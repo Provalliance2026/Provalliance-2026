@@ -15,14 +15,14 @@ emails, importes individuales de personas), avisa antes de seguir y no los lleve
    datos (y lo que pidan). Comprueba que los totales cuadran con el Excel nuevo.
 3. **Crear** uno nuevo: `unidades/<unidad>/<nombre>.html` (minúsculas y guiones).
    Si es una web de varias páginas, va en `unidades/<unidad>/<nombre>/` con un `index.html` de portada;
-   el portal enlaza esa portada (enlace "← Portal" a `../../../index.html`). Ej.: `unidades/producto/dist-wholesale/`.
+   el portal enlaza esa portada (enlace "← Portal" a `../../../`). Ej.: `unidades/producto/dist-wholesale/`.
 4. Cada dashboard es **un único HTML autocontenido**:
    - En `<head>`: `<title>`, `<meta name="description">` (una frase) y
      `<meta name="actualizado" content="aaaa-mm-dd">` con la fecha de los datos. El portal los usa.
    - Datos **agregados** incrustados como JSON en un `<script>`; nunca el Excel completo.
    - Gráficos con Chart.js desde `https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js`
      (versión fija). Sin otras dependencias externas salvo Google Fonts.
-   - Cabecera con el nombre de la unidad, título, fecha de los datos y enlace "← Portal" a `../../index.html`;
+   - Cabecera con el nombre de la unidad, título, fecha de los datos y enlace "← Portal" a `../../`;
      fila de KPIs; gráficos; tabla de detalle si aporta.
    - Responsive (usable en móvil) y modo claro/oscuro con variables CSS en `:root`.
    - Formato español: `1.234,56 €`, fechas `dd/mm/aaaa` (`Intl.NumberFormat('es-ES')`).

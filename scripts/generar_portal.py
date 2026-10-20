@@ -214,7 +214,7 @@ def main() -> None:
     for u in unidades:
         (SALIDA / "unidades" / u["carpeta"] / "index.html").write_text(PLANTILLA.format(
             titulo=html.escape(u['nombre']),
-            volver='<a class="volver" href="../../index.html">← Portal</a><br>',
+            volver='<a class="volver" href="../../">← Portal</a><br>',
             secciones=seccion(u, "")), encoding="utf-8")
     total = sum(len(u["dashboards"]) for u in unidades)
     print(f"Portal generado en {SALIDA}: {len(unidades)} unidades, {total} dashboards.")

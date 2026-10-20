@@ -183,6 +183,18 @@ PORTADA = """<!doctype html>
 """
 
 
+REDIRECCION = """<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url={destino}">
+<script>location.replace("{destino}")</script>
+<title>Redirigiendo…</title>
+</head>
+<body><a href="{destino}">Abrir el dashboard</a></body>
+</html>
+"""
+
 def tarjeta_unidad(u: dict) -> str:
     n = len(u["dashboards"])
     destino = "index.html"
@@ -210,9 +222,14 @@ def main() -> None:
         copiar_publico(UNIDADES / u["carpeta"], SALIDA / "unidades" / u["carpeta"])
     tarjetas = "".join(tarjeta_unidad(u) for u in unidades)
     (SALIDA / "index.html").write_text(PORTADA.format(tarjetas=tarjetas), encoding="utf-8")
-    # Una página por unidad con sus dashboards
+    # Una página por unidad con sus dashboards; si solo tiene uno, redirige a él
     for u in unidades:
-        (SALIDA / "unidades" / u["carpeta"] / "index.html").write_text(PLANTILLA.format(
+        pagina = SALIDA / "unidades" / u["carpeta"] / "index.html"
+        if len(u["dashboards"]) == 1:
+            destino = html.escape(u["dashboards"][0]["archivo"])
+            pagina.write_text(REDIRECCION.format(destino=destino), encoding="utf-8")
+            continue
+        pagina.write_text(PLANTILLA.format(
             titulo=html.escape(u['nombre']),
             volver='<a class="volver" href="../../">← Portal</a><br>',
             secciones=seccion(u, "")), encoding="utf-8")

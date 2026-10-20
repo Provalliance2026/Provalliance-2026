@@ -88,14 +88,38 @@ tr.difiere td:first-child { box-shadow:inset 3px 0 0 var(--acento); }
       <div class="ante">HQ · Marketing</div>
       <h1>Marketing Q4</h1>
     </div>
-    <div class="meta">Detalle por proveedor (cuenta 627)<br>Datos a __FECHA__ · Cifras en euros</div>
+    <div class="meta">Resumen por unidad y detalle por proveedor (cuenta 627)<br>Datos a __FECHA__ · Cifras en euros</div>
   </header>
 
   <nav role="tablist">
-    <button role="tab" id="t-hq" aria-controls="hq" aria-selected="true">HQ</button>
+    <button role="tab" id="t-summary" aria-controls="summary" aria-selected="true">Summary</button>
+    <button role="tab" id="t-hq" aria-controls="hq" aria-selected="false">HQ</button>
     <button role="tab" id="t-dist" aria-controls="dist" aria-selected="false">DIST</button>
     <button role="tab" id="t-bstores" aria-controls="bstores" aria-selected="false">BSTORES</button>
   </nav>
+  <!-- ───────── SUMMARY: totales por unidad, como la pestaña SUMMARY del Excel ───────── -->
+  <section class="panel" id="summary" role="tabpanel" aria-labelledby="t-summary">
+    <div class="kpis" id="res-kpis"></div>
+    <div class="rejilla">
+      <div class="caja">
+        <h2>Total frente a budget</h2>
+        <div class="sub">Por unidad, en miles de euros</div>
+        <div class="leyenda"><span><i style="background:var(--s1)"></i>Total</span><span><i style="background:var(--s2)"></i>Budget</span></div>
+        <div class="grafico"><canvas id="res-unidades"></canvas></div>
+      </div>
+      <div class="caja">
+        <h2>Composición del total</h2>
+        <div class="sub">Gasto de enero a septiembre y ajustes, en miles de euros</div>
+        <div class="leyenda" id="res-leyenda"></div>
+        <div class="grafico"><canvas id="res-composicion"></canvas></div>
+      </div>
+    </div>
+    <div class="caja">
+      <h2>Summary Marketing 2026</h2>
+      <div class="sub">Miles de euros · Diferencia = budget − total (positivo: margen disponible)</div>
+      <div class="tabla"><table id="res-tabla"></table></div>
+    </div>
+  </section>
   <div id="paneles"></div>
 </div>
 
@@ -136,7 +160,7 @@ const PESTANAS = { hq: 'HQ', dist: 'DIST', bstores: 'BSTORES' };
 const TIPOS = ['BRAND', 'DIGITAL', 'Ajustes', 'Sin tipo'];
 const TOP = 15;
 document.getElementById('paneles').innerHTML = Object.entries(PESTANAS).map(([id, nombre], i) => `
-  <section class="panel" id="${id}" role="tabpanel" aria-labelledby="t-${id}" ${i ? 'hidden' : ''}>
+  <section class="panel" id="${id}" role="tabpanel" aria-labelledby="t-${id}" hidden>
     <div class="filtros">
       ${id === 'hq' ? `<label>Tipo<select id="${id}-tipo"><option value="">Todos</option>${TIPOS.map(t => `<option>${t}</option>`).join('')}</select></label>` : ''}
       <label>Proveedor<input id="${id}-buscar" type="search" placeholder="Buscar proveedor…" autocomplete="off"></label>
@@ -171,6 +195,47 @@ function abrir(id) {
 }
 tabs.forEach(b => b.addEventListener('click', () => abrir(b.getAttribute('aria-controls'))));
 if (location.hash.slice(1) in PESTANAS) abrir(location.hash.slice(1));
+
+// ═════════ SUMMARY ═════════
+(() => {
+  const R = D.resumen, keur = v => fmt.format(Math.round(v) || 0) + ' k€';
+  const esTotal = f => f.unidad.toUpperCase() === 'TOTAL';
+  const unidades = R.filas.filter(f => !esTotal(f)), tot = R.filas.find(esTotal)?.valores;
+  const totalDe = f => f.valores['TOTAL'], budgetDe = f => f.valores['BUDGET'];
+  if (tot) kpis('res-kpis', [
+    ['Total', keur(tot['TOTAL']), 'Gasto enero–septiembre + ajustes'],
+    ['Budget', keur(tot['BUDGET']), 'Presupuesto 2026'],
+    ['Diferencia', keur(tot['BUDGET'] - tot['TOTAL']), tot['BUDGET'] >= tot['TOTAL'] ? 'Margen disponible' : 'Por encima del budget'],
+    ['Consumido', pct(tot['TOTAL'] / tot['BUDGET']), 'Total sobre budget'],
+  ]);
+  const enMiles = { callbacks: { label: c => `${c.dataset.label}: ${keur(c.parsed.y)}` } };
+  dibujar('res-unidades', {
+    type: 'bar',
+    data: { labels: unidades.map(f => f.unidad), datasets: [
+      { label: 'Total', data: unidades.map(totalDe), ...barra(css('--s1')) },
+      { label: 'Budget', data: unidades.map(budgetDe), ...barra(css('--s2')) },
+    ] },
+    options: { scales: ejes(false, false), interaction: { mode: 'index', intersect: false }, plugins: { tooltip: enMiles } },
+  });
+  // Partes del total: columnas anteriores a TOTAL que tengan algún valor
+  const partes = R.columnas.slice(0, R.columnas.indexOf('TOTAL')).filter(col => unidades.some(f => f.valores[col]));
+  const COL = ['--s1', '--s3', '--s4', '--s5'].map(css);
+  document.getElementById('res-leyenda').innerHTML = partes.map((col, i) => `<span><i style="background:${COL[i % COL.length]}"></i>${esc(col)}</span>`).join('');
+  dibujar('res-composicion', {
+    type: 'bar',
+    data: { labels: unidades.map(f => f.unidad), datasets: partes.map((col, i) => ({
+      label: col, data: unidades.map(f => f.valores[col]), ...barra(COL[i % COL.length]), borderRadius: 0, borderWidth: { top: 2 },
+    })) },
+    options: { scales: ejes(false, true), interaction: { mode: 'index', intersect: false }, plugins: { tooltip: enMiles } },
+  });
+  document.getElementById('res-tabla').innerHTML =
+    `<tr><th>Unidad</th>${R.columnas.map(col => `<th>${esc(col)}</th>`).join('')}<th>% consumido</th></tr>` +
+    R.filas.map(f => `<tr class="${esTotal(f) ? 'total' : ''}"><td>${esc(f.unidad)}</td>${R.columnas.map(col => {
+      const v = f.valores[col];
+      return `<td class="${col === 'DIFF' && v ? signo(v) : ''}">${col === 'TOTAL' ? `<strong>${keur(v)}</strong>` : keur(v)}</td>`;
+    }).join('')}<td>${budgetDe(f) ? pct(totalDe(f) / budgetDe(f)) : '—'}</td></tr>`).join('');
+  mejorarTabla(document.getElementById('res-tabla'), 'marketing-summary');
+})();
 
 // ═════════ Una pestaña por unidad ═════════
 for (const id of Object.keys(PESTANAS)) {

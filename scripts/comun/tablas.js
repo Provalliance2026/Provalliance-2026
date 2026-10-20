@@ -6,7 +6,7 @@
 const valorCelda = texto => {
   const s = texto.trim();
   if (!s || s === '—') return null;
-  const n = s.replace(/[€%\s]/g, '').replace(/\./g, '').replace(',', '.');
+  const n = s.replace(/k€|[€%\s]/g, '').replace(/\./g, '').replace(',', '.');  // «1.234 €», «62 %», «1.048 k€»
   return /^-?\d+(\.\d+)?$/.test(n) ? +n : null;
 };
 

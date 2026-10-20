@@ -1,4 +1,4 @@
-"""Extrae las pestañas MK HQ, MKDIST y MKBSTORES del Excel Marketing Q4 a JSON (lo usa generar.py)."""
+"""Extrae SUMMARY y las pestañas MK HQ, MKDIST y MKBSTORES del Excel Marketing Q4 a JSON (lo usa generar.py)."""
 import json
 import sys
 
@@ -27,4 +27,23 @@ def leer(nombre: str) -> dict:
     return {"filtros": {k: str(v) for k, v in filtros.items()}, "proveedores": proveedores}
 
 
-json.dump({k: leer(v) for k, v in PESTANAS.items()}, sys.stdout, ensure_ascii=False, separators=(",", ":"))
+def leer_resumen() -> dict:
+    """Tabla de SUMMARY (miles de euros): una fila por unidad y la fila TOTAL; columnas desde la cabecera con BUDGET."""
+    filas = [list(r) + [None] * 10 for r in wb["SUMMARY"].iter_rows(values_only=True)]
+    ini = next(i for i, r in enumerate(filas) if "BUDGET" in r)
+    cab = filas[ini]
+    cols = [(j, str(v).strip()) for j, v in enumerate(cab) if isinstance(v, str) and v.strip()]
+    unidades = []
+    for r in filas[ini + 1:]:
+        etiqueta = next((v for v in r[:cols[0][0]] if isinstance(v, str) and v.strip()), None)
+        if not etiqueta:
+            continue
+        unidades.append({"unidad": etiqueta.strip(), "valores": {nombre: num(r[j]) for j, nombre in cols}})
+        if etiqueta.strip().upper() == "TOTAL":
+            break
+    return {"columnas": [nombre for _, nombre in cols], "filas": unidades}
+
+
+salida = {k: leer(v) for k, v in PESTANAS.items()}
+salida["resumen"] = leer_resumen()
+json.dump(salida, sys.stdout, ensure_ascii=False, separators=(",", ":"))

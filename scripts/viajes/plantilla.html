@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viajes 2026 · HQ</title>
+<meta name="description" content="Seguimiento del presupuesto de viajes, gasto con tarjeta y reservas TravelPerk.">
+<meta name="actualizado" content="2026-09-30">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --fondo:#f2ede3; --tarjeta:#fff; --texto:#1c1a14; --cuerpo:#3a3628; --suave:#7a7260; --borde:#ddd8cc; --linea:#ece7dc;
+  --acento:#b8860b; --pos:#2d5a3d; --neg:#8b2020;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo:#16140f; --tarjeta:#201d17; --texto:#efe9dc; --cuerpo:#d6cfbf; --suave:#a39c8c; --borde:#3a352b; --linea:#2c2821;
+    --pos:#6fbf8a; --neg:#e07a7a;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300;
+  }
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:Inter, system-ui, sans-serif; font-size:14px; line-height:1.5; background:var(--fondo); color:var(--cuerpo); }
+.pagina { max-width:1240px; margin:auto; padding:28px 16px 64px; }
+.volver { display:inline-block; font-size:11px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--suave); text-decoration:none; margin-bottom:14px; }
+.volver:hover { color:var(--texto); }
+header { border-bottom:2px solid var(--texto); padding-bottom:16px; display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; }
+.ante { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--suave); }
+h1 { font-family:'EB Garamond', Georgia, serif; font-weight:500; font-size:40px; color:var(--texto); line-height:1.1; }
+.meta { font-size:12px; color:var(--suave); text-align:right; }
+nav { display:flex; gap:4px; border-bottom:1px solid var(--borde); margin:20px 0 24px; overflow-x:auto; }
+nav button { font:inherit; font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; background:none; border:0;
+  border-bottom:2px solid transparent; color:var(--suave); padding:10px 16px; cursor:pointer; white-space:nowrap; }
+nav button[aria-selected="true"] { color:var(--texto); border-bottom-color:var(--acento); }
+.panel[hidden] { display:none; }
+.kpis { display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px; margin-bottom:20px; }
+.kpi { background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:16px 18px; }
+.kpi .et { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--suave); }
+.kpi .v { font-family:'EB Garamond', Georgia, serif; font-size:30px; color:var(--texto); line-height:1.2; margin-top:4px; }
+.kpi .n { font-size:12px; color:var(--suave); }
+.rejilla { display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:16px; margin-bottom:20px; }
+.caja { background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:18px; min-width:0; }
+.caja h2 { font-family:'EB Garamond', Georgia, serif; font-weight:500; font-size:20px; color:var(--texto); }
+.caja .sub { font-size:12px; color:var(--suave); margin-bottom:12px; }
+.grafico { position:relative; height:300px; }
+.leyenda { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--suave); margin-bottom:8px; }
+.leyenda i { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px; }
+.leyenda i.linea { height:0; border-top:2px dashed var(--suave); border-radius:0; vertical-align:3px; }
+.filtros { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px; }
+.filtros label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--suave); display:flex; flex-direction:column; gap:4px; }
+select { font:inherit; font-size:13px; color:var(--texto); background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:6px 10px; min-width:180px; }
+.tabla { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; font-variant-numeric:tabular-nums; }
+th { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--suave); text-align:right; padding:8px 10px; border-bottom:1px solid var(--borde); white-space:nowrap; }
+td { padding:7px 10px; border-bottom:1px solid var(--linea); text-align:right; white-space:nowrap; color:var(--cuerpo); }
+th:first-child, td:first-child, th.txt, td.txt { text-align:left; }
+tr.grupo td { font-weight:600; color:var(--texto); background:var(--fondo); }
+tr.total td { font-weight:600; color:var(--texto); border-top:2px solid var(--texto); }
+.pos { color:var(--pos); } .neg { color:var(--neg); }
+.nota { font-size:12px; color:var(--suave); margin-top:10px; }
+@media (max-width:600px) { .rejilla { grid-template-columns:1fr; } h1 { font-size:32px; } .grafico { height:260px; } .meta { text-align:left; } }
+</style>
+</head>
+<body>
+<div class="pagina">
+  <a class="volver" href="../../">← Portal</a>
+  <header>
+    <div>
+      <div class="ante">HQ · Gastos de viaje</div>
+      <h1>Viajes 2026</h1>
+    </div>
+    <div class="meta">Datos de enero a septiembre de 2026<br>Cifras en euros</div>
+  </header>
+
+  <nav role="tablist">
+    <button role="tab" id="t-seguimiento" aria-controls="seguimiento" aria-selected="true">Seguimiento</button>
+    <button role="tab" id="t-tarjeta" aria-controls="tarjeta" aria-selected="false">Tarjeta</button>
+    <button role="tab" id="t-travelperk" aria-controls="travelperk" aria-selected="false">TravelPerk</button>
+  </nav>
+
+  <!-- ───────── SEGUIMIENTO ───────── -->
+  <section class="panel" id="seguimiento" role="tabpanel" aria-labelledby="t-seguimiento">
+    <div class="kpis" id="seg-kpis"></div>
+    <div class="rejilla">
+      <div class="caja">
+        <h2>Gasto real por mes</h2>
+        <div class="sub">Frente al presupuesto medio mensual</div>
+        <div class="leyenda"><span><i style="background:var(--s1)"></i>Gasto real</span><span><i class="linea"></i>Presupuesto medio mensual</span></div>
+        <div class="grafico"><canvas id="seg-mes"></canvas></div>
+      </div>
+      <div class="caja">
+        <h2>Presupuesto y gasto por BU</h2>
+        <div class="sub">Acumulado enero–septiembre frente a presupuesto anual</div>
+        <div class="leyenda"><span><i style="background:var(--s1)"></i>Presupuesto 2026</span><span><i style="background:var(--s2)"></i>Gasto real</span></div>
+        <div class="grafico"><canvas id="seg-bu"></canvas></div>
+      </div>
+    </div>
+    <div class="caja" style="margin-bottom:20px">
+      <h2>Resumen por BU</h2>
+      <div class="sub">Tal como aparece en el resumen de la pestaña Seguimiento</div>
+      <div class="tabla"><table id="seg-resumen"></table></div>
+    </div>
+    <div class="caja">
+      <h2>Detalle por responsable y empleado</h2>
+      <div class="sub">Tendencia = proyección a cierre de año del gasto actual · Desviación = presupuesto − tendencia (positivo: por debajo de presupuesto)</div>
+      <div class="tabla"><table id="seg-detalle"></table></div>
+      <p class="nota" id="seg-nota"></p>
+    </div>
+  </section>
+
+  <!-- ───────── TARJETA ───────── -->
+  <section class="panel" id="tarjeta" role="tabpanel" aria-labelledby="t-tarjeta" hidden>
+    <div class="filtros"><label>BU<select id="tar-bun"></select></label></div>
+    <div class="kpis" id="tar-kpis"></div>
+    <div class="rejilla">
+      <div class="caja">
+        <h2>Gasto con tarjeta por mes</h2>
+        <div class="sub" id="tar-mes-sub"></div>
+        <div class="grafico"><canvas id="tar-mes"></canvas></div>
+      </div>
+      <div class="caja">
+        <h2>Gasto con tarjeta por BU</h2>
+        <div class="sub">Acumulado enero–septiembre</div>
+        <div class="grafico"><canvas id="tar-bu"></canvas></div>
+      </div>
+    </div>
+    <div class="caja">
+      <h2>Detalle por titular</h2>
+      <div class="sub">Ordenado por gasto acumulado</div>
+      <div class="tabla"><table id="tar-tabla"></table></div>
+    </div>
+  </section>
+
+  <!-- ───────── TRAVELPERK ───────── -->
+  <section class="panel" id="travelperk" role="tabpanel" aria-labelledby="t-travelperk" hidden>
+    <div class="filtros">
+      <label>BU<select id="tp-bu"></select></label>
+      <label>Mes<select id="tp-filtro-mes"></select></label>
+    </div>
+    <div class="kpis" id="tp-kpis"></div>
+    <div class="rejilla">
+      <div class="caja">
+        <h2>Gasto por mes y tipo</h2>
+        <div class="sub">Reservas TravelPerk (incluye abonos)</div>
+        <div class="leyenda" id="tp-leyenda"></div>
+        <div class="grafico"><canvas id="tp-mes"></canvas></div>
+      </div>
+      <div class="caja">
+        <h2>Gasto por BU y sub-BU</h2>
+        <div class="sub" id="tp-bu-sub"></div>
+        <div class="grafico"><canvas id="tp-bus"></canvas></div>
+      </div>
+    </div>
+    <div class="caja">
+      <h2>Detalle por empleado</h2>
+      <div class="sub">Ordenado por gasto · movimientos = líneas de factura</div>
+      <div class="tabla"><table id="tp-tabla"></table></div>
+    </div>
+  </section>
+</div>
+
+<script id="datos" type="application/json">__DATOS__</script>
+<script>
+const D = JSON.parse(document.getElementById('datos').textContent);
+const MESES = D.meses, CORTO = MESES.map(m => m.slice(0, 3).charAt(0) + m.slice(1, 3).toLowerCase());
+const N_MESES = 9; // enero–septiembre con datos
+const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0, useGrouping: 'always' });
+const eur = v => v == null ? '—' : fmt.format(v) + ' €';
+const pct = v => v == null ? '—' : new Intl.NumberFormat('es-ES', { style: 'percent', maximumFractionDigits: 0 }).format(v);
+const signo = v => v == null ? '' : v >= 0 ? 'pos' : 'neg';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const sum = a => a.reduce((x, y) => x + (y || 0), 0);
+const kpis = (id, items) => document.getElementById(id).innerHTML = items.map(([et, v, n]) =>
+  `<div class="kpi"><div class="et">${et}</div><div class="v">${v}</div><div class="n">${n || ''}</div></div>`).join('');
+
+// ── Gráficos: estilo común ──
+Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+Chart.defaults.font.size = 11;
+Chart.defaults.color = css('--suave');
+Chart.defaults.plugins.legend.display = false;
+Chart.defaults.plugins.tooltip.callbacks.label = c => `${c.dataset.label}: ${eur(c.parsed[c.chart.options.indexAxis === 'y' ? 'x' : 'y'])}`;
+Chart.defaults.maintainAspectRatio = false;
+const ejes = (horizontal, apilado) => {
+  const valor = { stacked: apilado, grid: { color: css('--linea') }, border: { display: false }, ticks: { callback: v => fmt.format(v) } };
+  const cat = { stacked: apilado, grid: { display: false }, border: { color: css('--borde') } };
+  return horizontal ? { x: valor, y: cat } : { x: cat, y: valor };
+};
+const barra = color => ({ backgroundColor: color, borderRadius: 4, borderSkipped: 'start', maxBarThickness: 36, borderColor: css('--tarjeta'), borderWidth: { top: 0, bottom: 0, left: 0, right: 0 } });
+const graficos = {};
+const dibujar = (id, cfg) => { graficos[id]?.destroy(); graficos[id] = new Chart(document.getElementById(id), cfg); };
+
+// ── Pestañas ──
+const tabs = [...document.querySelectorAll('nav button')];
+function abrir(id) {
+  tabs.forEach(b => b.setAttribute('aria-selected', b.getAttribute('aria-controls') === id));
+  document.querySelectorAll('.panel').forEach(p => p.hidden = p.id !== id);
+  history.replaceState(null, '', '#' + id);
+}
+tabs.forEach(b => b.addEventListener('click', () => abrir(b.getAttribute('aria-controls'))));
+if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.hash.slice(1));
+
+// ═════════ SEGUIMIENTO ═════════
+(() => {
+  const S = D.seguimiento, T = S.total;
+  const presupuesto = S.resumen.find(r => r.bu === 'TOTAL').presupuesto;
+  const consumido = T.real / presupuesto;
+  kpis('seg-kpis', [
+    ['Presupuesto 2026', eur(presupuesto), 'Propuesta anual'],
+    ['Gasto real', eur(T.real), 'Enero–septiembre'],
+    ['Consumido', pct(consumido), `${N_MESES} de 12 meses transcurridos (${pct(N_MESES / 12)})`],
+    ['Pendiente', eur(presupuesto - T.real), 'Presupuesto disponible hasta diciembre'],
+  ]);
+  const mediaMes = presupuesto / 12;
+  dibujar('seg-mes', {
+    data: { labels: CORTO.slice(0, N_MESES), datasets: [
+      { type: 'bar', label: 'Gasto real', data: T.meses.slice(0, N_MESES), ...barra(css('--s1')) },
+      { type: 'line', label: 'Presupuesto medio mensual', data: Array(N_MESES).fill(mediaMes), borderColor: css('--suave'), borderWidth: 2, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 0 },
+    ] },
+    options: { scales: ejes(false, false), interaction: { mode: 'index', intersect: false } },
+  });
+  const AGREGADOS = ['HAIRDRESSING', 'SALON SPACE', 'TOTAL'];
+  const bus = S.resumen.filter(r => !AGREGADOS.includes(r.bu));
+  dibujar('seg-bu', {
+    type: 'bar',
+    data: { labels: bus.map(r => r.bu), datasets: [
+      { label: 'Presupuesto 2026', data: bus.map(r => r.presupuesto), ...barra(css('--s1')) },
+      { label: 'Gasto real', data: bus.map(r => r.real), ...barra(css('--s2')) },
+    ] },
+    options: { indexAxis: 'y', scales: ejes(true, false), interaction: { mode: 'index', intersect: false } },
+  });
+
+  const cab = `<tr><th>BU</th><th class="txt">Responsable</th><th>Presupuesto</th>${CORTO.slice(0, N_MESES).map(m => `<th>${m}</th>`).join('')}<th>Real 2026</th><th>Pendiente</th><th>% consumido</th></tr>`;
+  document.getElementById('seg-resumen').innerHTML = cab + S.resumen.map(r => {
+    const cls = r.bu === 'TOTAL' ? 'total' : AGREGADOS.includes(r.bu) ? 'grupo' : '';
+    return `<tr class="${cls}"><td>${esc(r.bu)}</td><td class="txt">${esc(r.owner)}</td><td>${eur(r.presupuesto)}</td>${r.meses.slice(0, N_MESES).map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(r.real)}</td><td class="${signo(r.pendiente)}">${eur(r.pendiente)}</td><td>${r.presupuesto ? pct(r.real / r.presupuesto) : '—'}</td></tr>`;
+  }).join('');
+
+  let html = `<tr><th>Empleado</th><th class="txt">BU</th><th>Presupuesto</th>${CORTO.slice(0, N_MESES).map(m => `<th>${m}</th>`).join('')}<th>Real 2026</th><th>Pendiente</th><th>Tendencia</th><th>Desviación</th><th>Desv. %</th><th>Tarjeta</th></tr>`;
+  const grupos = [...new Set(S.detalle.map(r => r.grupo))];
+  for (const g of grupos) {
+    const filas = S.detalle.filter(r => r.grupo === g);
+    html += `<tr class="grupo"><td>${esc(g)}</td><td></td><td>${eur(sum(filas.map(r => r.presupuesto)))}</td>${CORTO.slice(0, N_MESES).map((_, i) => `<td>${eur(sum(filas.map(r => r.meses[i])))}</td>`).join('')}<td>${eur(sum(filas.map(r => r.real)))}</td><td></td><td></td><td></td><td></td><td>${eur(sum(filas.map(r => r.tarjeta)))}</td></tr>`;
+    html += filas.map(r => `<tr><td>${esc(r.persona)}</td><td class="txt">${esc(r.bu)}</td><td>${eur(r.presupuesto)}</td>${r.meses.slice(0, N_MESES).map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(r.real)}</td><td class="${signo(r.pendiente)}">${eur(r.pendiente)}</td><td>${eur(r.tendencia)}</td><td class="${signo(r.desv)}">${eur(r.desv)}</td><td class="${signo(r.desvPct)}">${pct(r.desvPct)}</td><td>${eur(r.tarjeta)}</td></tr>`).join('');
+  }
+  html += `<tr class="total"><td>TOTAL</td><td></td><td>${eur(T.presupuesto)}</td>${T.meses.slice(0, N_MESES).map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(T.real)}</td><td>${eur(T.pendiente)}</td><td></td><td></td><td></td><td>${eur(T.tarjeta)}</td></tr>`;
+  document.getElementById('seg-detalle').innerHTML = html;
+  document.getElementById('seg-nota').textContent = `Fuera del total: OH Beauty ${eur(sum(S.fueraTotal.map(r => r.real)))} (` + S.fueraTotal.map(r => `${r.bu} · ${r.persona} ${eur(r.real)}`).join(' · ') + ').';
+})();
+
+// ═════════ TARJETA ═════════
+(() => {
+  const filas = D.tarjeta.map(r => ({ ...r, total: sum(r.meses) }));
+  const buns = [...new Set(filas.map(r => r.bun))].sort();
+  const sel = document.getElementById('tar-bun');
+  sel.innerHTML = '<option value="">Todas</option>' + buns.map(b => `<option>${esc(b)}</option>`).join('');
+  const meses = D.mesesTarjeta.map(m => m.slice(0, 1) + m.slice(1, 3).toLowerCase());
+  const porBu = buns.map(b => [b, sum(filas.filter(r => r.bun === b).map(r => r.total))]).sort((a, b) => b[1] - a[1]);
+  dibujar('tar-bu', {
+    type: 'bar',
+    data: { labels: porBu.map(x => x[0]), datasets: [{ label: 'Gasto con tarjeta', data: porBu.map(x => x[1]), ...barra(css('--s1')) }] },
+    options: { indexAxis: 'y', scales: ejes(true, false) },
+  });
+  function pintar() {
+    const f = filas.filter(r => !sel.value || r.bun === sel.value).sort((a, b) => b.total - a.total);
+    const total = sum(f.map(r => r.total)), porMes = meses.map((_, i) => sum(f.map(r => r.meses[i])));
+    const top = f[0];
+    kpis('tar-kpis', [
+      ['Gasto acumulado', eur(total), 'Enero–septiembre'],
+      ['Septiembre', eur(porMes[8]), `Media mensual ${eur(total / meses.length)}`],
+      ['Titulares', f.length, sel.value || 'Todas las BU'],
+      ['Mayor gasto', top ? eur(top.total) : '—', top ? esc(top.titular) : ''],
+    ]);
+    document.getElementById('tar-mes-sub').textContent = sel.value || 'Todas las BU';
+    dibujar('tar-mes', {
+      type: 'bar',
+      data: { labels: meses, datasets: [{ label: 'Gasto con tarjeta', data: porMes, ...barra(css('--s1')) }] },
+      options: { scales: ejes(false, false) },
+    });
+    document.getElementById('tar-tabla').innerHTML =
+      `<tr><th>Titular</th><th class="txt">BU</th><th class="txt">Asignación</th>${meses.map(m => `<th>${m}</th>`).join('')}<th>Total</th></tr>` +
+      f.map(r => `<tr><td>${esc(r.titular)}</td><td class="txt">${esc(r.bun)}</td><td class="txt">${esc(r.cruce)}</td>${r.meses.map(v => `<td>${eur(v)}</td>`).join('')}<td><strong>${eur(r.total)}</strong></td></tr>`).join('') +
+      `<tr class="total"><td>TOTAL</td><td></td><td></td>${porMes.map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(total)}</td></tr>`;
+  }
+  sel.addEventListener('change', pintar);
+  pintar();
+})();
+
+// ═════════ TRAVELPERK ═════════
+(() => {
+  // filas: [mes, bu, subBu, cruce, empleado, naturaleza, importe, movimientos]
+  const TIPOS = ['Gastos de gestión', 'Tren', 'Vuelo', 'Hotel', 'Otros'];
+  const COLORES = ['--s1', '--s2', '--s3', '--s4', '--s5'].map(css);
+  const tipo = n => TIPOS.includes(n) ? n : 'Otros';
+  const R = D.travelperk.map(([mes, bu, sub, cruce, emp, nat, imp, n]) => ({ mes, bu, sub, cruce, emp, tipo: tipo(nat), imp, n }));
+  const selBu = document.getElementById('tp-bu'), selMes = document.getElementById('tp-filtro-mes');
+  selBu.innerHTML = '<option value="">Todas</option>' + [...new Set(R.map(r => r.bu))].sort().map(b => `<option>${esc(b)}</option>`).join('');
+  selMes.innerHTML = '<option value="">Todos</option>' + CORTO.slice(0, N_MESES).map((m, i) => `<option value="${i}">${MESES[i].charAt(0) + MESES[i].slice(1).toLowerCase()}</option>`).join('');
+  document.getElementById('tp-leyenda').innerHTML = TIPOS.map((t, i) => `<span><i style="background:${COLORES[i]}"></i>${t}</span>`).join('');
+  function pintar() {
+    const porBu = R.filter(r => !selBu.value || r.bu === selBu.value);
+    const f = porBu.filter(r => selMes.value === '' || r.mes === +selMes.value);
+    const total = sum(f.map(r => r.imp)), movs = sum(f.map(r => r.n));
+    const emps = new Set(f.map(r => r.emp));
+    const porTipo = TIPOS.map(t => sum(f.filter(r => r.tipo === t).map(r => r.imp)));
+    const principal = porTipo.map((v, i) => [TIPOS[i], v]).filter(x => x[0] !== 'Gastos de gestión' && x[0] !== 'Otros').sort((a, b) => b[1] - a[1])[0];
+    kpis('tp-kpis', [
+      ['Gasto TravelPerk', eur(total), selMes.value === '' ? 'Enero–septiembre' : selMes.selectedOptions[0].text],
+      ['Movimientos', fmt.format(movs), 'Líneas de factura'],
+      ['Empleados', emps.size, selBu.value || 'Todas las BU'],
+      ['Mayor partida', principal ? principal[0] : '—', principal ? eur(principal[1]) : ''],
+    ]);
+    // Mes × tipo: respeta el filtro de BU; el de mes resalta la barra elegida
+    dibujar('tp-mes', {
+      type: 'bar',
+      data: { labels: CORTO.slice(0, N_MESES), datasets: TIPOS.map((t, i) => ({
+        label: t, data: CORTO.slice(0, N_MESES).map((_, m) => sum(porBu.filter(r => r.mes === m && r.tipo === t).map(r => r.imp))),
+        ...barra(COLORES[i]), borderRadius: 0, borderWidth: { top: 2 },
+        backgroundColor: CORTO.slice(0, N_MESES).map((_, m) => selMes.value === '' || +selMes.value === m ? COLORES[i] : COLORES[i] + '40'),
+      })) },
+      options: { scales: ejes(false, true), interaction: { mode: 'index', intersect: false } },
+    });
+    const subs = {};
+    f.forEach(r => { const k = selBu.value ? r.sub : r.bu; subs[k] = (subs[k] || 0) + r.imp; });
+    const orden = Object.entries(subs).sort((a, b) => b[1] - a[1]);
+    document.getElementById('tp-bu-sub').textContent = selBu.value ? `Sub-BU de ${selBu.value}` : 'Por BU (elige una BU para ver sus sub-BU)';
+    dibujar('tp-bus', {
+      type: 'bar',
+      data: { labels: orden.map(x => x[0]), datasets: [{ label: 'Gasto', data: orden.map(x => x[1]), ...barra(css('--s1')) }] },
+      options: { indexAxis: 'y', scales: ejes(true, false) },
+    });
+    const porEmp = {};
+    f.forEach(r => {
+      const e = porEmp[r.emp] ??= { emp: r.emp, bu: r.bu, sub: r.sub, total: 0, n: 0, tipos: Object.fromEntries(TIPOS.map(t => [t, 0])) };
+      e.total += r.imp; e.n += r.n; e.tipos[r.tipo] += r.imp;
+    });
+    const filas = Object.values(porEmp).sort((a, b) => b.total - a.total);
+    document.getElementById('tp-tabla').innerHTML =
+      `<tr><th>Empleado</th><th class="txt">BU</th><th class="txt">Sub-BU</th>${TIPOS.map(t => `<th>${t}</th>`).join('')}<th>Total</th><th>Movimientos</th></tr>` +
+      filas.map(e => `<tr><td>${esc(e.emp)}</td><td class="txt">${esc(e.bu)}</td><td class="txt">${esc(e.sub)}</td>${TIPOS.map(t => `<td>${eur(e.tipos[t])}</td>`).join('')}<td><strong>${eur(e.total)}</strong></td><td>${e.n}</td></tr>`).join('') +
+      `<tr class="total"><td>TOTAL</td><td></td><td></td>${porTipo.map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(total)}</td><td>${fmt.format(movs)}</td></tr>`;
+  }
+  selBu.addEventListener('change', pintar);
+  selMes.addEventListener('change', pintar);
+  pintar();
+})();
+</script>
+</body>
+</html>

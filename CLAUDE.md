@@ -30,6 +30,14 @@ emails, importes individuales de personas), avisa antes de seguir y no los lleve
 5. Ejecuta `python3 scripts/generar_portal.py` para comprobar que el portal se construye sin errores.
 6. Haz commit en la rama de trabajo (no en `main`) con un mensaje descriptivo.
 
+## Dashboards con generador propio
+
+- **HQ · Viajes** (`unidades/hq/viajes.html`): cuando pasen el Excel `TEMPLATE_TRAVELPERK-TICKLEIA`,
+  ejecuta `python3 scripts/viajes/generar.py <excel>`; no subas el Excel. Actualiza en
+  `scripts/viajes/plantilla.html` el mes de los datos (`actualizado`, texto "enero–septiembre",
+  `N_MESES`) y comprueba que los totales cuadran con el Excel. El responsable ha pedido expresamente
+  que este dashboard muestre el detalle por empleado.
+
 ## Estilo visual común
 
 El mismo que la portada del portal y DIST-WHOLESALE: fondo `#f2ede3`, texto `#1c1a14`, gris `#7a7260`,

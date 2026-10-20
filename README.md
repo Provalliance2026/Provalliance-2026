@@ -48,12 +48,25 @@ Claude: *"Actualiza el dashboard de `dashboards/ventas-salones` con el Excel nue
 - Tamaño máximo por fichero subido desde la web: 25 MB.
 - Nunca subas contraseñas ni cadenas de conexión.
 
+## Dónde se publica
+
+Este repositorio es **privado** (aquí están los Excel). Al fusionar en `main`, el workflow
+[`publicar-portal.yml`](.github/workflows/publicar-portal.yml) construye el portal **sin los Excel**
+y lo copia al repositorio **público** [`Provalliance2026/dashboards`](https://github.com/Provalliance2026/dashboards),
+que lo sirve en **https://provalliance2026.github.io/dashboards/**.
+
+> El portal es público: cualquiera con el enlace puede ver los dashboards (solo datos agregados).
+
 ## Configuración inicial (solo administrador, una vez)
 
-1. **Settings → Pages → Source: GitHub Actions** para activar el portal.
-2. **Settings → Branches**: proteger `main` exigiendo Pull Request con 1 aprobación.
-3. **Organización → Teams**: crear el equipo (p. ej. `analistas`) con permiso *Write*.
-4. Revisar quién aprueba cada carpeta en [`.github/CODEOWNERS`](.github/CODEOWNERS).
-
-> Nota: con el repositorio privado, GitHub Pages requiere plan GitHub Team/Enterprise. Con
-> Enterprise Cloud se puede limitar el portal a miembros de la organización.
+1. **Crear el repositorio público** `Provalliance2026/dashboards` (vacío o con README).
+2. **Clave de despliegue** (en tu ordenador): `ssh-keygen -t ed25519 -N "" -f portal -C portal`
+   - `portal.pub` → repositorio **dashboards** → *Settings → Deploy keys → Add* → marcar **Allow write access**.
+   - `portal` (privada) → repositorio **Provalliance-2026** → *Settings → Secrets and variables → Actions*
+     → *New repository secret* con nombre `PORTAL_DEPLOY_KEY`. Después borra ambos ficheros.
+3. En **Provalliance-2026** → *Actions* → *Publicar portal de dashboards* → **Run workflow**.
+4. En **dashboards** → *Settings → Pages* → *Deploy from a branch* → `main` / `(root)`.
+5. En **Provalliance-2026**: *Settings → General* → rama por defecto `main`, y
+   *Settings → Branches* → proteger `main` exigiendo Pull Request con 1 aprobación.
+6. **Organización → Teams**: crear el equipo (p. ej. `analistas`) con permiso *Write* en
+   Provalliance-2026 y descomentar la línea de [`.github/CODEOWNERS`](.github/CODEOWNERS).

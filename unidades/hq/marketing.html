@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marketing Q4 · HQ</title>
+<meta name="description" content="Gasto de marketing por proveedor de HQ, DIST y BSTORES: importe contabilizado frente a seguimiento.">
+<meta name="actualizado" content="2026-10-20">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --fondo:#f2ede3; --tarjeta:#fff; --texto:#1c1a14; --cuerpo:#3a3628; --suave:#7a7260; --borde:#ddd8cc; --linea:#ece7dc;
+  --acento:#b8860b; --pos:#2d5a3d; --neg:#8b2020;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo:#16140f; --tarjeta:#201d17; --texto:#efe9dc; --cuerpo:#d6cfbf; --suave:#a39c8c; --borde:#3a352b; --linea:#2c2821;
+    --pos:#6fbf8a; --neg:#e07a7a;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300;
+  }
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:Inter, system-ui, sans-serif; font-size:14px; line-height:1.5; background:var(--fondo); color:var(--cuerpo); }
+.pagina { max-width:1240px; margin:auto; padding:28px 16px 64px; }
+.volver { display:inline-block; font-size:11px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--suave); text-decoration:none; margin-bottom:14px; }
+.volver:hover { color:var(--texto); }
+header { border-bottom:2px solid var(--texto); padding-bottom:16px; display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; }
+.ante { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--suave); }
+h1 { font-family:'EB Garamond', Georgia, serif; font-weight:500; font-size:40px; color:var(--texto); line-height:1.1; }
+.meta { font-size:12px; color:var(--suave); text-align:right; }
+nav { display:flex; gap:4px; border-bottom:1px solid var(--borde); margin:20px 0 24px; overflow-x:auto; }
+nav button { font:inherit; font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; background:none; border:0;
+  border-bottom:2px solid transparent; color:var(--suave); padding:10px 16px; cursor:pointer; white-space:nowrap; }
+nav button[aria-selected="true"] { color:var(--texto); border-bottom-color:var(--acento); }
+.panel[hidden] { display:none; }
+.kpis { display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px; margin-bottom:20px; }
+.kpi { background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:16px 18px; }
+.kpi .et { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--suave); }
+.kpi .v { font-family:'EB Garamond', Georgia, serif; font-size:30px; color:var(--texto); line-height:1.2; margin-top:4px; }
+.kpi .n { font-size:12px; color:var(--suave); }
+.rejilla { display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:16px; margin-bottom:20px; }
+.caja { background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:18px; min-width:0; }
+.caja h2 { font-family:'EB Garamond', Georgia, serif; font-weight:500; font-size:20px; color:var(--texto); }
+.caja .sub { font-size:12px; color:var(--suave); margin-bottom:12px; }
+.grafico { position:relative; height:300px; }
+.leyenda { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--suave); margin-bottom:8px; }
+.leyenda i { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px; }
+.leyenda i.linea { height:0; border-top:2px dashed var(--suave); border-radius:0; vertical-align:3px; }
+.filtros { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px; }
+.filtros label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--suave); display:flex; flex-direction:column; gap:4px; }
+select, input[type="search"] { font:inherit; font-size:13px; color:var(--texto); background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:6px 10px; min-width:180px; }
+input[type="search"] { min-width:240px; text-transform:none; letter-spacing:normal; font-weight:400; }
+input[type="search"]:focus, select:focus { outline:2px solid var(--acento); outline-offset:1px; }
+td.vacio { text-align:left; color:var(--suave); font-style:italic; }
+.tabla { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; font-variant-numeric:tabular-nums; }
+th { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--suave); text-align:right; padding:8px 10px; border-bottom:1px solid var(--borde); white-space:nowrap; }
+td { padding:7px 10px; border-bottom:1px solid var(--linea); text-align:right; white-space:nowrap; color:var(--cuerpo); }
+th:first-child, td:first-child, th.txt, td.txt { text-align:left; }
+tr.grupo td { font-weight:600; color:var(--texto); background:var(--fondo); }
+tr.total td { font-weight:600; color:var(--texto); border-top:2px solid var(--texto); }
+.pos { color:var(--pos); } .neg { color:var(--neg); }
+.nota { font-size:12px; color:var(--suave); margin-top:10px; }
+@media (max-width:600px) { .rejilla { grid-template-columns:1fr; } h1 { font-size:32px; } .grafico { height:260px; } .meta { text-align:left; } }
+.tipo { display:inline-block; font-size:10px; font-weight:600; letter-spacing:1px; padding:1px 6px; border-radius:3px; background:var(--fondo); color:var(--suave); }
+td.coment { text-align:left; color:var(--suave); font-style:italic; white-space:normal; min-width:120px; }
+tr.difiere td:first-child { box-shadow:inset 3px 0 0 var(--acento); }
+</style>
+</head>
+<body>
+<div class="pagina">
+  <a class="volver" href="../../">← Portal</a>
+  <header>
+    <div>
+      <div class="ante">HQ · Marketing</div>
+      <h1>Marketing Q4</h1>
+    </div>
+    <div class="meta">Detalle por proveedor (cuenta 627)<br>Datos a 20/10/2026 · Cifras en euros</div>
+  </header>
+
+  <nav role="tablist">
+    <button role="tab" id="t-hq" aria-controls="hq" aria-selected="true">HQ</button>
+    <button role="tab" id="t-dist" aria-controls="dist" aria-selected="false">DIST</button>
+    <button role="tab" id="t-bstores" aria-controls="bstores" aria-selected="false">BSTORES</button>
+  </nav>
+  <div id="paneles"></div>
+</div>
+
+<script id="datos" type="application/json">{"hq":{"filtros":{"TRESD":"627","MES":"(Varios elementos)"},"proveedores":[{"proveedor":"AJUSTES 2025","importe":104668.47,"seguimiento":0.0,"comentario":"","tipo":"Ajustes"},{"proveedor":"DEVENTS PLATAFORM SCP","importe":83024.0,"seguimiento":83024.0,"comentario":"","tipo":"BRAND"},{"proveedor":"FABRA COMUNICACION SL","importe":41400.0,"seguimiento":41400.0,"comentario":"","tipo":"BRAND"},{"proveedor":"ACREEDOR VISAS","importe":37183.17,"seguimiento":38731.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"TEAM TOP VISUAL S.L.","importe":24335.66,"seguimiento":17552.86,"comentario":"Reparto salones","tipo":"BRAND"},{"proveedor":"UBERALL GMBH","importe":20868.0,"seguimiento":20868.0,"comentario":"","tipo":"DIGITAL"},{"proveedor":"CARVING LABS SAS","importe":20700.0,"seguimiento":20700.0,"comentario":"","tipo":"DIGITAL"},{"proveedor":"WEBMEFY ESPAÑA, SL","importe":20625.0,"seguimiento":20625.0,"comentario":"","tipo":"DIGITAL"},{"proveedor":"GOVENTURE TECHNOLOGIES SL","importe":16354.0,"seguimiento":16355.2,"comentario":"","tipo":"DIGITAL"},{"proveedor":"SMS PUBLI - COMMIFY IBERIA, S.L.","importe":15246.94,"seguimiento":16895.65,"comentario":"","tipo":"DIGITAL"},{"proveedor":"PINTO INVESTMENTS, S.L.","importe":15000.0,"seguimiento":15000.0,"comentario":"","tipo":"DIGITAL"},{"proveedor":"MEDIAPOST SPAIN SL","importe":14023.8,"seguimiento":14023.7,"comentario":"","tipo":"DIGITAL"},{"proveedor":"HOLA, SL","importe":12600.0,"seguimiento":12600.0,"comentario":"","tipo":"BRAND"},{"proveedor":"OLLO ESTUDIO CREATIVO SL","importe":12169.97,"seguimiento":11254.97,"comentario":"","tipo":"BRAND"},{"proveedor":"CARISMATIC SL","importe":10800.0,"seguimiento":10800.0,"comentario":"","tipo":"BRAND"},{"proveedor":"GOOGLE IRELAND LIMITED","importe":10152.24,"seguimiento":10357.0,"comentario":"","tipo":"DIGITAL"},{"proveedor":"21NOVA GROWTH SL","importe":10026.0,"seguimiento":10025.93,"comentario":"","tipo":"DIGITAL"},{"proveedor":"ANGELS PRJCT, S.L.","importe":10000.0,"seguimiento":10000.0,"comentario":"","tipo":"BRAND"},{"proveedor":"DOS MODELS SL","importe":8796.77,"seguimiento":8766.77,"comentario":"","tipo":"BRAND"},{"proveedor":"ABRAHAM E.ESCUDERO AUGUSTO","importe":8365.0,"seguimiento":8220.5,"comentario":"","tipo":"BRAND"},{"proveedor":"TEAM VALIENTE SL","importe":7000.0,"seguimiento":7000.0,"comentario":"","tipo":"BRAND"},{"proveedor":"PRAGMATISTS SP. Z O. O.","importe":6771.0,"seguimiento":6771.0,"comentario":"","tipo":"DIGITAL"},{"proveedor":"YOU GLOW AGENCY SL","importe":6658.94,"seguimiento":6659.41,"comentario":"","tipo":"BRAND"},{"proveedor":"Alejandra Dominguez Brito","importe":6450.0,"seguimiento":6450.0,"comentario":"","tipo":"BRAND"},{"proveedor":"VIEW MANAGEMENT MADRID S.L.","importe":5149.0,"seguimiento":5149.0,"comentario":"","tipo":"BRAND"},{"proveedor":"OMNIPRO3D","importe":4395.0,"seguimiento":4395.0,"comentario":"","tipo":"BRAND"},{"proveedor":"ADQUIERE PUBLICIDAD SL","importe":3636.59,"seguimiento":3439.97,"comentario":"","tipo":"BRAND"},{"proveedor":"M PILAR LLOMBART DE ARCE","importe":3000.0,"seguimiento":3000.0,"comentario":"","tipo":"BRAND"},{"proveedor":"BEATRIZ PASCUAL JIMÉNEZ","importe":2915.97,"seguimiento":2915.97,"comentario":"","tipo":"BRAND"},{"proveedor":"5TH AVE MODEL MANAGEMENT, S.L.","importe":2200.0,"seguimiento":2200.0,"comentario":"","tipo":"BRAND"},{"proveedor":"THE TRIBE MANAGEMENT S.L.","importe":2160.0,"seguimiento":2519.53,"comentario":"","tipo":"DIGITAL"},{"proveedor":"YKONE NMA S.R.L.","importe":2100.0,"seguimiento":0.0,"comentario":"FRA 2025","tipo":"BRAND"},{"proveedor":"Jose Luis Tabueña Acín","importe":2100.0,"seguimiento":2100.0,"comentario":"","tipo":"BRAND"},{"proveedor":"ALEXANDRE ARZA FONQUERNA","importe":2040.3,"seguimiento":2040.3,"comentario":"","tipo":"BRAND"},{"proveedor":"LAB MEDIA Y COMUNICACIÓN, S.L.","importe":2033.47,"seguimiento":2033.47,"comentario":"","tipo":"BRAND"},{"proveedor":"ITZIAR JIMENEZ BARROS","importe":2030.0,"seguimiento":2030.0,"comentario":"","tipo":"BRAND"},{"proveedor":"DANIELA FAJARDO","importe":2000.0,"seguimiento":2000.0,"comentario":"","tipo":"BRAND"},{"proveedor":"BEFEGA INVEST, S.L.","importe":2000.0,"seguimiento":2000.0,"comentario":"","tipo":"BRAND"},{"proveedor":"FERNANDO CASCALES RODRÍGUEZ","importe":1770.75,"seguimiento":1595.75,"comentario":"","tipo":"BRAND"},{"proveedor":"DIVINA ESTRATEGIA, S.L.","importe":1770.0,"seguimiento":1769.85,"comentario":"","tipo":"DIGITAL"},{"proveedor":"DAVID MERCHANTE CARRILLO","importe":1650.0,"seguimiento":1749.0,"comentario":"","tipo":"DIGITAL"},{"proveedor":"WASSABI STEREO SL","importe":1560.0,"seguimiento":1560.0,"comentario":"","tipo":"BRAND"},{"proveedor":"LEADING HOSPITALITY, S.L.","importe":1522.73,"seguimiento":1522.0,"comentario":"","tipo":"BRAND"},{"proveedor":"OTILIA SOLUCIONES GASTRÓNOMICAS S.L","importe":1422.0,"seguimiento":1422.4,"comentario":"","tipo":"BRAND"},{"proveedor":"SOCIEDAD ESPAÑOLA DE RADIODIFUSION","importe":1255.0,"seguimiento":0.0,"comentario":"FRA DAVINIA","tipo":"BRAND"},{"proveedor":"CRISANTO BLANCO SANCHEZ","importe":1200.0,"seguimiento":1200.0,"comentario":"","tipo":"BRAND"},{"proveedor":"JACOBO SUÁREZ MUÑOZ","importe":1150.0,"seguimiento":1100.0,"comentario":"","tipo":"BRAND"},{"proveedor":"CASONA HOUSE S.L","importe":1000.0,"seguimiento":1000.0,"comentario":"","tipo":"BRAND"},{"proveedor":"ALMUDENA CARNICERO","importe":1000.0,"seguimiento":1000.0,"comentario":"","tipo":"BRAND"},{"proveedor":"ESTHER MARTIN SEPULVEDA","importe":1000.0,"seguimiento":1000.0,"comentario":"","tipo":"BRAND"},{"proveedor":"MIRIAM ALIA, S.L.","importe":960.0,"seguimiento":960.0,"comentario":"","tipo":"BRAND"},{"proveedor":"COOL FACE ENTERPRISE, S.L.","importe":800.0,"seguimiento":836.9,"comentario":"","tipo":"BRAND"},{"proveedor":"SHOPIFY INTERNATIONAL LIMITED","importe":775.47,"seguimiento":775.47,"comentario":"","tipo":"DIGITAL"},{"proveedor":"ALVARO VALENTIN ROMERO","importe":680.0,"seguimiento":680.0,"comentario":"","tipo":"BRAND"},{"proveedor":"JOSEFINA RICO AVELLANEDA","importe":650.0,"seguimiento":650.0,"comentario":"","tipo":"BRAND"},{"proveedor":"LIDIA HERNÁNDEZ DIÉGUEZ","importe":639.19,"seguimiento":600.0,"comentario":"","tipo":"BRAND"},{"proveedor":"KLAVIYO INC","importe":630.0,"seguimiento":546.07,"comentario":"","tipo":"DIGITAL"},{"proveedor":"JUAN RAMON DUARTE  FERNANDEZ-MIJARE","importe":630.0,"seguimiento":630.0,"comentario":"","tipo":"BRAND"},{"proveedor":"UNIFORMES GARYS","importe":460.9,"seguimiento":460.4,"comentario":"","tipo":"BRAND"},{"proveedor":"ACTIVE CAMPAIGN LLC","importe":394.87,"seguimiento":394.87,"comentario":"","tipo":"DIGITAL"},{"proveedor":"THE CREW MGMT 24 SL","importe":376.84,"seguimiento":377.0,"comentario":"","tipo":"BRAND"},{"proveedor":"JOSE CARLOS LORA SANCHEZ","importe":350.0,"seguimiento":350.0,"comentario":"","tipo":"BRAND"},{"proveedor":"ALICIA DIAZ CANTERO","importe":250.0,"seguimiento":250.0,"comentario":"","tipo":"BRAND"},{"proveedor":"ZARA ESPAÑA S.A","importe":205.0,"seguimiento":205.0,"comentario":"","tipo":"BRAND"},{"proveedor":"ADOSEL S. COOP. AND","importe":200.0,"seguimiento":200.0,"comentario":"","tipo":"BRAND"},{"proveedor":"LUIS EDUARDO GUTIERREZ CUBERO","importe":200.0,"seguimiento":200.0,"comentario":"","tipo":"BRAND"},{"proveedor":"MARTIN SUQUIA MONFORT","importe":200.0,"seguimiento":200.0,"comentario":"","tipo":"BRAND"},{"proveedor":"OVH HISPANO S.L.U.","importe":194.86,"seguimiento":219.46,"comentario":"","tipo":"DIGITAL"},{"proveedor":"TYPEFORM, S.L.","importe":110.0,"seguimiento":55.0,"comentario":"","tipo":"DIGITAL"},{"proveedor":"HUBSPOT IRELAND LIMITED","importe":48.3,"seguimiento":144.9,"comentario":"","tipo":"DIGITAL"},{"proveedor":"META PLATFORMS IRELAND LIMITED","importe":23.93,"seguimiento":23.93,"comentario":"","tipo":"DIGITAL"},{"proveedor":"BANCO BILBAO VIZCAIA ARGENTARIA, SA","importe":0.0,"seguimiento":0.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"ACKERMAN MARIA AGUSTINA","importe":0.0,"seguimiento":300.0,"comentario":"","tipo":"BRAND"},{"proveedor":"WELLA PRESTIGE SP, S.L.U.","importe":0.0,"seguimiento":0.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"EDELMAN SPAIN, S.A.","importe":-60000.0,"seguimiento":-60000.0,"comentario":"","tipo":"BRAND"}]},"dist":{"filtros":{"TRESD":"627","MES":"(Varios elementos)","BUN":"DIST"},"proveedores":[{"proveedor":"REAL MADRID C.F.","importe":48000.0,"seguimiento":48000.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"AJUSTES 2025","importe":27994.0,"seguimiento":27994.0,"comentario":"","tipo":"Ajustes"},{"proveedor":"JESSICA DEL ARBOL JIMENEZ","importe":25136.25,"seguimiento":25635.03,"comentario":"","tipo":"Sin tipo"},{"proveedor":"HMY YUDIGAR EQUIPAMIENTO, S.L.U","importe":14546.68,"seguimiento":14927.37,"comentario":"","tipo":"Sin tipo"},{"proveedor":"JESSY ART ZONE, S.L.","importe":12420.07,"seguimiento":15795.09,"comentario":"","tipo":"Sin tipo"},{"proveedor":"OLLO ESTUDIO CREATIVO SL","importe":12224.0,"seguimiento":11489.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"DB COSMETIC UNIPESSOAL LDA","importe":8370.0,"seguimiento":8370.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"INSTITUCION FERIAL DE MADRID","importe":7729.81,"seguimiento":7729.81,"comentario":"","tipo":"Sin tipo"},{"proveedor":"ABRAHAM E.ESCUDERO AUGUSTO","importe":7470.0,"seguimiento":7490.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"FERNANDO CASCALES RODRÍGUEZ","importe":2846.5,"seguimiento":2856.5,"comentario":"","tipo":"Sin tipo"},{"proveedor":"SEMILLA FOOD FAMILY S.L","importe":2800.0,"seguimiento":2634.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"EVOL XXI","importe":2203.42,"seguimiento":2203.42,"comentario":"","tipo":"Sin tipo"},{"proveedor":"SHOCK MODELS AGENCY SLU","importe":1800.0,"seguimiento":1800.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"5TH AVE MODEL MANAGEMENT, S.L.","importe":1440.0,"seguimiento":1440.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"ACR 20","importe":500.0,"seguimiento":500.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"PRIVÉ CAFUNÉ, S.L.","importe":413.22,"seguimiento":413.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"CHIC LOVE FASHION BRAND SL","importe":288.1,"seguimiento":0.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"BAKED BLISS SL","importe":218.91,"seguimiento":218.9,"comentario":"","tipo":"Sin tipo"},{"proveedor":"MIRIAM MARTIN CEBALLOS","importe":120.0,"seguimiento":120.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"YUDIGAR G.S., S.A.U","importe":0.0,"seguimiento":0.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"AJUSTES 2026","importe":-2000.0,"seguimiento":0.0,"comentario":"","tipo":"Ajustes"}]},"bstores":{"filtros":{"TRESD":"627","MES":"(Todas)","BUN":"BSTORES"},"proveedores":[{"proveedor":"MADRID TROPHY PROMOTION SLU","importe":35224.0,"seguimiento":35224.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"SF & MACARENA DISEÑO INTEGRAL S.L.","importe":20097.0,"seguimiento":20097.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"M.DIFUSION Y CATERING, S.L.","importe":12048.6,"seguimiento":12048.6,"comentario":"","tipo":"Sin tipo"},{"proveedor":"TEMPS MULTIWORK, S.L. ETT","importe":1649.2,"seguimiento":1664.5,"comentario":"","tipo":"Sin tipo"},{"proveedor":"SEMILLA FOOD FAMILY S.L","importe":-380.0,"seguimiento":0.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"MUDANZAS LOPEZ - MUDANZAS JOLOFER,","importe":0.0,"seguimiento":5200.0,"comentario":"","tipo":"Sin tipo"},{"proveedor":"3D CREACIONES","importe":0.0,"seguimiento":1000.0,"comentario":"","tipo":"Sin tipo"}]}}</script>
+<script>
+const D = JSON.parse(document.getElementById('datos').textContent);
+const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0, useGrouping: 'always' });
+const eur = v => v == null ? '—' : fmt.format(Math.round(v) || 0) + ' €';  // || 0 evita «-0 €»
+const pct = v => v == null ? '—' : new Intl.NumberFormat('es-ES', { style: 'percent', maximumFractionDigits: 0 }).format(v);
+const signo = v => v == null ? '' : v >= 0 ? 'pos' : 'neg';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+// Búsqueda sin distinguir mayúsculas ni acentos ("maria" encuentra "María")
+const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const sum = a => a.reduce((x, y) => x + (y || 0), 0);
+const kpis = (id, items) => document.getElementById(id).innerHTML = items.map(([et, v, n]) =>
+  `<div class="kpi"><div class="et">${et}</div><div class="v">${v}</div><div class="n">${n || ''}</div></div>`).join('');
+
+// ── Gráficos: estilo común ──
+Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+Chart.defaults.font.size = 11;
+Chart.defaults.color = css('--suave');
+Chart.defaults.plugins.legend.display = false;
+Chart.defaults.plugins.tooltip.callbacks.label = c => `${c.dataset.label}: ${eur(c.parsed[c.chart.options.indexAxis === 'y' ? 'x' : 'y'])}`;
+Chart.defaults.maintainAspectRatio = false;
+const ejes = (horizontal, apilado) => {
+  const valor = { stacked: apilado, grid: { color: css('--linea') }, border: { display: false }, ticks: { callback: v => fmt.format(v) } };
+  const cat = { stacked: apilado, grid: { display: false }, border: { color: css('--borde') } };
+  return horizontal ? { x: valor, y: cat } : { x: cat, y: valor };
+};
+const barra = color => ({ backgroundColor: color, borderRadius: 4, borderSkipped: 'start', maxBarThickness: 36, borderColor: css('--tarjeta'), borderWidth: { top: 0, bottom: 0, left: 0, right: 0 } });
+const graficos = {};
+const dibujar = (id, cfg) => { graficos[id]?.destroy(); graficos[id] = new Chart(document.getElementById(id), cfg); };
+
+// ── Pestañas ──
+const PESTANAS = { hq: 'HQ', dist: 'DIST', bstores: 'BSTORES' };
+const TIPOS = ['BRAND', 'DIGITAL', 'Ajustes', 'Sin tipo'];
+const TOP = 15;
+document.getElementById('paneles').innerHTML = Object.entries(PESTANAS).map(([id, nombre], i) => `
+  <section class="panel" id="${id}" role="tabpanel" aria-labelledby="t-${id}" ${i ? 'hidden' : ''}>
+    <div class="filtros">
+      ${id === 'hq' ? `<label>Tipo<select id="${id}-tipo"><option value="">Todos</option>${TIPOS.map(t => `<option>${t}</option>`).join('')}</select></label>` : ''}
+      <label>Proveedor<input id="${id}-buscar" type="search" placeholder="Buscar proveedor…" autocomplete="off"></label>
+    </div>
+    <div class="kpis" id="${id}-kpis"></div>
+    <div class="rejilla">
+      <div class="caja">
+        <h2>Principales proveedores</h2>
+        <div class="sub">Los ${TOP} de mayor importe · importe contabilizado frente a seguimiento</div>
+        <div class="leyenda"><span><i style="background:var(--s1)"></i>Importe</span><span><i style="background:var(--s2)"></i>Seguimiento</span></div>
+        <div class="grafico" style="height:420px"><canvas id="${id}-top"></canvas></div>
+      </div>
+      <div class="caja">
+        <h2>Diferencias importe − seguimiento</h2>
+        <div class="sub">Proveedores donde no cuadran, sin ajustes (positivo: contabilizado por encima del seguimiento)</div>
+        <div class="leyenda"><span><i style="background:var(--s1)"></i>Importe mayor</span><span><i style="background:var(--s2)"></i>Importe menor</span></div>
+        <div class="grafico" style="height:420px"><canvas id="${id}-dif"></canvas></div>
+      </div>
+    </div>
+    <div class="caja">
+      <h2>Detalle por proveedor</h2>
+      <div class="sub">Ordenado por importe · marcados en dorado los que tienen diferencia</div>
+      <div class="tabla"><table id="${id}-tabla"></table></div>
+    </div>
+  </section>`).join('');
+
+const tabs = [...document.querySelectorAll('nav button')];
+function abrir(id) {
+  tabs.forEach(b => b.setAttribute('aria-selected', b.getAttribute('aria-controls') === id));
+  document.querySelectorAll('.panel').forEach(p => p.hidden = p.id !== id);
+  history.replaceState(null, '', '#' + id);
+}
+tabs.forEach(b => b.addEventListener('click', () => abrir(b.getAttribute('aria-controls'))));
+if (location.hash.slice(1) in PESTANAS) abrir(location.hash.slice(1));
+
+// ═════════ Una pestaña por unidad ═════════
+for (const id of Object.keys(PESTANAS)) {
+  const P = D[id].proveedores.map(p => ({ ...p, dif: Math.round((p.importe - p.seguimiento) * 100) / 100 }));
+  const conTipo = id === 'hq';
+  const selTipo = document.getElementById(`${id}-tipo`), buscar = document.getElementById(`${id}-buscar`);
+  function pintar() {
+    const q = norm(buscar.value);
+    const f = P.filter(p => (!selTipo || !selTipo.value || p.tipo === selTipo.value) && (!q || norm(p.proveedor).includes(q)))
+      .sort((a, b) => b.importe - a.importe);
+    const imp = sum(f.map(p => p.importe)), seg = sum(f.map(p => p.seguimiento)), dif = imp - seg;
+    const ajustes = sum(f.filter(p => p.tipo === 'Ajustes').map(p => p.importe));
+    const items = [
+      ['Importe contabilizado', eur(imp), ajustes ? `Incluye ajustes ${eur(ajustes)}` : 'Sin ajustes'],
+      ['Seguimiento', eur(seg), 'Previsto por marketing'],
+      ['Diferencia', eur(dif), `Importe − seguimiento · ${f.filter(p => Math.abs(p.dif) >= 1).length} proveedores no cuadran`],
+      ['Proveedores', f.filter(p => p.importe || p.seguimiento).length, q ? `Búsqueda “${esc(buscar.value.trim())}”` : 'Con importe o seguimiento'],
+    ];
+    if (conTipo && !selTipo.value) for (const t of ['BRAND', 'DIGITAL'])
+      items.push([t, eur(sum(f.filter(p => p.tipo === t).map(p => p.importe))), `${f.filter(p => p.tipo === t).length} proveedores`]);
+    kpis(`${id}-kpis`, items);
+
+    const top = f.filter(p => p.importe > 0).slice(0, TOP);
+    dibujar(`${id}-top`, {
+      type: 'bar',
+      data: { labels: top.map(p => p.proveedor), datasets: [
+        { label: 'Importe', data: top.map(p => p.importe), ...barra(css('--s1')) },
+        { label: 'Seguimiento', data: top.map(p => p.seguimiento), ...barra(css('--s2')) },
+      ] },
+      options: { indexAxis: 'y', scales: ejes(true, false), interaction: { mode: 'index', intersect: false } },
+    });
+    // Los ajustes contables quedan fuera del gráfico: su tamaño taparía al resto
+    const difs = f.filter(p => Math.abs(p.dif) >= 1 && p.tipo !== 'Ajustes').sort((a, b) => b.dif - a.dif);
+    dibujar(`${id}-dif`, {
+      type: 'bar',
+      data: { labels: difs.map(p => p.proveedor), datasets: [{
+        label: 'Diferencia', data: difs.map(p => p.dif), ...barra(css('--s1')),
+        backgroundColor: difs.map(p => css(p.dif >= 0 ? '--s1' : '--s2')), borderSkipped: false, borderRadius: 4,
+      }] },
+      options: { indexAxis: 'y', scales: ejes(true, false) },
+    });
+
+    const cols = 5 + (conTipo ? 1 : 0);
+    document.getElementById(`${id}-tabla`).innerHTML =
+      `<tr><th>Proveedor</th>${conTipo ? '<th class="txt">Tipo</th>' : ''}<th>Importe</th><th>Seguimiento</th><th>Diferencia</th><th class="txt">Comentario</th></tr>` +
+      (f.length ? f.map(p => `<tr class="${Math.abs(p.dif) >= 1 ? 'difiere' : ''}"><td>${esc(p.proveedor)}</td>${conTipo ? `<td class="txt"><span class="tipo">${esc(p.tipo)}</span></td>` : ''}<td>${eur(p.importe)}</td><td>${eur(p.seguimiento)}</td><td class="${Math.abs(p.dif) >= 1 ? signo(p.dif) : ''}">${eur(p.dif)}</td><td class="coment">${esc(p.comentario)}</td></tr>`).join('')
+        : `<tr><td class="vacio" colspan="${cols}">Ningún proveedor coincide con la búsqueda.</td></tr>`) +
+      `<tr class="total"><td>TOTAL</td>${conTipo ? '<td></td>' : ''}<td>${eur(imp)}</td><td>${eur(seg)}</td><td>${eur(dif)}</td><td></td></tr>`;
+  }
+  selTipo?.addEventListener('change', pintar);
+  buscar.addEventListener('input', pintar);
+  pintar();
+}
+</script>
+</body>
+</html>

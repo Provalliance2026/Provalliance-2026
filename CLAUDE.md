@@ -37,6 +37,10 @@ emails, importes individuales de personas), avisa antes de seguir y no los lleve
   `scripts/viajes/plantilla.html` el mes de los datos (`actualizado`, texto "enero–septiembre",
   `N_MESES`) y comprueba que los totales cuadran con el Excel. El responsable ha pedido expresamente
   que este dashboard muestre el detalle por empleado.
+- **HQ · Marketing Q4** (`unidades/hq/marketing.html`): con el Excel `Marketing_Q4`, ejecuta
+  `python3 scripts/marketing/generar.py <excel> <aaaa-mm-dd de los datos>`; no subas el Excel. Usa solo
+  las pestañas en rojo `MK HQ`, `MKDIST` y `MKBSTORES` (tablas dinámicas por proveedor). El Excel es
+  muy pesado: ábrelo siempre con `read_only=True`.
 
 ## Estilo visual común
 

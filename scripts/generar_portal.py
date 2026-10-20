@@ -40,7 +40,8 @@ class LectorCabecera(HTMLParser):
 def leer_dashboard(ruta: Path) -> dict:
     lector = LectorCabecera()
     lector.feed(ruta.read_text(encoding="utf-8"))
-    return {"archivo": ruta.name, "titulo": lector.meta.get("titulo") or ruta.stem, **lector.meta}
+    archivo = ruta.relative_to(ruta.parent.parent) if ruta.name == "index.html" else Path(ruta.name)
+    return {"archivo": archivo.as_posix(), "titulo": lector.meta.get("titulo") or ruta.stem, **lector.meta}
 
 
 def leer_unidades() -> list[dict]:
@@ -50,8 +51,10 @@ def leer_unidades() -> list[dict]:
             continue
         unidad = json.loads((carpeta / "unidad.json").read_text(encoding="utf-8"))
         unidad["carpeta"] = carpeta.name
-        unidad["dashboards"] = sorted((leer_dashboard(p) for p in carpeta.glob("*.html")),
-                                      key=lambda d: d["titulo"])
+        # Dashboards sueltos (*.html) y webs de varias páginas (<subcarpeta>/index.html)
+        paginas = [*carpeta.glob("*.html"),
+                   *(p for p in carpeta.glob("*/index.html") if p.parent.name != "datos")]
+        unidad["dashboards"] = sorted((leer_dashboard(p) for p in paginas), key=lambda d: d["titulo"])
         unidades.append(unidad)
     return sorted(unidades, key=lambda u: (u.get("orden", 99), u["nombre"]))
 

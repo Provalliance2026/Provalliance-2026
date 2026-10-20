@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&G · BUN Distribución</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:        #f2ede3;
+  --card:      #faf7f2;
+  --border:    #ddd8cc;
+  --border-light: #e8e3d8;
+  --text-h:    #1c1a14;
+  --text-body: #3a3628;
+  --text-muted:#7a7260;
+  --green-dark:#2d5a3d;
+  --green-mid: #3d7a52;
+  --green-line:#4a9464;
+  --gold:      #b8860b;
+  --gold-light:#c9a03a;
+  --red:       #8b2020;
+  --blue:      #1e3a5f;
+  --bar-venta: #2d5a3d;
+  --bar-cogs:  #c8b878;
+  --radius:    4px;
+  --shadow:    0 1px 4px rgba(0,0,0,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Inter',-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text-body);
+  font-size:13px;
+  padding-bottom:60px;
+}
+.topbar{
+  background:var(--text-h);
+  color:#f2ede3;
+  padding:22px 32px 20px;
+}
+.topbar h1{
+  font-family:'EB Garamond',serif;
+  font-size:26px;
+  font-weight:600;
+  letter-spacing:.5px;
+}
+.topbar .sub{
+  font-size:12px;
+  color:#c9c4b4;
+  margin-top:4px;
+  letter-spacing:.3px;
+}
+.back-home{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+  color:#c9c4b4;
+  text-decoration:none;
+  margin-bottom:10px;
+}
+.back-home:hover{color:#f2ede3;}
+.container{max-width:1180px;margin:0 auto;padding:24px 24px 0;}
+
+.controls{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 18px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+.controls label{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);font-weight:600;margin-right:6px;}
+.controls select{
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  padding:6px 10px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:#fff;
+  color:var(--text-h);
+}
+.toggle-group{display:flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.toggle-group button{
+  font-family:'Inter',sans-serif;
+  font-size:12.5px;
+  font-weight:600;
+  padding:7px 16px;
+  border:none;
+  background:#fff;
+  color:var(--text-muted);
+  cursor:pointer;
+}
+.toggle-group button.active{background:var(--green-dark);color:#fff;}
+.period-label{margin-left:auto;font-size:12px;color:var(--text-muted);font-style:italic;font-family:'EB Garamond',serif;font-size:15px;}
+
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:20px;
+}
+.kpi{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  box-shadow:var(--shadow);
+}
+.kpi .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);font-weight:600;}
+.kpi .val{font-family:'EB Garamond',serif;font-size:26px;font-weight:600;color:var(--text-h);margin-top:6px;}
+.kpi .val.neg{color:var(--red);}
+.kpi .sub{font-size:11px;color:var(--text-muted);margin-top:4px;}
+.kpi.venta .val{color:var(--green-dark);}
+.kpi.cogs .val{color:#8a6d0f;}
+.kpi.margen .val{color:var(--blue);}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  margin-bottom:20px;
+  overflow:hidden;
+}
+.card-h{
+  padding:14px 18px;
+  border-bottom:1px solid var(--border-light);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.card-h h2{font-family:'EB Garamond',serif;font-size:18px;font-weight:600;color:var(--text-h);}
+.card-h .hint{font-size:11px;color:var(--text-muted);}
+.card-body{padding:6px 18px 16px;}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th{
+  text-align:right;
+  padding:8px 10px;
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:var(--text-muted);
+  border-bottom:2px solid var(--border);
+  font-weight:600;
+}
+th:first-child, td:first-child{text-align:left;}
+td{padding:7px 10px;border-bottom:1px solid var(--border-light);text-align:right;}
+tr.grp td{font-weight:700;color:var(--text-h);background:#efe9db;}
+tr.sub td{color:var(--text-muted);font-style:italic;}
+tr.total-row td{font-weight:700;border-top:2px solid var(--border);border-bottom:none;color:var(--text-h);}
+tr:hover td{background:#f2ede1;}
+tr.grp:hover td, tr.total-row:hover td{background:#e8e0cd;}
+td.neg{color:var(--red);}
+td.pos{color:var(--green-dark);}
+td.name{font-weight:600;color:var(--text-h);}
+td.sel-month{background:#eee6d0;font-weight:700;}
+th.sel-month{background:#e4d9b8;color:var(--text-h);}
+
+.margin-cell{font-weight:700;}
+.margin-bar{
+  display:inline-block;
+  height:6px;
+  border-radius:3px;
+  background:var(--green-line);
+  vertical-align:middle;
+  margin-right:6px;
+}
+
+.footnote{
+  font-size:11px;
+  color:var(--text-muted);
+  padding:10px 18px 4px;
+  border-top:1px dashed var(--border);
+  font-style:italic;
+}
+
+.bunnav{
+  display:flex;
+  gap:8px;
+  max-width:1180px;
+  margin:0 auto;
+  padding:18px 24px 0;
+}
+.bunnav button{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.6px;
+  padding:8px 18px;
+  border:1px solid var(--text-h);
+  background:transparent;
+  color:var(--text-h);
+  cursor:pointer;
+  border-radius:20px;
+  transition:background .15s, color .15s;
+}
+.bunnav button.active{
+  background:var(--text-h);
+  border-color:var(--text-h);
+  color:#f2ede3;
+}
+.bunnav button:hover:not(.active){
+  background:rgba(28,26,20,0.08);
+}
+.bunnav button.acum-btn{
+  border-style:dashed;
+}
+
+.acum-chips{
+  display:none;
+  align-items:center;
+  gap:8px;
+  max-width:1180px;
+  margin:0 auto;
+  padding:10px 24px 0;
+  flex-wrap:wrap;
+}
+.acum-chips.show{display:flex;}
+.acum-chips-label{
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-right:2px;
+}
+.acum-chips .chip{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  padding:6px 14px;
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--text-muted);
+  cursor:pointer;
+  border-radius:16px;
+  opacity:.5;
+  transition:background .15s, color .15s, opacity .15s, border-color .15s;
+}
+.acum-chips .chip.active{
+  background:var(--green-dark);
+  border-color:var(--green-dark);
+  color:#fff;
+  opacity:1;
+}
+.acum-chips .chip:hover:not(.active){
+  opacity:.8;
+  border-color:var(--green-line);
+}
+
+.tabnav{
+  display:flex;
+  gap:6px;
+  max-width:1180px;
+  margin:0 auto;
+  padding:14px 24px 0;
+}
+.tabnav button{
+  font-family:'EB Garamond',serif;
+  font-size:15px;
+  font-weight:600;
+  padding:9px 20px;
+  border:1px solid var(--border);
+  border-bottom:none;
+  background:#e9e3d5;
+  color:var(--text-muted);
+  cursor:pointer;
+  border-radius:6px 6px 0 0;
+  position:relative;
+  top:1px;
+}
+.tabnav button.active{
+  background:var(--card);
+  color:var(--text-h);
+  border-bottom:1px solid var(--card);
+}
+.tabpage{display:none;}
+.tabpage.active{display:block;}
+
+/* Accordion tree table for full P&L view */
+.tree-tbl td, .tree-tbl th{white-space:nowrap;}
+tr.l1-row td{
+  font-weight:700;
+  color:var(--text-h);
+  background:#e8e0cb;
+  cursor:pointer;
+  border-top:1px solid var(--border);
+}
+tr.l1-row:hover td{background:#ded4b8;}
+tr.l1-row .arrow{display:inline-block;width:14px;transition:transform .15s;}
+tr.l1-row.open .arrow{transform:rotate(90deg);}
+tr.l2-row td{
+  background:#f5f1e6;
+  cursor:default;
+  color:var(--text-body);
+}
+tr.l2-row.expandable{cursor:pointer;}
+tr.l2-row.expandable:hover td{background:#efe8d5;}
+tr.l2-row .arrow{display:inline-block;width:14px;color:var(--text-muted);transition:transform .15s;}
+tr.l2-row.open .arrow{transform:rotate(90deg);}
+tr.l2-row td.name{padding-left:28px;}
+tr.brand-row td{background:#fbf9f4;color:var(--text-muted);font-style:italic;}
+tr.brand-row td.name{padding-left:48px;}
+tr.brand-row.expandable{cursor:pointer;}
+tr.brand-row.expandable:hover td{background:#f5f0e2;}
+tr.brand-row .arrow{display:inline-block;width:13px;color:var(--text-muted);transition:transform .15s;}
+tr.brand-row.open .arrow{transform:rotate(90deg);}
+tr.tercero-row td{background:#ffffff;color:var(--text-muted);font-size:11.5px;}
+tr.tercero-row td.name{padding-left:68px;}
+tr.resultado-row td{
+  font-weight:700;
+  border-top:2px solid var(--text-h);
+  background:#e0d9c4;
+  color:var(--text-h);
+  font-size:14px;
+}
+.hidden-row{display:none;}
+.pyg-kpi-row{display:flex;gap:14px;margin-bottom:20px;}
+.pyg-kpi-row .kpi{flex:1;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="back-home">← Volver al inicio</a>
+  <h1 id="bunTitle">P&amp;G · BUN Distribución</h1>
+  <div class="sub">Cuadro de Ventas y COGS por marca · Confidencial · Uso interno</div>
+</div>
+
+<div class="bunnav">
+  <button data-bun="DIST" class="active">DIST</button>
+  <button data-bun="BSTORES">BSTORES</button>
+  <button data-bun="WHOLESALE">WHOLESALE</button>
+  <button data-bun="ACUM" class="acum-btn">CONSOLIDADO</button>
+</div>
+
+<div class="acum-chips" id="acumChips">
+  <span class="acum-chips-label">Unidades a sumar</span>
+  <button class="chip active" data-chip="DIST">DIST</button>
+  <button class="chip active" data-chip="BSTORES">BSTORES</button>
+  <button class="chip active" data-chip="WHOLESALE">WHOLESALE</button>
+</div>
+
+<div class="tabnav">
+  <button data-tab="tab1" class="active">Venta y Margen</button>
+  <button data-tab="tab2">Visión PyG Completa</button>
+</div>
+
+<div class="container">
+
+<div id="tab1" class="tabpage active">
+
+  <div class="controls">
+    <div>
+      <label>Mes</label>
+      <select id="selMonth"></select>
+    </div>
+    <div class="toggle-group" id="toggleAcum">
+      <button data-mode="M" class="active">Mensual</button>
+      <button data-mode="A">Acumulado</button>
+    </div>
+    <div class="period-label" id="periodLabel"></div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi venta">
+      <div class="lbl">Venta Total</div>
+      <div class="val" id="kpiVenta">–</div>
+      <div class="sub" id="kpiVentaSub">Producto + Cooperación + Royalties</div>
+    </div>
+    <div class="kpi cogs">
+      <div class="lbl">COGS Total</div>
+      <div class="val" id="kpiCogs">–</div>
+      <div class="sub" id="kpiCogsSub">Compras + Variación Exist. + Rappel + Comisión</div>
+    </div>
+    <div class="kpi margen">
+      <div class="lbl">Margen Bruto (Producto)</div>
+      <div class="val" id="kpiMargen">–</div>
+      <div class="sub">Venta Producto − (Compras + Var. Existencias + Rappel)</div>
+    </div>
+    <div class="kpi margen">
+      <div class="lbl">% Margen (Producto)</div>
+      <div class="val" id="kpiPct">–</div>
+      <div class="sub">Excluye Cooperación Comercial</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">
+      <h2>Cuenta de Resultados — Evolución Mensual</h2>
+      <div class="hint"><span class="bun-hint">DIST</span> · valores en €</div>
+    </div>
+    <div class="card-body">
+      <table id="tblPyg"></table>
+    </div>
+    <div class="footnote">Signo contable: cifras de Compras/Variación de Existencias pueden aparecer negativas en meses con rappels o ajustes superiores al gasto del mes (anomalía conocida, no es un error).</div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">
+      <h2>Desglose por Marca (PRO)</h2>
+      <div class="hint" id="brandHint">Periodo seleccionado</div>
+    </div>
+    <div class="card-body">
+      <table id="tblBrand"></table>
+    </div>
+    <div class="footnote">Margen % calculado como Venta Producto − (Coste Producto [Compras + Variación de Existencias] + Rappel) / Venta Producto. La Cooperación Comercial no participa en este cálculo.</div>
+  </div>
+
+</div>
+
+<div id="tab2" class="tabpage">
+
+  <div class="controls">
+    <div>
+      <label>Mes</label>
+      <select id="selMonth2"></select>
+    </div>
+    <div class="toggle-group" id="toggleAcum2">
+      <button data-mode="M" class="active">Mensual</button>
+      <button data-mode="A">Acumulado</button>
+    </div>
+    <div class="period-label" id="periodLabel2"></div>
+  </div>
+
+  <div class="pyg-kpi-row">
+    <div class="kpi venta">
+      <div class="lbl">Total Ventas (1)</div>
+      <div class="val" id="pygKpiVentas">–</div>
+    </div>
+    <div class="kpi cogs">
+      <div class="lbl">Total Gastos (2–6)</div>
+      <div class="val" id="pygKpiGastos">–</div>
+    </div>
+    <div class="kpi margen">
+      <div class="lbl">Resultado</div>
+      <div class="val" id="pygKpiResultado">–</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">
+      <h2>Cuenta de Resultados Completa</h2>
+      <div class="hint">Clic en una línea para desplegar su detalle · <span class="bun-hint">DIST</span></div>
+    </div>
+    <div class="card-body">
+      <table class="tree-tbl" id="tblPygFull">
+        <thead><tr id="tblPygFullHead"><th style="text-align:left;">Partida</th></tr></thead>
+        <tbody id="tblPygFullBody"></tbody>
+      </table>
+    </div>
+    <div class="footnote">Ventas se muestra en positivo (ingreso); el resto de partidas conserva el signo contable original — un gasto puede aparecer negativo en meses con ajustes o abonos superiores al gasto (p. ej. rappels de compra).</div>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+const DATA_BY_BUN = {"DIST":{"months":[1,2,3,4,5,6,7,8,9],"mnames":["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre"],"TOT":{"VP":[174078.85,233150.1,135420.41,93740.64,117279.22,76619.94,113467.47,90845.1,100907.13],"CC":[2633.2,12244.32,14198.55,9692.02,9692.02,30092.8,-6585.17,1564.08,7435.92],"VR":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"CP":[0.0,0.0,0.0,0.0,-27231.59,-1400.88,0.0,0.0,0.0],"VE":[125012.79,166538.04,79312.58,65386.98,109323.63,56583.86,83746.12,61130.18,75799.82],"GC":[0.0,75.38,0.0,1577.2,3605.0,690.85,1907.58,1258.1,2946.05],"RP":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]},"BR":{"VP":{"SIN MARCA":[1000.0,26000.0,36047.35,-9732.66,1174.68,0.0,0.0,72.8,198.0],"BKT":[0.0,0.0,0.0,0.0,0.0,0.0,5885.02,38548.5,668.76],"CHICLOVE":[19773.08,69503.19,20718.16,20545.4,3001.75,37265.16,11785.15,16697.1,17657.43],"EOLUX":[27525.84,32088.1,32724.33,21293.12,532.62,3747.51,1209.6,0.0,2146.61],"GHD":[0.0,0.0,129.6,0.0,0.0,2386.91,1547.62,111.94,0.0],"GOLDWELL":[0.0,0.0,129.15,0.0,1380.88,1375.78,0.0,0.0,0.0],"LADIOSA":[38978.44,87220.82,45902.08,45840.67,59227.76,46737.59,74836.81,27093.93,30777.62],"MAXSUM":[0.0,1490.15,-818.37,0.0,-323.28,728.5,380.0,0.0,342.0],"OLAPLEX":[0.0,0.0,0.0,0.0,228.0,0.0,0.0,0.0,0.0],"REF":[85555.49,12212.14,-6083.25,14960.45,52944.32,-7247.84,16994.39,8229.63,44582.93],"REMEMBER":[1246.0,4635.7,6671.36,833.66,-887.51,-8373.67,828.88,91.2,4533.78]},"CC":{"SIN MARCA":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1564.08],"INNOVATIS":[2633.2,12244.32,14198.55,9692.02,9692.02,30092.8,-6585.17,1564.08,5871.84]},"VR":{},"CP":{"CHICLOVE":[0.0,0.0,0.0,0.0,-14625.74,2547.14,0.0,0.0,0.0],"EOLUX":[0.0,0.0,0.0,0.0,-9653.14,-394.52,0.0,0.0,0.0],"GOLDWELL":[0.0,0.0,0.0,0.0,0.0,971.42,0.0,0.0,0.0],"LADIOSA":[0.0,0.0,0.0,0.0,-3878.79,1302.4,0.0,0.0,0.0],"MAXSUM":[0.0,0.0,0.0,0.0,-135.81,0.0,0.0,0.0,0.0],"REF":[0.0,0.0,0.0,0.0,1678.62,-5827.32,0.0,0.0,0.0],"REMEMBER":[0.0,0.0,0.0,0.0,-616.73,0.0,0.0,0.0,0.0]},"VE":{"SIN MARCA":[-13000.0,15000.0,12000.0,0.0,0.0,0.0,0.0,0.0,0.0],"BKT":[0.0,0.0,0.0,0.0,0.0,0.0,2350.49,25078.48,227.82],"CHICLOVE":[17071.95,51686.59,18174.48,8617.32,14239.77,26051.71,5427.27,12496.87,14358.52],"EOLUX":[20958.36,24432.1,24797.08,15766.17,10834.53,6038.01,8604.94,0.0,2164.35],"GHD":[0.0,0.0,0.0,0.0,0.0,2028.88,1750.0,0.0,0.0],"GOLDWELL":[0.0,0.0,0.0,0.0,1035.64,99.2,0.0,0.0,0.0],"LADIOSA":[23709.37,61143.07,26158.12,27289.2,44813.81,26215.53,52540.6,17349.6,16865.45],"MAXSUM":[0.0,626.0,-343.79,0.0,0.0,458.5,239.0,0.0,237.59],"OLAPLEX":[0.0,0.0,0.0,0.0,189.9,0.0,0.0,0.0,0.0],"REF":[75515.35,10791.32,-5564.43,13201.66,37840.16,1995.78,12438.22,6189.83,39615.12],"REMEMBER":[757.76,2858.96,4091.12,512.63,369.82,-6303.75,395.6,15.4,2310.46],"SCHWARZKOP":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,20.51]},"GC":{},"RP":{}},"brands":["BKT","CHICLOVE","EOLUX","GHD","GOLDWELL","INNOVATIS","LADIOSA","MAXSUM","OLAPLEX","REF","REMEMBER","SCHWARZKOP","SIN MARCA"]},"BSTORES":{"months":[1,2,3,4,5,6,7,8,9],"mnames":["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre"],"TOT":{"VP":[94963.91,60496.54,57743.11,38280.88,54153.2,19859.47,38658.28,8611.61,62099.47],"CC":[441666.34,464030.66,445833.13,445833.22,445833.22,445833.22,445834.34,445834.34,455638.11],"VR":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"CP":[72628.96,59668.54,12567.07,14794.49,38562.8,12086.27,33202.88,0.0,35810.26],"VE":[0.0,0.0,43745.89,2346.02,0.0,2854.8,0.0,6063.56,9450.51],"GC":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"RP":[-5863.72,-9328.3,-0.0,13559.87,1632.15,-0.0,-12502.56,0.0,0.0]},"BR":{"VP":{"ALFAPARF":[5650.92,9466.04,15965.1,21913.5,26622.3,-2400.4,0.0,0.0,23355.36],"CHICLOVE":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,3558.1,0.0],"DAVINES":[46398.6,0.0,-22660.37,0.0,0.0,0.0,0.0,0.0,0.0],"LIVINGPRO":[0.0,0.0,10531.13,0.0,0.0,10447.38,0.0,0.0,0.0],"MASGLO":[26653.26,35826.25,0.0,-10953.24,-64.89,2972.55,19925.85,0.0,14674.78],"MOROCCANOI":[0.0,-1156.75,49267.01,2067.04,4745.83,-5085.09,0.0,3205.27,0.0],"OLAPLEX":[0.0,0.0,573.48,1447.74,0.0,3660.12,4420.98,1848.24,1047.6],"TERMIX":[16261.13,16361.0,4066.76,23805.84,22849.96,10264.91,14311.45,0.0,23021.73]},"CC":{"GHD":[0.0,22364.0,4166.66,4166.66,4166.66,4166.66,4166.66,4166.66,4166.6],"LOREAL":[374999.67,374999.99,374999.8,374999.89,374999.89,374999.89,375001.01,375001.01,374999.89],"MASGLO":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,9804.95],"WELLA":[66666.67,66666.67,66666.67,66666.67,66666.67,66666.67,66666.67,66666.67,66666.67]},"VR":{},"CP":{"ALFAPARF":[4050.84,7064.32,13292.32,16349.6,13023.12,-1680.28,0.0,0.0,15519.68],"DAVINES":[26820.0,0.0,-13410.0,0.0,0.0,0.0,0.0,0.0,0.0],"LIVINGPRO":[0.0,0.0,7020.75,0.0,0.0,7028.64,0.0,0.0,0.0],"MASGLO":[30176.08,40558.02,0.0,-21066.69,-40.03,2292.86,21655.07,0.0,2476.16],"MOROCCANOI":[0.0,0.0,0.0,0.0,4845.63,-3165.35,0.0,0.0,0.0],"TERMIX":[11582.04,12046.2,5664.0,19511.58,20734.08,7610.4,11547.81,0.0,17814.42]},"VE":{"CHICLOVE":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,1662.71,0.0],"MASGLO":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,8823.42],"MOROCCANOI":[0.0,0.0,43308.24,1908.37,0.0,0.0,0.0,2965.3,0.0],"OLAPLEX":[0.0,0.0,437.65,437.65,0.0,2854.8,0.0,1435.55,627.09]},"GC":{},"RP":{"LOREAL":[0.0,0.0,0.0,0.0,0.0,-0.0,0.0,0.0,0.0],"MASGLO":[-5863.72,-9328.3,-0.0,13559.87,1632.15,0.0,-12502.56,0.0,0.0]}},"brands":["ALFAPARF","CHICLOVE","DAVINES","GHD","LIVINGPRO","LOREAL","MASGLO","MOROCCANOI","OLAPLEX","TERMIX","WELLA"]},"WHOLESALE":{"months":[1,2,3,4,5,6,7,8,9],"mnames":["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre"],"TOT":{"VP":[210148.61,201684.08,96501.69,195121.06,154040.82,69243.7,200971.3,237041.82,218123.76],"CC":[0.0,0.0,0.0,-0.0,0.0,0.0,0.0,-0.0,0.0],"VR":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"CP":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"VE":[300522.54,184619.78,176195.04,276071.99,208513.96,95368.1,160589.04,195217.03,324251.67],"GC":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"RP":[-114138.41,-5128.98,-90999.87,-124277.35,-88614.64,-42436.61,0.0,-6061.66,-150567.0]},"BR":{"VP":{"SIN MARCA":[0.0,64000.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"GHD":[2289.92,-2289.92,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"LOREAL":[46935.48,-10033.45,60000.0,87222.8,77041.65,16155.32,36067.31,132292.12,92087.27],"MOROCCANOI":[0.0,29032.56,-4584.0,761.49,2312.16,-23.68,0.0,0.0,0.0],"OLAPLEX":[25065.0,60698.22,-34352.29,-615.14,0.0,459.9,177.06,0.0,230.85],"REDKEN":[95694.74,86178.97,44476.82,75339.51,67365.85,37855.45,154718.02,103074.84,81841.82],"WELLA":[40163.47,-25902.3,30961.16,32412.4,7321.16,14796.71,10008.91,1674.86,39768.17],"AMIKA":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4195.65]},"CC":{"SIN MARCA":[0.0,0.0,0.0,0.0,0.0,0.0,-107457.2,-89993.74,0.0],"LOREAL":[0.0,0.0,0.0,-0.0,0.0,0.0,0.0,42215.82,0.0],"REDKEN":[0.0,0.0,0.0,0.0,0.0,0.0,86149.3,44202.24,0.0],"WELLA":[0.0,0.0,0.0,0.0,0.0,0.0,21307.9,3575.68,0.0]},"VR":{},"CP":{},"VE":{"SIN MARCA":[24000.0,61000.0,14000.0,-3000.0,-4000.0,0.0,-72000.0,-72000.0,0.0],"LOREAL":[71480.47,-15280.46,91377.1,132836.11,117330.71,24603.77,30848.0,155401.52,138651.23],"MOROCCANOI":[0.0,24486.32,-3866.19,642.25,1950.1,-19.97,0.0,0.0,0.0],"OLAPLEX":[22506.95,54503.57,-30846.41,552.36,0.0,412.96,137.24,0.0,66.33],"REDKEN":[114935.74,103506.67,53419.62,90487.76,80910.86,45466.91,180527.36,108286.71,96211.68],"WELLA":[67599.38,-43596.32,52110.92,54553.51,12322.29,24904.43,21076.44,3528.8,86325.4],"AMIKA":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2997.03]},"GC":{},"RP":{"LOREAL":[-31386.89,6709.61,-40123.45,-58327.99,-51519.61,-10803.45,0.0,-6061.66,-59759.0],"REDKEN":[-42191.89,-37996.38,-19609.87,-33217.26,-29701.66,-16690.5,0.0,0.0,-34696.0],"WELLA":[-40559.63,26157.79,-31266.55,-32732.1,-7393.37,-14942.66,0.0,0.0,-56112.0]}},"brands":["AMIKA","GHD","LOREAL","MOROCCANOI","OLAPLEX","REDKEN","SIN MARCA","WELLA"]}};
+let currentBun = "DIST";
+let DATA = DATA_BY_BUN[currentBun];
+
+const PYG_BY_BUN = {"DIST":{"months":[1,2,3,4,5,6,7,8,9],"mnames":["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre"],"l1_order":["1.VENTAS","2.COGS","3.GASTOS PERSONAL","4.ALQUILER","5.MARKETING","6.OPEX"],"data":{"1.VENTAS":{"l2_order":["COOPERACION COMERCIAL","VENTA PRODUCTO","VENTA ROYALTIES"],"subs":{"COOPERACION COMERCIAL":{"total":[2633.2,12244.32,14198.55,9692.02,9692.02,30092.8,-6585.17,1564.08,7435.92],"hasBrandAxis":true,"brands":{"SIN MARCA":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1564.08],"terceros":{"INNOVATIS HAIR SL":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1564.08]}},"INNOVATIS":{"total":[2633.2,12244.32,14198.55,9692.02,9692.02,30092.8,-6585.17,1564.08,5871.84],"terceros":{"CLIENTE GENERICO":[2633.2,12244.32,14198.55,9692.02,9692.02,1016.74,-47912.77,1564.08,5871.84],"INNOVATIS HAIR SL":[0.0,0.0,0.0,0.0,0.0,29076.06,41327.6,0.0,0.0]}}}},"VENTA PRODUCTO":{"total":[174078.85,233150.1,135420.41,93740.64,117279.22,76619.94,113467.47,90845.1,100907.13],"hasBrandAxis":true,"brands":{"SIN MARCA":{"total":[1000.0,26000.0,36047.35,-9732.66,1174.68,0.0,0.0,72.8,198.0],"terceros":{"ALÍNEA PRINCIPAL UNIPESSOAL LDA.":[0.0,0.0,0.0,0.0,355.43,0.0,0.0,0.0,0.0],"CLIENTE GENERICO":[1000.0,26000.0,34000.0,0.0,0.0,0.0,0.0,0.0,0.0],"DISCANARY COSMÉTICA Y BELLEZA, S.L":[0.0,0.0,0.0,0.0,-16.1,0.0,0.0,0.0,0.0],"GME SERVICIO INTEGRAL DE PELUQUERIA":[0.0,0.0,0.0,0.0,757.95,0.0,0.0,0.0,0.0],"JESSY ART ZONE, S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,72.8,0.0],"LE MIROIR DE DESI, S.L.":[0.0,0.0,0.0,0.0,77.4,0.0,0.0,0.0,0.0],"MAYTE GARROTE VELEZ":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,99.0],"MIMA TU CABELLO BY LARA FERNANDEZ S":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,99.0],"(en blanco)":[0.0,0.0,2047.35,-9732.66,0.0,0.0,0.0,0.0,0.0]}},"BKT":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,5885.02,38548.5,668.76],"terceros":{"ADUHO TATOO ART":[0.0,0.0,0.0,0.0,0.0,0.0,2312.91,0.0,287.65],"GME SERVICIO INTEGRAL DE PELUQUERIA":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,19274.25,0.0],"HAIR LOOK SL":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,19274.25,0.0],"JESSY ART ZONE, S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,1259.2,0.0,381.11],"SESABE PROFESSIONAL S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,1541.94,0.0,0.0],"XENIA ANDRES ALVAREZ":[0.0,0.0,0.0,0.0,0.0,0.0,770.97,0.0,0.0]}},"CHICLOVE":{"total":[19773.08,69503.19,20718.16,20545.4,3001.75,37265.16,11785.15,16697.1,17657.43],"terceros":{"ADELA CAICOYA SL":[486.0,3781.8,771.6,0.0,1346.4,2522.4,360.0,497.76,1568.94],"ANA CAÑADAS":[0.0,328.52,-179.0,323.0,0.0,0.0,0.0,0.0,231.0],"ATELIER VITORIA S.L.":[300.0,-225.24,300.0,0.0,0.0,0.0,0.0,0.0,0.0],"BELLA AURORA LABS, S.A.,":[0.0,3824.7,-3824.7,0.0,0.0,0.0,0.0,0.0,0.0],"BENZAQUEN 2, S.L.":[0.0,0.0,0.0,0.0,385.0,0.0,0.0,385.0,0.0],"CASALS DISPRO S.L.":[1807.2,190.2,1807.2,583.2,0.0,2499.36,-1037.76,2090.4,0.0],"CENTRAL LAB LLEIDA SLU":[1919.85,2157.75,4920.0,1123.2,2995.2,1053.6,880.65,1166.4,3009.6],"CF PINEDO, S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,-3741.75,0.0,0.0],"CHIC LOVE FASHION BRAND SL":[4443.96,10670.22,6774.6,9628.97,0.0,1721.93,0.0,0.0,0.0],"CLIENTE GENERICO":[0.0,0.0,17813.47,0.0,-17813.47,0.0,0.0,0.0,0.0],"CODI MAGIC DREAM SLL":[0.0,74.76,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"COMERCIAL RENOIR SL":[162.0,-162.0,1545.6,0.0,0.0,0.0,360.0,0.0,0.0],"COSBEL SL":[524.4,4070.7,1297.2,940.8,1886.4,1814.4,-340.8,1896.0,2907.36],"CULT OF HAIR SLU":[0.0,0.0,0.0,0.0,1582.2,-75.0,0.0,0.0,0.0],"DAVID HENRY LESUR DEPRET":[0.0,0.0,0.0,186.0,0.0,120.0,0.0,0.0,0.0],"DB COSMETIC UNIPESSOAL LDA":[162.0,-162.0,2676.8,1985.88,2211.24,2698.21,8440.31,-364.8,3139.2],"DISTRIBUCIONES L Y MANGADO SL":[648.0,124.8,648.0,0.0,1526.4,768.0,0.0,0.0,0.0],"EDISHEVA GONZALEZ VAZQUEZ":[0.0,348.6,195.0,0.0,0.0,0.0,0.0,0.0,0.0],"ENCARNACION PACHECO SANCHEZ":[0.0,232.36,180.0,0.0,0.0,0.0,0.0,0.0,25.0],"ENEXO HAIR SATATE":[118.84,-118.84,534.72,0.0,0.0,222.16,0.0,0.0,0.0],"EVA PROL S.L.":[168.0,-168.0,168.0,0.0,0.0,0.0,0.0,202.0,212.0],"FATIMA TERESA TORMO CASTRO":[110.79,188.25,110.79,116.0,0.0,0.0,0.0,0.0,0.0],"FEDERACIÓ FARMACÈUTICA S.COOP.C.L.":[1255.4,-458.2,710.55,1467.02,0.0,0.0,0.0,0.0,0.0],"FLORENTINO ARTICULOS DE PELUQUERIA,":[0.0,1545.6,0.0,-772.8,0.0,0.0,0.0,0.0,0.0],"GME SERVICIO INTEGRAL DE PELUQUERIA":[0.0,0.0,0.0,0.0,0.0,2784.0,2436.0,7108.8,0.0],"HAIR LOOK SL":[2630.4,-261.6,5800.8,2109.6,0.0,8544.0,0.0,0.0,1886.4],"HAIR SYSTEM PROJECT AGV, SLL":[0.0,0.0,0.0,0.0,0.0,0.0,763.2,0.0,0.0],"IMAGEN 93 S.L.U.":[0.0,0.0,0.0,184.9,0.0,0.0,0.0,0.0,0.0],"INTERNATIONAL COSMETIC GROUP, CB":[0.0,23.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ITALBEAUTY, S.L.":[1793.98,-1426.78,3837.21,1688.4,0.0,816.0,0.0,0.0,0.0],"JESSY ART ZONE, S.L.":[78.15,420.95,327.35,0.0,0.0,90.6,0.0,206.4,0.0],"JOSHUA RIGGIO":[0.0,0.0,0.0,0.0,0.0,10250.4,0.0,0.0,0.0],"LISOS Y ONDAS, S.L.":[0.0,1932.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"LUXURY ORGANIC S.L.":[1010.4,5214.3,4045.6,1209.6,3602.4,1920.0,806.4,-10.3,489.33],"MARIA DEL MAR ADAN MARTINEZ":[0.0,321.26,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"MARIA LUISA LASTRAS GARCIA":[0.0,216.18,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"MARISOL BELLIDO S.L.U":[0.0,0.0,170.85,0.0,0.0,0.0,0.0,0.0,0.0],"MEDICAL HERITAGE S.L.":[0.0,0.0,0.0,78.0,0.0,0.0,0.0,0.0,0.0],"MIMA TU CABELLO BY LARA FERNANDEZ S":[0.0,0.0,0.0,823.2,744.0,0.0,0.0,0.0,1056.0],"MOLECULE ESHOP":[1529.5,-1529.5,1529.5,4020.0,0.0,0.0,0.0,0.0,0.0],"NURIA SALAZAR RUIZ":[261.0,-186.24,576.0,332.0,-12.0,-25.0,302.26,205.5,0.0],"PAULA ROMERO GOMEZ":[96.53,-21.77,96.53,102.5,76.0,-76.0,215.5,0.0,0.0],"PLUINCA, S.L.":[0.0,2704.8,1159.2,0.0,948.0,0.0,0.0,0.0,0.0],"PROFESSIONAL CARE ELITE 2023, S.L.":[0.0,2313.6,0.0,1346.4,1171.2,-656.0,0.0,0.0,1346.4],"RAQUEL LARIOS ALONSO":[0.0,74.76,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ROGER NEBOT":[0.0,149.52,0.0,0.0,372.0,0.0,0.0,908.28,0.0],"ROSA RAMIREZ MOTA":[-49.84,49.84,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"ROSANA GALVEZ ADRADA":[192.16,-142.32,192.16,0.0,0.0,0.0,0.0,0.0,0.0],"SANDRA MARIA AUGUSTO AMBROSIO":[0.0,0.0,0.0,0.0,0.0,204.0,0.0,203.5,0.0],"SERVICIO INTEGRAL DE PELUQUERIAS, G":[0.0,44109.57,-28198.17,900.0,0.0,0.0,0.0,0.0,0.0],"SEVEL PROFESIONAL S.L.":[0.0,0.0,724.8,0.0,1852.8,0.0,565.8,1346.4,0.0],"TACHA BEAUTY & WELLNESS SL.":[59.88,350.28,0.0,68.1,127.98,68.1,127.98,0.0,0.0],"VITAL LOOK, S.L.":[0.0,3852.0,380.7,1730.4,0.0,0.0,1647.36,0.0,1123.2],"YANDUB-85, SL":[64.48,208.74,64.48,0.0,0.0,0.0,0.0,0.0,0.0],"YARIBU BELLEZA, S.L.":[0.0,0.0,335.92,0.0,0.0,0.0,0.0,388.0,248.0],"(en blanco)":[0.0,-15114.18,-6774.6,-9628.97,0.0,0.0,0.0,0.0,0.0],"MARIA RODRIGUEZ MARTINEZ":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,467.76,0.0],"DIANA AROZAMENA ALVAREZ":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,415.0]}},"EOLUX":{"total":[27525.84,32088.1,32724.33,21293.12,532.62,3747.51,1209.6,0.0,2146.61],"terceros":{"ADELA CAICOYA SL":[5506.04,-5506.04,5506.04,0.0,0.0,0.0,814.86,0.0,0.0],"ANDREA PRESMANES APEZTEGUIA":[0.0,0.0,233.75,0.0,0.0,0.0,0.0,0.0,0.0],"BELLA AURORA LABS, S.A.,":[16092.8,-12982.9,15952.8,0.0,0.0,0.0,0.0,0.0,0.0],"BRITO COSMETICS, S.L.":[0.0,0.0,0.0,0.0,10471.2,0.0,0.0,0.0,0.0],"CLIENTE GENERICO":[0.0,0.0,13259.74,0.0,-13259.74,0.0,0.0,0.0,0.0],"COSMETICA COSBAR, S.L.":[309.0,-309.0,309.0,0.0,0.0,0.0,0.0,0.0,0.0],"COSMETICOS ANDREA SLU":[0.0,0.0,0.0,0.0,0.0,0.0,394.74,0.0,0.0],"CSP LOGISTICS":[0.0,0.0,4599.0,0.0,0.0,0.0,0.0,0.0,0.0],"DB COSMETIC UNIPESSOAL LDA":[0.0,0.0,11444.0,0.0,0.0,0.0,0.0,0.0,0.0],"DESIGN PROFESSIONEL A.M.B.A.":[0.0,0.0,1200.0,0.0,0.0,0.0,0.0,0.0,0.0],"DISTRIBUCIONES COSMOLAN, S.L.":[-120.0,3056.0,-160.0,0.0,0.0,0.0,0.0,0.0,40.0],"ELICES SALVADOR S.C":[0.0,0.0,0.0,0.0,112.02,0.0,0.0,0.0,0.0],"EVA NAVARRO ESTILISTAS":[0.0,0.0,0.0,0.0,224.04,0.0,0.0,0.0,0.0],"GME SERVICIO INTEGRAL DE PELUQUERIA":[0.0,0.0,0.0,0.0,240.0,1542.96,0.0,0.0,0.0],"HAIR DAY SL":[0.0,0.0,0.0,228.0,0.0,0.0,0.0,0.0,0.0],"IO  PROMO, S.L":[0.0,0.0,0.0,18382.0,0.0,0.0,0.0,0.0,0.0],"IRIS ESCARTIN MOLINER":[0.0,0.0,205.79,0.0,0.0,0.0,0.0,0.0,0.0],"ITALBEAUTY, S.L.":[240.0,-240.0,1680.0,0.0,0.0,0.0,0.0,0.0,0.0],"JESSY ART ZONE, S.L.":[1686.0,-1686.0,90.0,0.0,0.0,0.0,0.0,0.0,976.16],"M&S HAIR EVOLUTION, S.L.":[0.0,0.0,0.0,1000.0,0.0,0.0,0.0,0.0,0.0],"MAPEXBELL, SL":[0.0,0.0,0.0,570.16,0.0,0.0,0.0,0.0,470.0],"MOLECULE ESHOP":[0.0,0.0,1596.0,0.0,0.0,0.0,0.0,0.0,0.0],"ORGANIMAX BUSINESS SL":[0.0,0.0,0.0,354.25,0.0,2060.55,0.0,0.0,0.0],"PALCRIS SL":[0.0,0.0,185.25,411.75,0.0,0.0,0.0,0.0,0.0],"PH STYLE SRO":[3058.0,-3058.0,5011.0,0.0,2176.0,0.0,0.0,0.0,0.0],"SERVICIO INTEGRAL DE PELUQUERIAS, G":[0.0,53394.04,-29242.04,0.0,0.0,0.0,0.0,0.0,0.0],"SESABE PROFESSIONAL S.L.":[0.0,0.0,0.0,0.0,503.31,0.0,0.0,0.0,0.0],"SKIN HAIR CARE S.L.":[654.0,-480.0,654.0,0.0,0.0,0.0,0.0,0.0,0.0],"SOLEDAD REBOLLAR":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,510.45],"SORAYA PEÑA ORTIZ":[0.0,0.0,0.0,346.96,65.79,0.0,0.0,0.0,0.0],"TAHE PRODUCTOS COSMETICOS SL":[100.0,-100.0,200.0,0.0,0.0,0.0,0.0,0.0,0.0],"THE HAIR MBA, S.L.":[0.0,0.0,0.0,0.0,0.0,144.0,0.0,0.0,0.0],"EVA MARTINEZ LLORCA LAPELUDEEVA":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,150.0]}},"GHD":{"total":[0.0,0.0,129.6,0.0,0.0,2386.91,1547.62,111.94,0.0],"terceros":{"Gemma  farre Agusti":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,111.94,0.0],"GME SERVICIO INTEGRAL DE PELUQUERIA":[0.0,0.0,0.0,0.0,0.0,2568.6,1547.62,0.0,0.0],"LORENZO HERNANDEZ HERNANDEZ":[0.0,0.0,0.0,0.0,0.0,1373.55,0.0,0.0,0.0],"MARISOL BELLIDO S.L.U":[0.0,0.0,129.6,0.0,0.0,0.0,0.0,0.0,0.0],"SKIN HAIR CARE S.L.":[0.0,0.0,0.0,0.0,0.0,-1555.24,0.0,0.0,0.0]}},"GOLDWELL":{"total":[0.0,0.0,129.15,0.0,1380.88,1375.78,0.0,0.0,0.0],"terceros":{"CASALS DISPRO S.L.":[0.0,0.0,0.0,0.0,0.0,1346.68,-1346.68,0.0,0.0],"ENEXO HAIR SATATE":[0.0,0.0,0.0,0.0,1380.88,29.1,1346.68,0.0,0.0],"MARISOL BELLIDO S.L.U":[0.0,0.0,129.15,0.0,0.0,0.0,0.0,0.0,0.0]}},"LADIOSA":{"total":[38978.44,87220.82,45902.08,45840.67,59227.76,46737.59,74836.81,27093.93,30777.62],"terceros":{"ADELA CAICOYA SL":[899.58,2392.45,3105.9,0.0,5870.64,8845.19,6577.22,-1001.68,4152.28],"ADRIANA KARINA RODRIGUEZ OROZCO":[0.0,0.0,1850.0,0.0,0.0,0.0,0.0,0.0,0.0],"ALCAHUZ & VALLORI SLU":[0.0,0.0,0.0,0.0,0.0,1868.95,0.0,0.0,0.0],"ALICIA RAMIREZ HAIR SALON":[307.58,-307.58,2764.57,0.0,602.57,0.0,875.54,119.0,672.18],"AMANDA BERNAL JIMENEZ":[214.29,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"AMPARO FERNANDEZ SILVA":[0.0,0.0,0.0,407.2,0.0,0.0,0.0,0.0,0.0],"ANA SANCHEZ PALOMEQUE":[2612.93,-2612.93,2612.93,0.0,134.16,0.0,0.0,0.0,0.0],"ANDREA PRESMANES APEZTEGUIA":[0.0,0.0,188.46,0.0,0.0,0.0,0.0,0.0,0.0],"ANTONIO BASCUÑANA SANCHEZ":[376.92,-74.16,671.07,0.0,152.46,201.3,292.1,118.9,0.0],"ATELIER VITORIA S.L.":[662.46,-662.46,662.46,0.0,0.0,0.0,0.0,0.0,0.0],"BEAUTYGE S.L.":[0.0,0.0,0.0,1815.91,0.0,0.0,0.0,0.0,0.0],"BELLA AURORA LABS, S.A.,":[0.0,46828.46,-46828.46,0.0,0.0,0.0,0.0,0.0,0.0],"BIARTEMA COSMETIC SL":[0.0,0.0,0.0,0.0,0.0,390.0,0.0,0.0,0.0],"CAROLINA RODAL TENORIO":[402.48,-402.48,402.48,0.0,0.0,0.0,0.0,0.0,0.0],"CASALS DISPRO S.L.":[0.0,0.0,0.0,0.0,0.0,12677.47,-12677.47,0.0,0.0],"CLIENTE GENERICO":[0.0,0.0,18922.02,0.0,-18922.02,0.0,0.0,0.0,0.0],"COMERCIAL AISAN 3, S.L.":[181.08,-181.08,1552.92,219.96,191.02,0.0,0.0,0.0,0.0],"COMERCIAL RENOIR SL":[778.32,-778.32,0.0,388.51,1150.12,-362.16,20006.58,0.0,0.0],"DB COSMETIC UNIPESSOAL LDA":[23165.65,-23165.65,81787.62,22420.15,19349.3,-865.9,47144.4,641.68,5828.75],"DISTRIBUCIONES COSMOLAN, S.L.":[722.5,-722.5,6833.47,1737.94,2915.76,2548.54,997.2,91.0,159.26],"ELICES SALVADOR S.C":[0.0,0.0,0.0,1877.04,376.92,0.0,0.0,0.0,0.0],"ELISABET JIMENEZ IBAÑEZ":[0.0,0.0,0.0,188.46,376.92,-376.92,240.12,0.0,0.0],"EMMA FERNANDEZ GARCIA":[0.0,0.0,0.0,0.0,0.0,0.0,1877.04,0.0,0.0],"ENEXO HAIR SATATE":[0.0,0.0,11.58,0.0,0.0,567.63,0.0,0.0,46.74],"EVA NAVARRO ESTILISTAS":[0.0,0.0,0.0,1877.04,0.0,0.0,0.0,0.0,0.0],"FRANCISCA MELGUIZO SL":[0.0,0.0,0.0,0.0,1868.95,0.0,0.0,0.0,0.0],"GME SERVICIO INTEGRAL DE PELUQUERIA":[0.0,0.0,0.0,0.0,36958.18,2801.89,2019.68,23183.99,9561.45],"HAIR & GWOW BY PELUQUERIAGLORIAA SL":[0.0,0.0,0.0,1877.04,0.0,0.0,0.0,0.0,0.0],"HAIR DAY SL":[2370.12,-2370.12,402.48,7956.22,184.69,4153.49,0.0,0.0,0.0],"IMAXEN BIENESTAR Y BELLEZA SL":[0.0,0.0,0.0,0.0,412.44,0.0,0.0,0.0,0.0],"JAVIER EQUIP S.L":[0.0,0.0,2539.05,0.0,205.2,0.0,0.0,0.0,0.0],"JESSY ART ZONE, S.L.":[1952.46,-1952.46,4094.75,1100.84,2263.9,4095.89,3872.52,1485.84,3930.22],"LAILA REJANE DOS REIS FLAUSINO":[0.0,0.0,0.0,0.0,806.21,0.0,188.46,0.0,0.0],"LE MIROIR DE DESI, S.L.":[0.0,0.0,0.0,0.0,591.21,36.6,0.0,0.0,0.0],"LETICIA COMA BARBA":[0.0,0.0,1581.38,205.68,0.0,0.0,0.0,0.0,0.0],"LORENA ESTILISTA HAIR STUDIO SL":[134.16,-134.16,1223.7,0.0,0.0,0.0,0.0,337.8,0.0],"Mª JULIANA JIMENEZ LARA":[0.0,0.0,0.0,0.0,347.46,0.0,0.0,0.0,0.0],"MARÍA LUISA BAREA MARTÍN":[0.0,0.0,0.0,0.0,167.91,0.0,0.0,0.0,0.0],"MARISOL BELLIDO S.L.U":[0.0,0.0,195.0,0.0,0.0,0.0,0.0,0.0,0.0],"MARTA LUS GALARRAGA":[0.0,0.0,0.0,0.0,0.0,0.0,2322.52,0.0,0.0],"MICRONHAIR, S.L.":[0.0,0.0,1850.0,0.0,0.0,0.0,0.0,0.0,0.0],"MIREIA RUIZ JOAQUIN":[134.16,-134.16,134.16,0.0,0.0,0.0,0.0,0.0,0.0],"MIRIAM MASGORET ROSELL":[0.0,0.0,205.21,0.0,195.0,0.0,195.0,0.0,0.0],"MONICA BUENO ROBLES":[0.0,0.0,1850.0,0.0,0.0,0.0,0.0,0.0,0.0],"NIYIRET MONTILLA RUEDA":[536.64,-536.64,536.64,0.0,0.0,0.0,0.0,0.0,0.0],"OH PELUQUEROS FASHION":[0.0,0.0,0.0,0.0,181.08,0.0,0.0,0.0,0.0],"OIANE MARTIN SANCHEZ":[456.78,-456.78,456.78,152.46,0.0,0.0,0.0,0.0,0.0],"OLIVER Y GORETTI SL":[0.0,0.0,511.08,268.32,645.24,5693.04,268.32,0.0,0.0],"ORGANIMAX BUSINESS SL":[0.0,0.0,0.0,0.0,0.0,3388.72,0.0,0.0,0.0],"PELISSE SINGLE MEMBER, S.A.":[940.08,-940.08,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"PELUQUERIA CACHE VALLISOLETANA SLU":[0.0,0.0,0.0,642.87,207.36,1895.46,0.0,0.0,0.0],"REDRUELLOS PELUQUERAS, SL":[601.42,-601.42,601.42,0.0,0.0,0.0,0.0,0.0,0.0],"RESERVADO MUESTRA":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1138.5],"RIGAT INVERSIONS BNC SL":[0.0,0.0,0.0,0.0,0.0,0.0,151.38,0.0,0.0],"SARA ALCAHUZ SANCHEZ":[0.0,0.0,1868.95,0.0,0.0,-1868.95,0.0,0.0,0.0],"SARA RUBIO":[428.31,-428.31,428.31,0.0,0.0,0.0,0.0,0.0,0.0],"SERVEC 94, S.L.":[0.0,0.0,2120.84,2605.05,471.93,1173.85,195.0,0.0,0.0],"SERVICIO INTEGRAL DE PELUQUERIAS, G":[651.12,74399.52,-55539.96,-662.16,0.0,0.0,0.0,0.0,0.0],"SOLEDAD REBOLLAR":[181.08,-181.08,181.08,762.14,1085.15,-126.5,291.2,2117.4,0.0],"TANIA SANCHEZ ALBARRAN":[0.0,0.0,1868.95,0.0,0.0,0.0,0.0,0.0,0.0],"THAIS FONOLLOSA MARTIN":[0.0,511.08,2136.92,0.0,438.0,0.0,0.0,0.0,0.0],"THAIS LOPEZ MOSEGUI":[268.32,-268.32,268.32,0.0,0.0,0.0,0.0,0.0,0.0],"VANESSA BERMUDEZ MOLINA":[0.0,0.0,1850.0,0.0,0.0,0.0,0.0,0.0,0.0],"HOLISTIC AIR":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1311.71],"ROSA MARÍA GUTIÉRREZ":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2091.71],"SILVIA DE LA CRUZ JURADO":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1884.82]}},"MAXSUM":{"total":[0.0,1490.15,-818.37,0.0,-323.28,728.5,380.0,0.0,342.0],"terceros":{"BELLA AURORA LABS, S.A.,":[0.0,348.5,-348.5,0.0,0.0,0.0,0.0,0.0,0.0],"CLIENTE GENERICO":[0.0,0.0,323.28,0.0,-323.28,0.0,0.0,0.0,0.0],"ENEXO HAIR SATATE":[0.0,0.0,0.0,0.0,0.0,380.0,0.0,0.0,342.0],"MARIA DEL MAR ADAN MARTINEZ":[0.0,0.0,348.5,0.0,0.0,348.5,380.0,0.0,0.0],"SERVICIO INTEGRAL DE PELUQUERIAS, G":[0.0,1141.65,-1141.65,0.0,0.0,0.0,0.0,0.0,0.0]}},"OLAPLEX":{"total":[0.0,0.0,0.0,0.0,228.0,0.0,0.0,0.0,0.0],"terceros":{"SALON VALVERDE 44 SL":[0.0,0.0,0.0,0.0,228.0,0.0,0.0,0.0,0.0]}},"REF":{"total":[85555.49,12212.14,-6083.25,14960.45,52944.32,-7247.84,16994.39,8229.63,44582.93],"terceros":{"ALÍNEA PRINCIPAL UNIPESSOAL LDA.":[0.0,0.0,0.0,1483.99,3694.68,-2227.55,0.0,1601.2,1973.12],"BELLA AURORA LABS, S.A.,":[0.0,23182.55,-23182.55,0.0,0.0,0.0,0.0,0.0,0.0],"CLIENTE GENERICO":[85270.64,-85270.64,4535.52,0.0,-4535.52,0.0,0.0,0.0,0.0],"DISCANARY COSMÉTICA Y BELLEZA, S.L":[0.0,2196.65,4947.71,0.0,2798.3,0.0,4459.72,3326.34,3171.38],"DUTCH BEAUTY DISTRIBUTION":[0.0,0.0,0.0,0.0,0.0,0.0,5136.68,2542.27,5984.72],"ENEXO HAIR SATATE":[284.85,-284.85,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"GME SERVICIO INTEGRAL DE PELUQUERIA":[0.0,0.0,0.0,0.0,10270.04,0.0,0.0,0.0,32003.72],"GUSTAVO DELERA PERALTA":[0.0,0.0,0.0,0.0,445.04,0.0,0.0,264.06,0.0],"HANANE EL HAOUARI":[0.0,0.0,0.0,749.98,131.64,-131.64,171.99,0.0,0.0],"LOOKGE CORP, S.L.":[0.0,0.0,174.98,6464.91,408.94,0.0,0.0,0.0,0.0],"LOURDES CHAO SÁNCHEZ":[0.0,195.24,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"LUXUS TRADE OU":[0.0,0.0,27648.43,0.0,0.0,0.0,0.0,0.0,0.0],"NURIA SANCHEZ CARMONA":[0.0,0.0,677.71,0.0,0.0,0.0,0.0,0.0,0.0],"SERVICIO INTEGRAL DE PELUQUERIAS, G":[0.0,25016.19,-20584.32,0.0,0.0,0.0,0.0,0.0,0.0],"SESABE PROFESSIONAL S.L.":[0.0,0.0,615.03,6261.57,5251.56,2564.01,7226.0,495.76,1449.99],"SHAZAM HAIR & COSMETIC, S.L.":[0.0,25188.24,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"SUBLIME BEAUTY WHOLESALER SL":[0.0,1082.34,-915.76,0.0,1068.52,-120.66,0.0,0.0,0.0],"VILLALBA AL ALBA, S.L.U.":[0.0,20906.42,0.0,0.0,33411.12,-7332.0,0.0,0.0,0.0]}},"REMEMBER":{"total":[1246.0,4635.7,6671.36,833.66,-887.51,-8373.67,828.88,91.2,4533.78],"terceros":{"BELLA AURORA LABS, S.A.,":[0.0,752.66,-752.66,0.0,0.0,0.0,0.0,0.0,0.0],"CLIENTE GENERICO":[0.0,0.0,1005.69,0.0,-1005.69,0.0,0.0,0.0,0.0],"DB COSMETIC UNIPESSOAL LDA":[0.0,0.0,0.0,0.0,0.0,-11531.85,0.0,0.0,0.0],"GESCOOK GESTION DE SERVICIOS, S.L.":[167.0,-167.0,287.0,0.0,0.0,0.0,0.0,0.0,0.0],"HAIR LOOK SL":[878.0,2455.04,7726.33,632.66,-120.81,2701.18,555.28,0.0,3621.78],"JESSY ART ZONE, S.L.":[0.0,0.0,0.0,0.0,238.99,0.0,0.0,0.0,0.0],"METODO, C.D.M":[201.0,-201.0,201.0,201.0,0.0,201.0,273.6,91.2,0.0],"PEDRO BETRIAN PEREZ":[0.0,0.0,0.0,0.0,0.0,256.0,0.0,0.0,0.0],"SERVICIO INTEGRAL DE PELUQUERIAS, G":[0.0,1796.0,-1796.0,0.0,0.0,0.0,0.0,0.0,0.0],"VERONICA MUÑOZ DE FRUTOS":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,912.0]}}}},"VENTA ROYALTIES":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"hasBrandAxis":false,"terceros":{"MARISOL BELLIDO S.L.U":[0.0,99.0,99.0,0.0,0.0,0.0,0.0,0.0,0.0],"MAYTE GARROTE VELEZ":[0.0,99.0,99.0,0.0,0.0,0.0,0.0,0.0,0.0],"MIMA TU CABELLO BY LARA FERNANDEZ S":[0.0,99.0,99.0,0.0,0.0,0.0,0.0,0.0,0.0],"(en blanco)":[0.0,-297.0,-297.0,0.0,0.0,0.0,0.0,0.0,0.0]}}},"total":[176712.05,245394.42,149618.96,103432.66,126971.24,106712.74,106882.3,92409.18,108343.05]},"2.COGS":{"l2_order":["COMPRAS PRODUCTO","GASTOS POR COMISION DE VENTA","VARIACION DE EXISTENCIAS"],"subs":{"COMPRAS PRODUCTO":{"total":[0.0,0.0,0.0,0.0,-27231.59,-1400.88,0.0,0.0,0.0],"hasBrandAxis":true,"brands":{"CHICLOVE":{"total":[0.0,0.0,0.0,0.0,-14625.74,2547.14,0.0,0.0,0.0],"terceros":{"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,-15058.16,2979.56,0.0,0.0,0.0],"DB COSMETIC UNIPESSOAL LDA":[0.0,0.0,0.0,0.0,432.42,-432.42,0.0,0.0,0.0]}},"EOLUX":{"total":[0.0,0.0,0.0,0.0,-9653.14,-394.52,0.0,0.0,0.0],"terceros":{"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,-9653.14,-394.52,0.0,0.0,0.0]}},"GOLDWELL":{"total":[0.0,0.0,0.0,0.0,0.0,971.42,0.0,0.0,0.0],"terceros":{"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,0.0,971.42,0.0,0.0,0.0]}},"LADIOSA":{"total":[0.0,0.0,0.0,0.0,-3878.79,1302.4,0.0,0.0,0.0],"terceros":{"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,-9859.37,7053.48,0.0,0.0,0.0],"COMERCIAL RENOIR SL":[0.0,0.0,0.0,0.0,215.2,-215.2,0.0,0.0,0.0],"DB COSMETIC UNIPESSOAL LDA":[0.0,0.0,0.0,0.0,5535.88,-5535.88,0.0,0.0,0.0],"DIOSA HAIRS.L":[0.0,0.0,0.0,0.0,229.5,0.0,0.0,0.0,0.0]}},"MAXSUM":{"total":[0.0,0.0,0.0,0.0,-135.81,0.0,0.0,0.0,0.0],"terceros":{"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,-135.81,0.0,0.0,0.0,0.0]}},"REF":{"total":[0.0,0.0,0.0,0.0,1678.62,-5827.32,0.0,0.0,0.0],"terceros":{"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,-4091.1,-57.6,0.0,0.0,0.0],"SESABE PROFESSIONAL S.L.":[0.0,0.0,0.0,0.0,67.44,-67.44,0.0,0.0,0.0],"VILLALBA AL ALBA, S.L.U.":[0.0,0.0,0.0,0.0,5702.28,-5702.28,0.0,0.0,0.0]}},"REMEMBER":{"total":[0.0,0.0,0.0,0.0,-616.73,0.0,0.0,0.0,0.0],"terceros":{"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,-616.73,0.0,0.0,0.0,0.0]}}}},"GASTOS POR COMISION DE VENTA":{"total":[0.0,75.38,0.0,1577.2,3605.0,690.85,1907.58,1258.1,2946.05],"hasBrandAxis":false,"terceros":{"JESSICA DEL ARBOL JIMENEZ":[0.0,75.38,0.0,579.97,1020.12,0.0,241.38,1000.0,0.0],"JESSY ART ZONE, S.L.":[0.0,0.0,0.0,997.23,2584.88,690.85,1666.2,258.1,2946.05]}},"VARIACION DE EXISTENCIAS":{"total":[125012.79,166538.04,79312.58,65386.98,109323.63,56583.86,83746.12,61130.18,75799.82],"hasBrandAxis":true,"brands":{"SIN MARCA":{"total":[-13000.0,15000.0,12000.0,0.0,0.0,0.0,0.0,0.0,0.0],"terceros":{"(en blanco)":[-13000.0,15000.0,12000.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"BKT":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,2350.49,25078.48,227.82],"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,2350.49,25078.48,227.82]}},"CHICLOVE":{"total":[17071.95,51686.59,18174.48,8617.32,14239.77,26051.71,5427.27,12496.87,14358.52],"terceros":{"(en blanco)":[17071.95,51686.59,18174.48,8617.32,14239.77,26051.71,5427.27,12496.87,14358.52]}},"EOLUX":{"total":[20958.36,24432.1,24797.08,15766.17,10834.53,6038.01,8604.94,0.0,2164.35],"terceros":{"(en blanco)":[20958.36,24432.1,24797.08,15766.17,10834.53,6038.01,8604.94,0.0,2164.35]}},"GHD":{"total":[0.0,0.0,0.0,0.0,0.0,2028.88,1750.0,0.0,0.0],"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,2028.88,1750.0,0.0,0.0]}},"GOLDWELL":{"total":[0.0,0.0,0.0,0.0,1035.64,99.2,0.0,0.0,0.0],"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,1035.64,99.2,0.0,0.0,0.0]}},"LADIOSA":{"total":[23709.37,61143.07,26158.12,27289.2,44813.81,26215.53,52540.6,17349.6,16865.45],"terceros":{"(en blanco)":[23709.37,61143.07,26158.12,27289.2,44813.81,26215.53,52540.6,17349.6,16865.45]}},"MAXSUM":{"total":[0.0,626.0,-343.79,0.0,0.0,458.5,239.0,0.0,237.59],"terceros":{"(en blanco)":[0.0,626.0,-343.79,0.0,0.0,458.5,239.0,0.0,237.59]}},"OLAPLEX":{"total":[0.0,0.0,0.0,0.0,189.9,0.0,0.0,0.0,0.0],"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,189.9,0.0,0.0,0.0,0.0]}},"REF":{"total":[75515.35,10791.32,-5564.43,13201.66,37840.16,1995.78,12438.22,6189.83,39615.12],"terceros":{"(en blanco)":[75515.35,10791.32,-5564.43,13201.66,37840.16,1995.78,12438.22,6189.83,39615.12]}},"REMEMBER":{"total":[757.76,2858.96,4091.12,512.63,369.82,-6303.75,395.6,15.4,2310.46],"terceros":{"(en blanco)":[757.76,2858.96,4091.12,512.63,369.82,-6303.75,395.6,15.4,2310.46]}},"SCHWARZKOP":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,20.51],"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,20.51]}}}}},"total":[125012.79,166613.42,79312.58,66964.18,85697.04,55873.83,85653.7,62388.28,78745.87]},"3.GASTOS PERSONAL":{"l2_order":["SEGURIDAD SOCIAL EMPRESA","SUELDOS Y SALARIOS"],"subs":{"SEGURIDAD SOCIAL EMPRESA":{"total":[-13545.44,-17899.93,-3087.69,8339.8,8492.24,9737.9,9263.86,10239.53,10160.85],"hasBrandAxis":false,"terceros":{"(en blanco)":[-13545.44,-17899.93,-3087.69,8339.8,8492.24,9737.9,9263.86,10239.53,10160.85]}},"SUELDOS Y SALARIOS":{"total":[40353.79,44599.02,33509.65,30760.17,32820.38,35561.48,34729.62,36687.99,35501.97],"hasBrandAxis":false,"terceros":{"BORJA ROBLEDA VIVES":[0.0,0.0,0.0,0.0,1000.0,0.0,0.0,0.0,0.0],"EVA VILLAR OCURRELE":[0.0,0.0,0.0,0.0,819.03,0.0,0.0,0.0,0.0],"(en blanco)":[40353.79,44599.02,33509.65,30760.17,31001.35,35561.48,34729.62,36687.99,35501.97]}}},"total":[26808.35,26699.09,30421.96,39099.97,41312.62,45299.38,43993.48,46927.52,45662.82]},"4.ALQUILER":{"l2_order":["ALQUILER OTROS"],"subs":{"ALQUILER OTROS":{"total":[7888.48,7431.96,7122.85,6630.65,8114.6,8457.3,7282.21,5679.05,4863.82],"hasBrandAxis":false,"terceros":{"ACREEDOR GENERICO":[-5000.0,-14000.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"INICIATIVAS ROSALES S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,164.07,-164.07,0.0],"(en blanco)":[12888.48,21431.96,7122.85,6630.65,8114.6,8457.3,7118.14,5843.12,4863.82]}}},"total":[7888.48,7431.96,7122.85,6630.65,8114.6,8457.3,7282.21,5679.05,4863.82]},"5.MARKETING":{"l2_order":["MARKETING"],"subs":{"MARKETING":{"total":[12967.96,20493.14,18880.22,33125.48,18280.26,20608.78,23641.01,10786.0,19998.81],"hasBrandAxis":false,"terceros":{"5TH AVE MODEL MANAGEMENT, S.L.":[0.0,0.0,0.0,1440.0,0.0,0.0,0.0,0.0,0.0],"ABRAHAM E.ESCUDERO AUGUSTO":[0.0,770.0,0.0,2900.0,3800.0,0.0,0.0,0.0,0.0],"ACR 20":[0.0,0.0,500.0,0.0,0.0,0.0,0.0,0.0,0.0],"ACREEDOR GENERICO":[0.0,6000.0,-8000.0,0.0,0.0,0.0,0.0,0.0,0.0],"BAKED BLISS SL":[0.0,218.9,0.0,0.01,0.0,0.0,0.0,0.0,0.0],"CHIC LOVE FASHION BRAND SL":[0.0,0.0,0.0,288.1,0.0,0.0,0.0,0.0,0.0],"DB COSMETIC UNIPESSOAL LDA":[0.0,0.0,0.0,0.0,1800.0,0.0,0.0,0.0,0.0],"EVOL XXI":[0.0,0.0,1312.06,891.0,0.0,0.0,0.0,0.0,0.0],"FERNANDO CASCALES RODRÍGUEZ":[0.0,0.0,1307.5,0.0,0.0,760.0,86.0,0.0,693.0],"HMY YUDIGAR EQUIPAMIENTO, S.L.U":[0.0,0.0,12733.87,1812.81,0.0,0.0,0.0,0.0,0.0],"INSTITUCION FERIAL DE MADRID":[0.0,0.0,0.0,0.0,0.0,0.0,8600.0,0.0,7729.81],"JESSICA DEL ARBOL JIMENEZ":[1473.82,3277.54,1315.94,9321.06,3214.26,3973.78,3875.79,0.0,0.0],"JESSY ART ZONE, S.L.":[1198.14,-432.8,1949.85,6120.0,0.0,3300.0,0.0,0.0,0.0],"OLLO ESTUDIO CREATIVO SL":[3630.0,1800.0,1095.0,4080.0,0.0,1909.0,0.0,0.0,910.0],"PRIVÉ CAFUNÉ, S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,413.22,0.0,0.0],"REAL MADRID C.F.":[0.0,0.0,0.0,0.0,0.0,48000.0,0.0,0.0,0.0],"SEMILLA FOOD FAMILY S.L":[0.0,0.0,0.0,0.0,2800.0,0.0,0.0,0.0,0.0],"SHOCK MODELS AGENCY SLU":[0.0,0.0,0.0,1800.0,0.0,0.0,0.0,0.0,0.0],"YUDIGAR G.S., S.A.U":[0.0,2193.5,0.0,-2193.5,0.0,0.0,0.0,0.0,0.0],"(en blanco)":[6666.0,6666.0,6666.0,6666.0,6666.0,-37334.0,10666.0,10666.0,10666.0],"MIRIAM MARTIN CEBALLOS":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,120.0,0.0]}}},"total":[12967.96,20493.14,18880.22,33125.48,18280.26,20608.78,23641.01,10786.0,19998.81]},"6.OPEX":{"l2_order":["ALQUILER OTROS","CONSUMIBLES","FORMACION","MANTENIMIENTO Y REPARACIONES","MATERIAL OFICINA","OTROS SERVICIOS","ROPA TRABAJO","SEGUROS","SERVICIOS BANCARIOS Y SIMILARES","SERVICIOS PROFESIONALES INDEPENDIENTES","SUMINISTROS","TRANSPORTE","VIAJES"],"subs":{"ALQUILER OTROS":{"total":[1123.57,1123.57,1123.57,1381.7,1123.57,1114.41,974.47,1016.14,1519.2],"hasBrandAxis":false,"terceros":{"INICIATIVAS ROSALES S.L.":[164.07,164.07,164.07,-492.21,164.07,164.07,0.0,-328.14,0.0],"SANTANDER (BANSACAR)":[1353.44,1353.44,1353.44,2267.85,1353.44,1344.28,1368.41,1344.28,1519.2],"(en blanco)":[-393.94,-393.94,-393.94,-393.94,-393.94,-393.94,-393.94,0.0,0.0]}},"CONSUMIBLES":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,330.57,0.0,864.06],"hasBrandAxis":false,"terceros":{"DIOSA HAIRS.L":[0.0,0.0,0.0,0.0,0.0,0.0,330.57,0.0,0.0],"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,864.06]}},"FORMACION":{"total":[300.0,0.0,120.0,3454.22,0.0,450.0,0.0,0.0,0.0],"hasBrandAxis":false,"terceros":{"ADELA CAICOYA SL":[300.0,0.0,0.0,0.0,0.0,450.0,0.0,0.0,0.0],"EVOL XXI":[0.0,0.0,120.0,771.36,0.0,0.0,0.0,0.0,0.0],"JESSY ART ZONE, S.L.":[0.0,0.0,0.0,2682.86,0.0,0.0,0.0,0.0,0.0]}},"MANTENIMIENTO Y REPARACIONES":{"total":[0.0,0.0,0.0,0.0,0.0,109.43,181.83,0.0,27.83],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,109.43,181.83,0.0,27.83]}},"MATERIAL OFICINA":{"total":[1744.93,2108.9,760.99,1325.68,627.56,1616.63,991.3,422.28,0.0],"hasBrandAxis":false,"terceros":{"EL CORTE INGLES, S.A.":[0.0,0.0,0.0,0.0,0.0,0.0,62.72,0.0,0.0],"(en blanco)":[1744.93,2108.9,760.99,1325.68,627.56,1616.63,928.58,422.28,0.0]}},"OTROS SERVICIOS":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,914.74],"hasBrandAxis":false,"terceros":{"CASLOMA2020, SL":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-67.76],"DISTRIBUCIONES COSMOLAN, S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1080.0],"DUTCH BEAUTY DISTRIBUTION":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,17.88],"LAURA NAVARRO CALVENTE":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-115.38]}},"ROPA TRABAJO":{"total":[0.0,0.0,314.21,0.0,0.0,0.0,0.0,0.0,0.0],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,314.21,0.0,0.0,0.0,0.0,0.0,0.0]}},"SEGUROS":{"total":[2628.67,0.0,0.0,82.14,126.58,128.86,113.4,102.87,95.27],"hasBrandAxis":false,"terceros":{"SANTANDER (BANSACAR)":[0.0,0.0,0.0,82.14,0.0,0.0,0.0,0.0,0.0],"(en blanco)":[2628.67,0.0,0.0,0.0,126.58,128.86,113.4,102.87,95.27]}},"SERVICIOS BANCARIOS Y SIMILARES":{"total":[0.0,29.85,0.02,19.35,208.71,0.0,0.0,0.0,0.0],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,29.85,0.02,19.35,208.71,0.0,0.0,0.0,0.0]}},"SERVICIOS PROFESIONALES INDEPENDIENTES":{"total":[4029.03,-4180.97,4919.11,7594.83,6204.0,7519.84,560.0,560.0,560.0],"hasBrandAxis":false,"terceros":{"ACREEDOR GENERICO":[-5000.0,-14000.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"BORJA ROBLEDA VIVES":[1210.0,1000.0,540.0,0.0,0.0,667.64,0.0,0.0,0.0],"EVA VILLAR OCURRELE":[819.03,819.03,-819.03,-819.03,0.0,0.0,0.0,0.0,0.0],"GLOBALIS PHARMA CONSULTING S.L.":[0.0,0.0,0.0,0.0,0.0,2890.0,560.0,560.0,560.0],"JESSY ART ZONE, S.L.":[0.0,0.0,1198.14,-1198.14,0.0,0.0,0.0,0.0,0.0],"JESÚS CASTELLS NAVARRO":[6000.0,5000.0,4000.0,9612.0,6204.0,3412.2,0.0,0.0,0.0],"LORENZO HERNANDEZ HERNANDEZ":[1000.0,0.0,0.0,0.0,-1000.0,0.0,0.0,0.0,0.0],"LORENZO LAPO GROTTANELLI":[0.0,3000.0,0.0,0.0,1000.0,0.0,0.0,0.0,0.0],"MANUELA CORIGLIANO":[0.0,0.0,0.0,0.0,0.0,550.0,0.0,0.0,0.0]}},"SUMINISTROS":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,109.54,0.0,88.85],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,109.54,0.0,88.85]}},"TRANSPORTE":{"total":[7404.16,10850.49,4126.39,3479.96,4135.65,6646.4,5970.96,3493.0,2906.82],"hasBrandAxis":false,"terceros":{"CASLOMA2020, SL":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-3.75],"ENCARNACION PACHECO SANCHEZ":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-3.75],"GREAT LENGHTS SPAIN SL":[179.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"LAURA NAVARRO CALVENTE":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-3.75],"(en blanco)":[7225.16,10850.49,4126.39,3479.96,4135.65,6646.4,5970.96,3493.0,2918.07]}},"VIAJES":{"total":[5723.22,6075.57,7809.55,1149.21,6941.5,6657.16,7001.43,2780.02,9350.69],"hasBrandAxis":false,"terceros":{"ACREEDOR VISAS":[1924.05,2899.31,4218.23,3391.8,3459.15,5769.16,5658.35,1024.53,6880.81],"INTERMODALIDAD DE LEVANTE SA (IRYO)":[160.79,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"JEAN LOUIS DAVID FRANCHISE SPAIN SL":[429.23,0.0,0.0,469.12,0.0,0.0,0.0,0.0,0.0],"TRAVELPERK S.L.U.":[3209.15,3176.26,4519.64,-1879.57,3482.35,888.0,1343.08,1754.91,2469.88],"(en blanco)":[0.0,0.0,-928.32,-832.14,0.0,0.0,0.0,0.58,0.0]}}},"total":[22953.58,16007.41,19173.84,18487.09,19367.57,24242.73,16233.5,8374.31,16327.46]}},"resultado":[-18919.11,8149.4,-5292.49,-60874.71,-45800.85,-47769.28,-69921.6,-41745.98,-57255.73]},"BSTORES":{"months":[1,2,3,4,5,6,7,8,9],"mnames":["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre"],"l1_order":["1.VENTAS","2.COGS","3.GASTOS PERSONAL","4.ALQUILER","5.MARKETING","6.OPEX"],"data":{"1.VENTAS":{"l2_order":["COOPERACION COMERCIAL","VENTA PRODUCTO"],"subs":{"COOPERACION COMERCIAL":{"total":[441666.34,464030.66,445833.13,445833.22,445833.22,445833.22,445834.34,445834.34,455638.11],"hasBrandAxis":true,"brands":{"GHD":{"total":[0.0,22364.0,4166.66,4166.66,4166.66,4166.66,4166.66,4166.66,4166.6],"terceros":{"CLIENTE GENERICO":[0.0,22364.0,0.0,0.0,-22364.0,0.0,0.0,0.0,0.0],"GHD SPAIN, S.A.U":[0.0,0.0,4166.66,4166.66,26530.66,4166.66,4166.66,4166.66,4166.6]}},"LOREAL":{"total":[374999.67,374999.99,374999.8,374999.89,374999.89,374999.89,375001.01,375001.01,374999.89],"terceros":{"CLIENTE GENERICO":[374999.67,-266666.67,-108333.0,0.0,0.0,0.0,0.0,0.0,0.0],"L'OREAL ESPAÑA, S.A.":[0.0,641666.66,483332.8,374999.89,374999.89,191666.56,375001.01,375001.01,374999.89],"(en blanco)":[0.0,0.0,0.0,0.0,0.0,183333.33,0.0,0.0,0.0]}},"MASGLO":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,9804.95],"terceros":{"CERESCOS IBERICA S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,9804.95]}},"WELLA":{"total":[66666.67,66666.67,66666.67,66666.67,66666.67,66666.67,66666.67,66666.67,66666.67],"terceros":{"CLIENTE GENERICO":[50000.0,50000.0,-100000.0,0.0,0.0,0.0,0.0,0.0,0.0],"L'OREAL ESPAÑA, S.A.":[0.0,0.0,0.0,50000.0,50000.0,-100000.0,0.0,0.0,0.0],"WELLA PRESTIGE SP, S.L.U.":[0.0,0.0,150000.0,0.0,0.0,150000.0,50000.0,50000.0,50000.0],"(en blanco)":[16666.67,16666.67,16666.67,16666.67,16666.67,16666.67,16666.67,16666.67,16666.67]}}}},"VENTA PRODUCTO":{"total":[94963.91,60496.54,57743.11,38280.88,54153.2,19859.47,38658.28,8611.61,62099.47],"hasBrandAxis":true,"brands":{"ALFAPARF":{"total":[5650.92,9466.04,15965.1,21913.5,26622.3,-2400.4,0.0,0.0,23355.36],"terceros":{"DRUNI S.A.":[0.0,0.0,15965.1,5948.4,-21913.5,0.0,0.0,0.0,23355.36],"PRIMOR INVESTMENT MANAGMENT, S.L.":[5650.92,9466.04,0.0,15965.1,48535.8,-2400.4,0.0,0.0,0.0]}},"CHICLOVE":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,3558.1,0.0],"terceros":{"FUND GRUBE, S.A.":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,3558.1,0.0]}},"DAVINES":{"total":[46398.6,0.0,-22660.37,0.0,0.0,0.0,0.0,0.0,0.0],"terceros":{"DRUNI S.A.":[46398.6,0.0,-23199.29,0.0,0.0,0.0,0.0,0.0,0.0],"GALA CARLEMANY":[0.0,0.0,538.92,0.0,0.0,0.0,0.0,0.0,0.0]}},"LIVINGPRO":{"total":[0.0,0.0,10531.13,0.0,0.0,10447.38,0.0,0.0,0.0],"terceros":{"PRIMOR INVESTMENT MANAGMENT, S.L.":[0.0,0.0,10531.13,0.0,0.0,10447.38,0.0,0.0,0.0]}},"MASGLO":{"total":[26653.26,35826.25,0.0,-10953.24,-64.89,2972.55,19925.85,0.0,14674.78],"terceros":{"DRUNI S.A.":[26653.26,35826.25,0.0,-10953.24,-64.89,2972.55,19925.85,0.0,14674.78]}},"MOROCCANOI":{"total":[0.0,-1156.75,49267.01,2067.04,4745.83,-5085.09,0.0,3205.27,0.0],"terceros":{"A.CARDOSO, S.A.":[0.0,0.0,4576.92,1423.51,4745.83,-4745.83,0.0,0.0,0.0],"FUND GRUBE, S.A.":[0.0,0.0,-24.04,0.0,0.0,-339.26,0.0,3205.27,0.0],"PERFUMERIA EDEN SA":[0.0,-1156.75,0.0,643.53,0.0,0.0,0.0,0.0,0.0],"PRIMOR INVESTMENT MANAGMENT, S.L.":[0.0,0.0,44714.13,0.0,0.0,0.0,0.0,0.0,0.0]}},"OLAPLEX":{"total":[0.0,0.0,573.48,1447.74,0.0,3660.12,4420.98,1848.24,1047.6],"terceros":{"A.CARDOSO, S.A.":[0.0,0.0,573.48,1447.74,0.0,3660.12,5950.26,286.74,0.0],"FUND GRUBE, S.A.":[0.0,0.0,0.0,0.0,0.0,0.0,-1529.28,1561.5,1047.6]}},"TERMIX":{"total":[16261.13,16361.0,4066.76,23805.84,22849.96,10264.91,14311.45,0.0,23021.73],"terceros":{"DRUNI S.A.":[12821.52,0.0,8011.2,23805.84,-1869.56,10264.91,10264.91,0.0,6625.0],"PRIMOR INVESTMENT MANAGMENT, S.L.":[3439.61,16361.0,-3944.44,0.0,24719.52,0.0,4046.54,0.0,16396.73]}}}}},"total":[536630.25,524527.2,503576.24,484114.1,499986.42,465692.69,484492.62,454445.95,517737.58]},"2.COGS":{"l2_order":["COMPRAS PRODUCTO","RAPPELS","VARIACION DE EXISTENCIAS"],"subs":{"COMPRAS PRODUCTO":{"total":[72628.96,59668.54,12567.07,14794.49,38562.8,12086.27,33202.88,0.0,35810.26],"hasBrandAxis":true,"brands":{"ALFAPARF":{"total":[4050.84,7064.32,13292.32,16349.6,13023.12,-1680.28,0.0,0.0,15519.68],"terceros":{"ALFAPARF GROUP ESPAÑA S.L.":[0.0,7064.32,0.0,32699.2,-14012.08,0.0,0.0,0.0,15519.68],"BEOVIPEL, S.L.":[4050.84,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,10685.6,-1680.28,0.0,0.0,0.0],"DOLS INDUSTRIAL DE PELUQUERIA, S.A.":[0.0,0.0,13292.32,-16349.6,16349.6,0.0,0.0,0.0,0.0]}},"DAVINES":{"total":[26820.0,0.0,-13410.0,0.0,0.0,0.0,0.0,0.0,0.0],"terceros":{"ALFAPARF GROUP ESPAÑA S.L.":[0.0,0.0,13410.0,0.0,0.0,0.0,0.0,0.0,0.0],"BEOVIPEL, S.L.":[26820.0,0.0,-40230.0,0.0,0.0,0.0,0.0,0.0,0.0],"DAVINES ESPAс S.L.U.":[0.0,0.0,13410.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"LIVINGPRO":{"total":[0.0,0.0,7020.75,0.0,0.0,7028.64,0.0,0.0,0.0],"terceros":{"KERAPLUS, S.L.":[0.0,0.0,7020.75,0.0,0.0,14353.8,0.0,0.0,0.0],"(en blanco)":[0.0,0.0,0.0,0.0,0.0,-7325.16,0.0,0.0,0.0]}},"MASGLO":{"total":[30176.08,40558.02,0.0,-21066.69,-40.03,2292.86,21655.07,0.0,2476.16],"terceros":{"BEOVIPEL, S.L.":[30176.08,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"CERESCOS IBERICA S.L.":[0.0,40558.02,0.0,-21066.69,-40.03,2972.86,0.0,0.0,2476.16],"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,0.0,-680.0,21655.07,0.0,0.0]}},"MOROCCANOI":{"total":[0.0,0.0,0.0,0.0,4845.63,-3165.35,0.0,0.0,0.0],"terceros":{"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,4845.63,-3165.35,0.0,0.0,0.0]}},"TERMIX":{"total":[11582.04,12046.2,5664.0,19511.58,20734.08,7610.4,11547.81,0.0,17814.42],"terceros":{"BEOVIPEL, S.L.":[11582.04,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"CERESCOS IBERICA S.L.":[0.0,0.0,5664.0,-5664.0,0.0,0.0,0.0,0.0,0.0],"CLIENTE GENERICO":[0.0,0.0,0.0,0.0,4765.44,0.0,-4765.44,0.0,0.0],"DOLS INDUSTRIAL DE PELUQUERIA, S.A.":[0.0,12046.2,0.0,25175.58,15968.64,7610.4,16313.25,0.0,17814.42]}}}},"RAPPELS":{"total":[-5863.72,-9328.3,-0.0,13559.87,1632.15,-0.0,-12502.56,0.0,0.0],"hasBrandAxis":true,"brands":{"LOREAL":{"total":[0.0,0.0,0.0,0.0,0.0,-0.0,0.0,0.0,0.0],"terceros":{"L'OREAL ESPAÑA, S.A.":[0.0,0.0,0.0,0.0,0.0,-183333.33,0.0,0.0,0.0],"(en blanco)":[0.0,0.0,0.0,0.0,0.0,183333.33,0.0,0.0,0.0]}},"MASGLO":{"total":[-5863.72,-9328.3,-0.0,13559.87,1632.15,0.0,-12502.56,0.0,0.0],"terceros":{"BEOVIPEL, S.L.":[0.0,-9328.3,-5863.72,15192.02,0.0,0.0,0.0,0.0,0.0],"CERESCOS IBERICA S.L.":[-5863.72,0.0,5863.72,-1632.15,1632.15,0.0,-12502.56,0.0,0.0]}}}},"VARIACION DE EXISTENCIAS":{"total":[0.0,0.0,43745.89,2346.02,0.0,2854.8,0.0,6063.56,9450.51],"hasBrandAxis":true,"brands":{"CHICLOVE":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,1662.71,0.0],"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,1662.71,0.0]}},"MASGLO":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,8823.42],"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,8823.42]}},"MOROCCANOI":{"total":[0.0,0.0,43308.24,1908.37,0.0,0.0,0.0,2965.3,0.0],"terceros":{"(en blanco)":[0.0,0.0,43308.24,1908.37,0.0,0.0,0.0,2965.3,0.0]}},"OLAPLEX":{"total":[0.0,0.0,437.65,437.65,0.0,2854.8,0.0,1435.55,627.09],"terceros":{"(en blanco)":[0.0,0.0,437.65,437.65,0.0,2854.8,0.0,1435.55,627.09]}}}}},"total":[66765.24,50340.24,56312.96,30700.38,40194.95,14941.07,20700.32,6063.56,45260.77]},"3.GASTOS PERSONAL":{"l2_order":["SEGURIDAD SOCIAL EMPRESA","SUELDOS Y SALARIOS"],"subs":{"SEGURIDAD SOCIAL EMPRESA":{"total":[9860.75,9494.11,8804.68,8500.34,10657.3,7192.7,6887.84,7410.42,7874.85],"hasBrandAxis":false,"terceros":{"(en blanco)":[9860.75,9494.11,8804.68,8500.34,10657.3,7192.7,6887.84,7410.42,7874.85]}},"SUELDOS Y SALARIOS":{"total":[46422.91,37358.48,35201.17,33600.46,41058.75,29013.7,28400.03,29336.37,30045.33],"hasBrandAxis":false,"terceros":{"(en blanco)":[46422.91,37358.48,35201.17,33600.46,41058.75,29013.7,28400.03,29336.37,30045.33]}}},"total":[56283.66,46852.59,44005.85,42100.8,51716.05,36206.4,35287.87,36746.79,37920.18]},"4.ALQUILER":{"l2_order":["ALQUILER OTROS"],"subs":{"ALQUILER OTROS":{"total":[183.79,189.14,3769.41,1784.01,0.0,188.3,1048.95,207.11,1050.43],"hasBrandAxis":false,"terceros":{"INICIATIVAS ROSALES S.L.":[183.79,189.14,188.83,188.83,0.0,188.3,188.0,188.0,0.0],"SANTANDER (BANSACAR)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,188.0],"(en blanco)":[0.0,0.0,3580.58,1595.18,0.0,0.0,860.95,19.11,862.43]}}},"total":[183.79,189.14,3769.41,1784.01,0.0,188.3,1048.95,207.11,1050.43]},"5.MARKETING":{"l2_order":["MARKETING"],"subs":{"MARKETING":{"total":[0.0,0.0,16437.87,22445.27,3997.47,2348.27,3976.37,4356.37,4356.37],"hasBrandAxis":false,"terceros":{"M.DIFUSION Y CATERING, S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,12048.6,0.0,0.0],"MADRID TROPHY PROMOTION SLU":[0.0,0.0,35224.0,0.0,0.0,0.0,0.0,0.0,0.0],"SEMILLA FOOD FAMILY S.L":[0.0,0.0,0.0,0.0,0.0,0.0,-380.0,0.0,0.0],"SF & MACARENA DISEÑO INTEGRAL S.L.":[0.0,0.0,0.0,20097.0,0.0,0.0,0.0,0.0,0.0],"TEMPS MULTIWORK, S.L. ETT":[0.0,0.0,0.0,0.0,1649.2,0.0,0.0,0.0,0.0],"(en blanco)":[0.0,0.0,-18786.13,2348.27,2348.27,2348.27,-7692.23,4356.37,4356.37]}}},"total":[0.0,0.0,16437.87,22445.27,3997.47,2348.27,3976.37,4356.37,4356.37]},"6.OPEX":{"l2_order":["ALQUILER OTROS","CONSUMIBLES","MANTENIMIENTO Y REPARACIONES","MATERIAL OFICINA","OTROS SERVICIOS","ROPA TRABAJO","SEGUROS","SUMINISTROS","TRANSPORTE","VIAJES"],"subs":{"ALQUILER OTROS":{"total":[393.94,393.94,393.94,393.94,393.94,393.94,393.94,393.94,13.64],"hasBrandAxis":false,"terceros":{"SANTANDER (BANSACAR)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,393.94,13.64],"(en blanco)":[393.94,393.94,393.94,393.94,393.94,393.94,393.94,0.0,0.0]}},"CONSUMIBLES":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.27,153.21],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.27,153.21]}},"MANTENIMIENTO Y REPARACIONES":{"total":[220.6,36.1,0.0,0.0,0.0,0.0,17.19,0.0,4.94],"hasBrandAxis":false,"terceros":{"SERES SOCIE. EXPLO. REDES ELECTRO.":[220.6,36.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,17.19,0.0,4.94]}},"MATERIAL OFICINA":{"total":[0.0,0.0,382.54,318.92,0.0,0.0,87.78,1.38,0.0],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,382.54,318.92,0.0,0.0,87.78,1.38,0.0]}},"OTROS SERVICIOS":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,15.68],"hasBrandAxis":false,"terceros":{"FUND GRUBE, S.A.":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,15.68]}},"ROPA TRABAJO":{"total":[0.0,0.0,157.95,0.0,0.0,0.0,0.0,0.0,0.0],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,157.95,0.0,0.0,0.0,0.0,0.0,0.0]}},"SEGUROS":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,10.72,0.34,16.89],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,10.72,0.34,16.89]}},"SUMINISTROS":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,10.35,0.0,15.75],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,10.35,0.0,15.75]}},"TRANSPORTE":{"total":[0.0,0.0,2074.3,837.2,0.0,0.0,564.49,11.43,517.42],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,2074.3,837.2,0.0,0.0,564.49,11.43,517.42]}},"VIAJES":{"total":[1504.73,1778.48,1895.34,1597.16,0.0,888.0,344.5,0.0,2142.22],"hasBrandAxis":false,"terceros":{"ACREEDOR VISAS":[535.13,685.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"BLACK CARS SPAIN S.L.":[0.0,0.0,0.0,240.0,0.0,0.0,0.0,0.0,0.0],"TRAVELPERK S.L.U.":[969.6,1093.28,967.02,525.02,0.0,888.0,344.5,0.0,0.0],"(en blanco)":[0.0,0.0,928.32,832.14,0.0,0.0,0.0,0.0,2142.22]}}},"total":[2119.27,2208.52,4904.07,3147.22,393.94,1281.94,1428.97,410.36,2879.75]}},"resultado":[411278.29,424936.71,378146.08,383936.42,403684.01,410726.71,422050.14,406661.76,426270.08]},"WHOLESALE":{"months":[1,2,3,4,5,6,7,8,9],"mnames":["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre"],"l1_order":["1.VENTAS","2.COGS","3.GASTOS PERSONAL","4.ALQUILER","6.OPEX"],"data":{"1.VENTAS":{"l2_order":["COOPERACION COMERCIAL","VENTA PRODUCTO"],"subs":{"COOPERACION COMERCIAL":{"total":[0.0,0.0,0.0,-0.0,0.0,0.0,0.0,-0.0,0.0],"hasBrandAxis":true,"brands":{"SIN MARCA":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,-107457.2,-89993.74,0.0],"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,-107457.2,-89993.74,0.0]}},"LOREAL":{"total":[0.0,0.0,0.0,-0.0,0.0,0.0,0.0,42215.82,0.0],"terceros":{"L'OREAL ESPAÑA, S.A.":[0.0,0.0,0.0,-0.0,0.0,0.0,0.0,42215.82,52362.46],"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-52362.46]}},"REDKEN":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,86149.3,44202.24,0.0],"terceros":{"L'OREAL ESPAÑA, S.A.":[0.0,0.0,0.0,0.0,0.0,0.0,86149.3,44202.24,0.0]}},"WELLA":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,21307.9,3575.68,0.0],"terceros":{"L'OREAL ESPAÑA, S.A.":[0.0,0.0,0.0,0.0,0.0,0.0,21307.9,3575.68,0.0]}}}},"VENTA PRODUCTO":{"total":[210148.61,201684.08,96501.69,195121.06,154040.82,69243.7,200971.3,237041.82,218123.76],"hasBrandAxis":true,"brands":{"SIN MARCA":{"total":[0.0,64000.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"terceros":{"CLIENTE GENERICO":[0.0,64000.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"GHD":{"total":[2289.92,-2289.92,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"terceros":{"CLIENTE GENERICO":[2289.92,-2289.92,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"LOREAL":{"total":[46935.48,-10033.45,60000.0,87222.8,77041.65,16155.32,36067.31,132292.12,92087.27],"terceros":{"CASALS DISPRO S.L.":[0.0,0.0,0.0,0.0,0.0,29292.42,-29292.42,0.0,0.0],"CF PINEDO, S.L.":[0.0,0.0,0.0,0.0,16365.96,-5835.5,0.0,0.0,11156.04],"CLIENTE GENERICO":[46935.48,-46935.48,60000.0,0.0,-60000.0,0.0,0.0,0.0,0.0],"COMERCIAL OPORTO PRODUCTOS DE":[0.0,0.0,0.0,0.0,0.0,0.0,419.79,736.1,136.49],"LEAD CANARIAS":[0.0,0.0,0.0,0.0,17.02,-17.02,0.0,0.0,0.0],"MAPEXBELL, SL":[0.0,0.0,0.0,23190.84,0.0,0.0,0.0,3914.83,0.0],"OVEN GLOBE, S.L.":[0.0,0.0,0.0,2003.63,0.0,0.0,-154.13,7394.22,0.0],"ROCIO DIAZ MARQUEZ":[0.0,0.0,0.0,0.0,75.44,-75.44,0.0,0.0,0.0],"SESABE PROFESSIONAL S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,6565.02,0.0,29447.88],"SHAZAM HAIR & COSMETIC, S.L.":[0.0,36902.03,0.0,37749.45,118391.0,-6812.9,35801.65,37753.85,0.0],"THE HAIR PRO DISTRIBUTION, S.L.":[0.0,0.0,0.0,0.0,2074.8,0.0,0.0,0.0,0.0],"VELVET ECHO UNIPESSOAL LDA":[0.0,0.0,0.0,24278.88,117.43,-396.24,22727.4,82493.12,51346.86]}},"MOROCCANOI":{"total":[0.0,29032.56,-4584.0,761.49,2312.16,-23.68,0.0,0.0,0.0],"terceros":{"COSMETICOS ANDREA SLU":[0.0,2384.08,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"OVEN GLOBE, S.L.":[0.0,22064.48,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"SERVICIO INTEGRAL DE PELUQUERIAS, G":[0.0,4584.0,-4584.0,0.0,0.0,0.0,0.0,0.0,0.0],"VELVET ECHO UNIPESSOAL LDA":[0.0,0.0,0.0,0.0,2312.16,-23.68,0.0,0.0,0.0],"XARIG BALEAR, S.A.":[0.0,0.0,0.0,761.49,0.0,0.0,0.0,0.0,0.0]}},"OLAPLEX":{"total":[25065.0,60698.22,-34352.29,-615.14,0.0,459.9,177.06,0.0,230.85],"terceros":{"CLIENTE GENERICO":[25065.0,-25065.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"COMERCIAL OPORTO PRODUCTOS DE":[0.0,0.0,0.0,0.0,0.0,0.0,58.34,0.0,0.0],"GME SERVICIO INTEGRAL DE PELUQUERIA":[0.0,0.0,0.0,0.0,0.0,459.9,0.0,0.0,0.0],"MARIA DEL MAR ADAN MARTINEZ":[0.0,35195.43,-34067.29,-615.14,0.0,0.0,0.0,0.0,0.0],"SALON VALVERDE 44 SL":[0.0,0.0,152.5,0.0,0.0,0.0,118.72,0.0,230.85],"SERVICIO INTEGRAL DE PELUQUERIAS, G":[0.0,437.5,-437.5,0.0,0.0,0.0,0.0,0.0,0.0],"VELVET ECHO UNIPESSOAL LDA":[0.0,50130.29,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"REDKEN":{"total":[95694.74,86178.97,44476.82,75339.51,67365.85,37855.45,154718.02,103074.84,81841.82],"terceros":{"BEAUTYWORLD INVERSIONES, SL":[0.0,38629.42,-38629.42,0.0,0.0,0.0,0.0,0.0,0.0],"CLIENTE GENERICO":[95694.74,-95694.74,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"COMERCIAL RENOIR SL":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,28759.92],"DB COSMETIC UNIPESSOAL LDA":[0.0,0.0,2568.36,0.0,0.0,0.0,0.0,0.0,0.0],"GME SERVICIO INTEGRAL DE PELUQUERIA":[0.0,0.0,0.0,0.0,9333.57,24068.5,7338.6,0.0,0.0],"MAPEXBELL, SL":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,661.14,0.0],"MARIA DEL MAR ADAN MARTINEZ":[0.0,58607.41,-26535.04,-32072.37,0.0,0.0,0.0,0.0,0.0],"OVEN GLOBE, S.L.":[0.0,0.0,16451.33,-56.14,12576.48,0.0,0.0,20810.72,0.0],"SERVICIO INTEGRAL DE PELUQUERIAS, G":[0.0,0.0,12896.64,0.0,0.0,0.0,0.0,0.0,0.0],"SESABE PROFESSIONAL S.L.":[0.0,0.0,0.0,21146.72,0.0,0.0,29488.69,18525.36,11183.2],"SHAZAM HAIR & COSMETIC, S.L.":[0.0,16337.39,70783.26,44569.59,42265.6,-964.08,34694.4,19467.76,19467.76],"THE HAIR PRO DISTRIBUTION, S.L.":[0.0,0.0,0.0,0.0,716.4,0.0,0.0,0.0,0.0],"VELVET ECHO UNIPESSOAL LDA":[0.0,68299.49,6941.69,41751.71,2473.8,14751.03,83196.33,43609.86,22430.94]}},"WELLA":{"total":[40163.47,-25902.3,30961.16,32412.4,7321.16,14796.71,10008.91,1674.86,39768.17],"terceros":{"BEAUTYWORLD INVERSIONES, SL":[0.0,14261.17,-14261.17,0.0,0.0,0.0,0.0,0.0,0.0],"CASALS DISPRO S.L.":[0.0,0.0,0.0,0.0,0.0,606.06,-606.06,0.0,0.0],"CLIENTE GENERICO":[40163.47,-40163.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"COMERCIAL OPORTO PRODUCTOS DE":[0.0,0.0,0.0,0.0,0.0,0.0,15.48,0.0,0.0],"COSMETICOS ANDREA SLU":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,33697.56],"CYB ARTICULOS DE PELUQUERIA S.L.":[0.0,0.0,0.0,0.0,2837.08,769.04,0.0,0.0,0.0],"GME SERVICIO INTEGRAL DE PELUQUERIA":[0.0,0.0,0.0,0.0,0.0,660.72,9993.43,0.0,4167.99],"LIDIA MARIA BARRALLO ALVAREZ":[0.0,0.0,0.0,0.0,68.4,-68.4,0.0,0.0,0.0],"Luxus trade OÜ":[0.0,0.0,0.0,12831.23,321.72,-321.72,0.0,0.0,0.0],"MARIA DEL MAR ADAN MARTINEZ":[0.0,0.0,5499.68,-5499.68,0.0,0.0,0.0,0.0,0.0],"OVEN GLOBE, S.L.":[0.0,0.0,3401.82,0.0,0.0,13385.29,0.0,730.17,1442.45],"SERVICIO INTEGRAL DE PELUQUERIAS, G":[0.0,0.0,14261.17,-6674.86,0.0,0.0,0.0,0.0,0.0],"SESABE PROFESSIONAL S.L.":[0.0,0.0,0.0,31755.71,0.0,0.0,0.0,0.0,0.0],"SHAZAM HAIR & COSMETIC, S.L.":[0.0,0.0,22059.66,0.0,0.0,0.0,0.0,0.0,0.0],"SIMPLY BEAUTY S.L.":[0.0,0.0,0.0,0.0,25.68,-25.68,0.0,0.0,0.0],"VICTORIA CHAFINO MUÑOZ":[0.0,0.0,0.0,0.0,0.0,0.0,606.06,944.69,460.17],"VILLALBA AL ALBA, S.L.U.":[0.0,0.0,0.0,0.0,4068.28,-208.6,0.0,0.0,0.0]}},"AMIKA":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4195.65],"terceros":{"SESABE PROFESSIONAL S.L.":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4195.65]}}}}},"total":[210148.61,201684.08,96501.69,195121.06,154040.82,69243.7,200971.3,237041.82,218123.76]},"2.COGS":{"l2_order":["RAPPELS","VARIACION DE EXISTENCIAS"],"subs":{"RAPPELS":{"total":[-114138.41,-5128.98,-90999.87,-124277.35,-88614.64,-42436.61,0.0,-6061.66,-150567.0],"hasBrandAxis":true,"brands":{"LOREAL":{"total":[-31386.89,6709.61,-40123.45,-58327.99,-51519.61,-10803.45,0.0,-6061.66,-59759.0],"terceros":{"(en blanco)":[-31386.89,6709.61,-40123.45,-58327.99,-51519.61,-10803.45,0.0,-6061.66,-59759.0]}},"REDKEN":{"total":[-42191.89,-37996.38,-19609.87,-33217.26,-29701.66,-16690.5,0.0,0.0,-34696.0],"terceros":{"(en blanco)":[-42191.89,-37996.38,-19609.87,-33217.26,-29701.66,-16690.5,0.0,0.0,-34696.0]}},"WELLA":{"total":[-40559.63,26157.79,-31266.55,-32732.1,-7393.37,-14942.66,0.0,0.0,-56112.0],"terceros":{"(en blanco)":[-40559.63,26157.79,-31266.55,-32732.1,-7393.37,-14942.66,0.0,0.0,-56112.0]}}}},"VARIACION DE EXISTENCIAS":{"total":[300522.54,184619.78,176195.04,276071.99,208513.96,95368.1,160589.04,195217.03,324251.67],"hasBrandAxis":true,"brands":{"SIN MARCA":{"total":[24000.0,61000.0,14000.0,-3000.0,-4000.0,0.0,-72000.0,-72000.0,0.0],"terceros":{"(en blanco)":[24000.0,61000.0,14000.0,-3000.0,-4000.0,0.0,-72000.0,-72000.0,0.0]}},"LOREAL":{"total":[71480.47,-15280.46,91377.1,132836.11,117330.71,24603.77,30848.0,155401.52,138651.23],"terceros":{"(en blanco)":[71480.47,-15280.46,91377.1,132836.11,117330.71,24603.77,30848.0,155401.52,138651.23]}},"MOROCCANOI":{"total":[0.0,24486.32,-3866.19,642.25,1950.1,-19.97,0.0,0.0,0.0],"terceros":{"(en blanco)":[0.0,24486.32,-3866.19,642.25,1950.1,-19.97,0.0,0.0,0.0]}},"OLAPLEX":{"total":[22506.95,54503.57,-30846.41,552.36,0.0,412.96,137.24,0.0,66.33],"terceros":{"(en blanco)":[22506.95,54503.57,-30846.41,552.36,0.0,412.96,137.24,0.0,66.33]}},"REDKEN":{"total":[114935.74,103506.67,53419.62,90487.76,80910.86,45466.91,180527.36,108286.71,96211.68],"terceros":{"(en blanco)":[114935.74,103506.67,53419.62,90487.76,80910.86,45466.91,180527.36,108286.71,96211.68]}},"WELLA":{"total":[67599.38,-43596.32,52110.92,54553.51,12322.29,24904.43,21076.44,3528.8,86325.4],"terceros":{"(en blanco)":[67599.38,-43596.32,52110.92,54553.51,12322.29,24904.43,21076.44,3528.8,86325.4]}},"AMIKA":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2997.03],"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2997.03]}}}}},"total":[186384.13,179490.8,85195.17,151794.64,119899.32,52931.49,160589.04,189155.37,173684.67]},"3.GASTOS PERSONAL":{"l2_order":["SEGURIDAD SOCIAL EMPRESA","SUELDOS Y SALARIOS"],"subs":{"SEGURIDAD SOCIAL EMPRESA":{"total":[-9468.76,-9361.3,3199.84,3462.61,-1921.47,3065.41,3654.27,4574.39,4072.91],"hasBrandAxis":false,"terceros":{"(en blanco)":[-9468.76,-9361.3,3199.84,3462.61,-1921.47,3065.41,3654.27,4574.39,4072.91]}},"SUELDOS Y SALARIOS":{"total":[9638.85,9045.23,7948.42,12027.73,10543.96,10624.06,12814.42,15433.83,13472.52],"hasBrandAxis":false,"terceros":{"(en blanco)":[9638.85,9045.23,7948.42,12027.73,10543.96,10624.06,12814.42,15433.83,13472.52]}}},"total":[170.09,-316.07,11148.26,15490.34,8622.49,13689.47,16468.69,20008.22,17545.43]},"4.ALQUILER":{"l2_order":["ALQUILER OTROS"],"subs":{"ALQUILER OTROS":{"total":[7648.92,7266.39,7984.55,8558.2,8664.12,3699.83,13524.48,15805.57,11348.75],"hasBrandAxis":false,"terceros":{"ACREEDOR GENERICO":[-8000.0,-2000.0,5000.0,-4000.0,-2000.0,-4000.0,0.0,0.0,0.0],"(en blanco)":[15648.92,9266.39,2984.55,12558.2,10664.12,7699.83,13524.48,15805.57,11348.75]}}},"total":[7648.92,7266.39,7984.55,8558.2,8664.12,3699.83,13524.48,15805.57,11348.75]},"6.OPEX":{"l2_order":["CONSUMIBLES","MANTENIMIENTO Y REPARACIONES","MATERIAL OFICINA","ROPA TRABAJO","SEGUROS","SERVICIOS PROFESIONALES INDEPENDIENTES","SUMINISTROS","TRANSPORTE","VIAJES"],"subs":{"CONSUMIBLES":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,2706.15,2016.12],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,2706.15,2016.12]}},"MANTENIMIENTO Y REPARACIONES":{"total":[0.0,0.0,0.0,0.0,0.0,101.9,345.48,0.0,64.94],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,101.9,345.48,0.0,64.94]}},"MATERIAL OFICINA":{"total":[2118.66,911.81,318.86,2510.8,824.73,1505.51,1764.29,1142.26,0.0],"hasBrandAxis":false,"terceros":{"(en blanco)":[2118.66,911.81,318.86,2510.8,824.73,1505.51,1764.29,1142.26,0.0]}},"ROPA TRABAJO":{"total":[0.0,0.0,131.66,0.0,0.0,0.0,0.0,0.0,0.0],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,131.66,0.0,0.0,0.0,0.0,0.0,0.0]}},"SEGUROS":{"total":[3191.67,0.0,0.0,0.0,166.35,120.0,215.45,278.26,222.29],"hasBrandAxis":false,"terceros":{"(en blanco)":[3191.67,0.0,0.0,0.0,166.35,120.0,215.45,278.26,222.29]}},"SERVICIOS PROFESIONALES INDEPENDIENTES":{"total":[-14000.0,-6000.0,0.0,-2000.0,0.0,0.0,0.0,0.0,0.0],"hasBrandAxis":false,"terceros":{"ACREEDOR GENERICO":[-14000.0,-6000.0,0.0,-2000.0,0.0,0.0,0.0,0.0,0.0]}},"SUMINISTROS":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,208.11,0.0,207.32],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,208.11,0.0,207.32]}},"TRANSPORTE":{"total":[8772.65,4691.35,1728.99,6590.91,5435.04,6189.56,11344.83,9448.5,6808.73],"hasBrandAxis":false,"terceros":{"(en blanco)":[8772.65,4691.35,1728.99,6590.91,5435.04,6189.56,11344.83,9448.5,6808.73]}},"VIAJES":{"total":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.56,0.0],"hasBrandAxis":false,"terceros":{"(en blanco)":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.56,0.0]}}},"total":[82.98,-396.84,2179.51,7101.71,6426.12,7916.97,13878.16,13576.73,9319.4]}},"resultado":[15862.49,15639.8,-10005.8,12176.17,10428.77,-8994.06,-3489.07,-1504.07,6225.51]}};
+let PYG_FULL = PYG_BY_BUN[currentBun];
+
+let months = DATA.months;
+let nM = months.length;
+let mode = 'M';       // 'M' mensual, 'A' acumulado
+let selMonthIdx = nM - 1; // index into months array, default last month
+
+const fmt = (n) => {
+  const s = Math.round(n).toLocaleString('es-ES');
+  return (n<0? '−' : '') + '' + Math.abs(Math.round(n)).toLocaleString('es-ES') + ' €';
+};
+const fmtPct = (n) => (n<0?'−':'') + Math.abs(n).toFixed(1).replace('.',',') + ' %';
+
+function sumRange(arr, endIdxInclusive, cumulative){
+  if(!cumulative) return arr[endIdxInclusive] || 0;
+  let s = 0;
+  for(let i=0;i<=endIdxInclusive;i++) s += (arr[i]||0);
+  return s;
+}
+
+function brandSeries(catKey, brand){
+  const obj = DATA.BR[catKey] || {};
+  return obj[brand] || new Array(nM).fill(0);
+}
+
+function populateMonthSelect(){
+  const sel = document.getElementById('selMonth');
+  sel.innerHTML = '';
+  for(let i=0;i<nM;i++){
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = DATA.mnames[i];
+    sel.appendChild(opt);
+  }
+  sel.value = selMonthIdx;
+  sel.onchange = () => {
+    selMonthIdx = parseInt(sel.value);
+    render();
+  };
+}
+
+document.getElementById('toggleAcum').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  mode = btn.dataset.mode;
+  document.querySelectorAll('#toggleAcum button').forEach(b=>b.classList.toggle('active', b===btn));
+  render();
+});
+
+function getTotal(key){
+  const cum = mode === 'A';
+  return sumRange(DATA.TOT[key], selMonthIdx, cum);
+}
+
+function render(){
+  const cum = mode === 'A';
+
+  // period label
+  const label = cum
+    ? `2026 — Ene → ${DATA.mnames[selMonthIdx]} (acum.)`
+    : `2026 — ${DATA.mnames[selMonthIdx]}`;
+  document.getElementById('periodLabel').textContent = label;
+  document.getElementById('brandHint').textContent = label;
+
+  const VP = getTotal('VP'), CC = getTotal('CC'), VR = getTotal('VR');
+  const CP = getTotal('CP'), VE = getTotal('VE'), GC = getTotal('GC'), RP = getTotal('RP');
+  const ventaTotal = VP + CC + VR;
+  const cogsTotal = CP + VE + GC + RP;
+  const margenBruto = VP - (CP + VE + RP);
+  const pctMargen = VP !== 0 ? (margenBruto / VP) * 100 : 0;
+
+  document.getElementById('kpiVenta').textContent = fmt(ventaTotal);
+  document.getElementById('kpiCogs').textContent = fmt(cogsTotal);
+  const elM = document.getElementById('kpiMargen');
+  elM.textContent = fmt(margenBruto);
+  elM.classList.toggle('neg', margenBruto < 0);
+  const elP = document.getElementById('kpiPct');
+  elP.textContent = fmtPct(pctMargen);
+  elP.classList.toggle('neg', pctMargen < 0);
+
+  renderPygTable();
+  renderBrandTable();
+}
+
+function renderPygTable(){
+  const cum = mode === 'A';
+  const tbl = document.getElementById('tblPyg');
+  let html = '<thead><tr><th>Concepto</th>';
+  for(let i=0;i<nM;i++){
+    html += `<th class="${i===selMonthIdx?'sel-month':''}">${DATA.mnames[i].slice(0,3)}</th>`;
+  }
+  html += '<th>Total</th></tr></thead><tbody>';
+
+  const rows = [
+    {label:'Venta Producto', key:'VP', cls:'row'},
+    {label:'Cooperación Comercial', key:'CC', cls:'row'},
+    {label:'Venta Royalties', key:'VR', cls:'row sub'},
+    {label:'TOTAL VENTAS', keys:['VP','CC','VR'], cls:'grp'},
+    {label:'Coste Producto', keys:['CP','VE'], cls:'row'},
+    {label:'Rappel (Ctas. 609)', key:'RP', cls:'row'},
+    {label:'Gastos Comisión Venta', key:'GC', cls:'row sub'},
+    {label:'TOTAL COGS', keys:['CP','VE','RP','GC'], cls:'grp'},
+    {label:'MARGEN BRUTO (Producto)', formula:'margin', cls:'total-row'},
+    {label:'% MARGEN (Producto)', formula:'pct', cls:'total-row'},
+  ];
+
+  rows.forEach(r=>{
+    html += `<tr class="${r.cls}"><td class="name">${r.label}</td>`;
+    let full = 0;
+    for(let i=0;i<nM;i++){
+      let v;
+      if(r.key){
+        v = sumRange(DATA.TOT[r.key], i, cum);
+      } else if(r.keys){
+        v = r.keys.reduce((s,k)=>s+sumRange(DATA.TOT[k], i, cum), 0);
+      } else if(r.formula==='margin'){
+        const vp = sumRange(DATA.TOT.VP, i, cum);
+        const cp = sumRange(DATA.TOT.CP, i, cum);
+        const ve = sumRange(DATA.TOT.VE, i, cum);
+        const rp = sumRange(DATA.TOT.RP, i, cum);
+        v = vp - (cp+ve+rp);
+      } else if(r.formula==='pct'){
+        const vp = sumRange(DATA.TOT.VP, i, cum);
+        const cp = sumRange(DATA.TOT.CP, i, cum);
+        const ve = sumRange(DATA.TOT.VE, i, cum);
+        const rp = sumRange(DATA.TOT.RP, i, cum);
+        v = vp!==0 ? ((vp-(cp+ve+rp))/vp*100) : 0;
+      }
+      if(i===selMonthIdx) full = v;
+      const isPct = r.formula==='pct';
+      const cellVal = isPct ? fmtPct(v) : fmt(v);
+      const negCls = v<0 ? 'neg' : '';
+      const selCls = i===selMonthIdx ? 'sel-month' : '';
+      html += `<td class="${negCls} ${selCls}">${cellVal}</td>`;
+    }
+    // total column = full accumulated (Ene->Jul) regardless of toggle, for reference
+    let totCol;
+    if(r.key){ totCol = sumRange(DATA.TOT[r.key], nM-1, true); }
+    else if(r.keys){ totCol = r.keys.reduce((s,k)=>s+sumRange(DATA.TOT[k], nM-1, true), 0); }
+    else if(r.formula==='margin'){
+      const vp = sumRange(DATA.TOT.VP, nM-1, true);
+      const cp = sumRange(DATA.TOT.CP, nM-1, true);
+      const ve = sumRange(DATA.TOT.VE, nM-1, true);
+      const rp = sumRange(DATA.TOT.RP, nM-1, true);
+      totCol = vp-(cp+ve+rp);
+    } else if(r.formula==='pct'){
+      const vp = sumRange(DATA.TOT.VP, nM-1, true);
+      const cp = sumRange(DATA.TOT.CP, nM-1, true);
+      const ve = sumRange(DATA.TOT.VE, nM-1, true);
+      const rp = sumRange(DATA.TOT.RP, nM-1, true);
+      totCol = vp!==0 ? ((vp-(cp+ve+rp))/vp*100) : 0;
+    }
+    const isPct = r.formula==='pct';
+    html += `<td class="${totCol<0?'neg':''}" style="font-weight:700;">${isPct?fmtPct(totCol):fmt(totCol)}</td>`;
+    html += '</tr>';
+  });
+
+  html += '</tbody>';
+  tbl.innerHTML = html;
+}
+
+function renderBrandTable(){
+  const cum = mode === 'A';
+  // union of brands present in VP, CP, VE, RP (product-related brands)
+  const brandSet = new Set([
+    ...Object.keys(DATA.BR.VP||{}),
+    ...Object.keys(DATA.BR.CP||{}),
+    ...Object.keys(DATA.BR.VE||{}),
+    ...Object.keys(DATA.BR.RP||{}),
+  ]);
+  const brands = Array.from(brandSet);
+
+  const rows = brands.map(b=>{
+    const vp = sumRange(brandSeries('VP', b), selMonthIdx, cum);
+    const cc = sumRange(brandSeries('CC', b), selMonthIdx, cum);
+    const cp = sumRange(brandSeries('CP', b), selMonthIdx, cum);
+    const ve = sumRange(brandSeries('VE', b), selMonthIdx, cum);
+    const rp = sumRange(brandSeries('RP', b), selMonthIdx, cum);
+    const costeProducto = cp + ve;
+    const margen = vp - (costeProducto + rp);
+    const pct = vp!==0 ? (margen/vp*100) : 0;
+    return {brand:b, vp, cc, costeProducto, rp, margen, pct};
+  }).sort((a,b)=> b.vp - a.vp);
+
+  const maxVenta = Math.max(1, ...rows.map(r=>Math.abs(r.vp)));
+
+  let html = `<thead><tr>
+    <th>Marca</th><th>Venta Producto</th><th>Coop. Comercial</th>
+    <th>Coste Producto</th><th>Rappel</th>
+    <th>Margen Bruto</th><th>% Margen</th>
+  </tr></thead><tbody>`;
+
+  rows.forEach(r=>{
+    const barW = Math.max(2, Math.abs(r.vp)/maxVenta*60);
+    html += `<tr>
+      <td class="name">${r.brand}</td>
+      <td class="${r.vp<0?'neg':''}">${fmt(r.vp)}</td>
+      <td class="${r.cc<0?'neg':''}">${fmt(r.cc)}</td>
+      <td class="${r.costeProducto<0?'neg':''}">${fmt(r.costeProducto)}</td>
+      <td class="${r.rp<0?'neg':''}">${fmt(r.rp)}</td>
+      <td class="margin-cell ${r.margen<0?'neg':'pos'}">${fmt(r.margen)}</td>
+      <td class="${r.pct<0?'neg':'pos'}"><span class="margin-bar" style="width:${barW}px;background:${r.pct<0?'var(--red)':'var(--green-line)'}"></span>${fmtPct(r.pct)}</td>
+    </tr>`;
+  });
+
+  // totals row
+  const totVp = rows.reduce((s,r)=>s+r.vp,0);
+  const totCc = rows.reduce((s,r)=>s+r.cc,0);
+  const totCoste = rows.reduce((s,r)=>s+r.costeProducto,0);
+  const totRp = rows.reduce((s,r)=>s+r.rp,0);
+  const totMargen = totVp - (totCoste+totRp);
+  const totPct = totVp!==0 ? (totMargen/totVp*100) : 0;
+  html += `<tr class="total-row">
+    <td class="name">TOTAL</td>
+    <td>${fmt(totVp)}</td>
+    <td>${fmt(totCc)}</td>
+    <td>${fmt(totCoste)}</td>
+    <td>${fmt(totRp)}</td>
+    <td class="${totMargen<0?'neg':''}">${fmt(totMargen)}</td>
+    <td class="${totPct<0?'neg':''}">${fmtPct(totPct)}</td>
+  </tr>`;
+
+  html += '</tbody>';
+  document.getElementById('tblBrand').innerHTML = html;
+}
+
+populateMonthSelect();
+render();
+
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabnav button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tabnav button').forEach(b=>b.classList.toggle('active', b===btn));
+    document.querySelectorAll('.tabpage').forEach(p=>p.classList.toggle('active', p.id===btn.dataset.tab));
+  });
+});
+
+/* ================= TAB 2: VISIÓN PYG COMPLETA ================= */
+let pygMonths = PYG_FULL.months;
+let nPM = pygMonths.length;
+let nM2 = nPM;
+let mode2 = 'M';
+let selMonthIdx2 = nM2 - 1;
+const openL1 = new Set();
+const openL2 = new Set();
+const openBrand = new Set();
+
+function properCase(s){
+  return s.split(' ').map(w=> w.length ? w.charAt(0)+w.slice(1).toLowerCase() : w).join(' ');
+}
+
+function populateMonthSelect2(){
+  const sel = document.getElementById('selMonth2');
+  sel.innerHTML = '';
+  for(let i=0;i<nM2;i++){
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = DATA.mnames[i];
+    sel.appendChild(opt);
+  }
+  sel.value = selMonthIdx2;
+  sel.onchange = () => {
+    selMonthIdx2 = parseInt(sel.value);
+    renderPygFull();
+  };
+}
+
+document.getElementById('toggleAcum2').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  mode2 = btn.dataset.mode;
+  document.querySelectorAll('#toggleAcum2 button').forEach(b=>b.classList.toggle('active', b===btn));
+  renderPygFull();
+});
+
+function renderPygFull(){
+  const cum2 = mode2 === 'A';
+  const label = cum2
+    ? `2026 — Ene → ${DATA.mnames[selMonthIdx2]} (acum.)`
+    : `2026 — ${DATA.mnames[selMonthIdx2]}`;
+  document.getElementById('periodLabel2').textContent = label;
+
+  function periodVal(arr){
+    return sumRange(arr, selMonthIdx2, cum2);
+  }
+
+  const ventasTotal = periodVal(PYG_FULL.data['1.VENTAS'].total);
+  let gastosTotal = 0;
+  PYG_FULL.l1_order.slice(1).forEach(l1=>{ gastosTotal += periodVal(PYG_FULL.data[l1].total); });
+  const resultado = periodVal(PYG_FULL.resultado);
+
+  document.getElementById('pygKpiVentas').textContent = fmt(ventasTotal);
+  document.getElementById('pygKpiGastos').textContent = fmt(gastosTotal);
+  const elR = document.getElementById('pygKpiResultado');
+  elR.textContent = fmt(resultado);
+  elR.classList.toggle('neg', resultado < 0);
+
+  // header row: Partida | Ene..Jun | Total (Jul always excluded)
+  const theadRow = document.getElementById('tblPygFullHead');
+  let headHtml = '<th style="text-align:left;">Partida</th>';
+  for(let i=0;i<nM2;i++){
+    headHtml += `<th class="${i===selMonthIdx2?'sel-month':''}">${DATA.mnames[i].slice(0,3)}</th>`;
+  }
+  headHtml += '<th>Total</th>';
+  theadRow.innerHTML = headHtml;
+
+  const tbody = document.getElementById('tblPygFullBody');
+  let html = '';
+
+  function rowCells(arr){
+    let h = '';
+    for(let i=0;i<nM2;i++){
+      const v = arr[i]||0;
+      const selCls = i===selMonthIdx2 ? 'sel-month' : '';
+      h += `<td class="${v<0?'neg':''} ${selCls}">${fmt(v)}</td>`;
+    }
+    let tot = 0;
+    for(let i=0;i<nM2;i++){ tot += (arr[i]||0); }
+    h += `<td class="${tot<0?'neg':''}" style="font-weight:700;">${fmt(tot)}</td>`;
+    return h;
+  }
+
+  function sortKey(arr){
+    return Math.abs(periodVal(arr));
+  }
+
+  function terceroRows(tercerosObj, visible){
+    let h = '';
+    const entries = Object.entries(tercerosObj).sort((a,b)=>sortKey(b[1])-sortKey(a[1]));
+    entries.forEach(([name, arr])=>{
+      h += `<tr class="tercero-row ${visible?'':'hidden-row'}">
+        <td class="name">${name}</td>
+        ${rowCells(arr)}
+      </tr>`;
+    });
+    return h;
+  }
+
+  PYG_FULL.l1_order.forEach(l1=>{
+    const l1Node = PYG_FULL.data[l1];
+    const isOpen = openL1.has(l1);
+    html += `<tr class="l1-row ${isOpen?'open':''}" data-l1="${l1}">
+      <td class="name"><span class="arrow">▶</span>${l1}</td>
+      ${rowCells(l1Node.total)}
+    </tr>`;
+
+    l1Node.l2_order.forEach(l2=>{
+      const l2Node = l1Node.subs[l2];
+      const l2Key = l1+'|'+l2;
+      const l2Open = openL2.has(l2Key);
+      const l2Visible = isOpen;
+
+      if(l2Node.hasBrandAxis){
+        html += `<tr class="l2-row expandable ${l2Open?'open':''} ${l2Visible?'':'hidden-row'}" data-l2="${l2Key}">
+          <td class="name"><span class="arrow">▶</span>${properCase(l2)}</td>
+          ${rowCells(l2Node.total)}
+        </tr>`;
+
+        const brandEntries = Object.entries(l2Node.brands).sort((a,b)=>sortKey(b[1].total)-sortKey(a[1].total));
+        brandEntries.forEach(([brand, bnode])=>{
+          const brandKey = l2Key+'|'+brand;
+          const brandOpen = openBrand.has(brandKey);
+          const brandVisible = l2Visible && l2Open;
+          html += `<tr class="brand-row expandable ${brandOpen?'open':''} ${brandVisible?'':'hidden-row'}" data-brand="${brandKey}">
+            <td class="name"><span class="arrow">▶</span>${brand}</td>
+            ${rowCells(bnode.total)}
+          </tr>`;
+          html += terceroRows(bnode.terceros, brandVisible && brandOpen);
+        });
+      } else {
+        html += `<tr class="l2-row expandable ${l2Open?'open':''} ${l2Visible?'':'hidden-row'}" data-l2="${l2Key}">
+          <td class="name"><span class="arrow">▶</span>${properCase(l2)}</td>
+          ${rowCells(l2Node.total)}
+        </tr>`;
+        html += terceroRows(l2Node.terceros, l2Visible && l2Open);
+      }
+    });
+  });
+
+  html += `<tr class="resultado-row">
+    <td class="name">RESULTADO</td>
+    ${rowCells(PYG_FULL.resultado)}
+  </tr>`;
+
+  tbody.innerHTML = html;
+
+  tbody.querySelectorAll('tr.l1-row').forEach(tr=>{
+    tr.addEventListener('click', ()=>{
+      const l1 = tr.dataset.l1;
+      if(openL1.has(l1)) openL1.delete(l1); else openL1.add(l1);
+      renderPygFull();
+    });
+  });
+  tbody.querySelectorAll('tr.l2-row.expandable').forEach(tr=>{
+    tr.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const l2Key = tr.dataset.l2;
+      if(openL2.has(l2Key)) openL2.delete(l2Key); else openL2.add(l2Key);
+      renderPygFull();
+    });
+  });
+  tbody.querySelectorAll('tr.brand-row.expandable').forEach(tr=>{
+    tr.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const brandKey = tr.dataset.brand;
+      if(openBrand.has(brandKey)) openBrand.delete(brandKey); else openBrand.add(brandKey);
+      renderPygFull();
+    });
+  });
+}
+
+populateMonthSelect2();
+renderPygFull();
+
+/* ================= BUN SWITCHING ================= */
+const BUN_TITLES = {
+  'DIST': 'BUN Distribución',
+  'BSTORES': 'BUN Beauty Stores',
+  'WHOLESALE': 'BUN Wholesale'
+};
+const BUN_ORDER = ['DIST', 'BSTORES', 'WHOLESALE'];
+let acumSelected = new Set(BUN_ORDER); // unidades incluidas en el consolidado
+
+function sumArr(...arrs){
+  const len = Math.max(0, ...arrs.map(a => a ? a.length : 0));
+  const out = new Array(len).fill(0);
+  arrs.forEach(a=>{
+    if(!a) return;
+    for(let i=0;i<a.length;i++) out[i] += (a[i]||0);
+  });
+  return out;
+}
+
+// Combina TOT/BR de tab1 (Venta y Margen) para las unidades seleccionadas.
+function buildCombinedData(buns){
+  const base = DATA_BY_BUN[buns[0]];
+  const TOT = {};
+  Object.keys(base.TOT).forEach(k=>{
+    TOT[k] = sumArr(...buns.map(b=>DATA_BY_BUN[b].TOT[k]));
+  });
+  const BR = {};
+  Object.keys(base.BR).forEach(cat=>{
+    const brandNames = new Set();
+    buns.forEach(b=> Object.keys(DATA_BY_BUN[b].BR[cat]||{}).forEach(br=>brandNames.add(br)));
+    BR[cat] = {};
+    brandNames.forEach(br=>{
+      BR[cat][br] = sumArr(...buns.map(b=>(DATA_BY_BUN[b].BR[cat]||{})[br]));
+    });
+  });
+  const brandSet = new Set();
+  buns.forEach(b=>(DATA_BY_BUN[b].brands||[]).forEach(x=>brandSet.add(x)));
+  return {months: base.months, mnames: base.mnames, TOT, BR, brands: Array.from(brandSet)};
+}
+
+// Combina el árbol completo de tab2 (Visión PyG Completa): cada unidad puede tener
+// líneas/marcas/terceros distintos, así que se hace unión de claves y suma de importes.
+function buildCombinedPygFull(buns){
+  const l1Order = [];
+  buns.forEach(b=>{
+    PYG_BY_BUN[b].l1_order.forEach(l1=>{ if(!l1Order.includes(l1)) l1Order.push(l1); });
+  });
+
+  const data = {};
+  l1Order.forEach(l1=>{
+    const l2Order = [];
+    buns.forEach(b=>{
+      const node = PYG_BY_BUN[b].data[l1];
+      if(node) node.l2_order.forEach(l2=>{ if(!l2Order.includes(l2)) l2Order.push(l2); });
+    });
+
+    const subs = {};
+    l2Order.forEach(l2=>{
+      const l2Nodes = buns.map(b=>{
+        const l1node = PYG_BY_BUN[b].data[l1];
+        return (l1node && l1node.subs[l2]) || null;
+      });
+      const hasBrandAxis = l2Nodes.some(n=>n && n.hasBrandAxis);
+      const total = sumArr(...l2Nodes.map(n=>n && n.total));
+
+      if(hasBrandAxis){
+        const brandNames = [];
+        l2Nodes.forEach(n=>{
+          if(n && n.brands) Object.keys(n.brands).forEach(br=>{ if(!brandNames.includes(br)) brandNames.push(br); });
+        });
+        const brands = {};
+        brandNames.forEach(br=>{
+          const brNodes = l2Nodes.map(n=>n && n.brands && n.brands[br]);
+          const terceroNames = [];
+          brNodes.forEach(n=>{
+            if(n && n.terceros) Object.keys(n.terceros).forEach(t=>{ if(!terceroNames.includes(t)) terceroNames.push(t); });
+          });
+          const terceros = {};
+          terceroNames.forEach(t=>{
+            terceros[t] = sumArr(...brNodes.map(n=>n && n.terceros && n.terceros[t]));
+          });
+          brands[br] = {total: sumArr(...brNodes.map(n=>n && n.total)), terceros};
+        });
+        subs[l2] = {total, hasBrandAxis:true, brands};
+      } else {
+        const terceroNames = [];
+        l2Nodes.forEach(n=>{
+          if(n && n.terceros) Object.keys(n.terceros).forEach(t=>{ if(!terceroNames.includes(t)) terceroNames.push(t); });
+        });
+        const terceros = {};
+        terceroNames.forEach(t=>{
+          terceros[t] = sumArr(...l2Nodes.map(n=>n && n.terceros && n.terceros[t]));
+        });
+        subs[l2] = {total, hasBrandAxis:false, terceros};
+      }
+    });
+
+    const l1Total = sumArr(...buns.map(b=>{
+      const node = PYG_BY_BUN[b].data[l1];
+      return node && node.total;
+    }));
+    data[l1] = {l2_order: l2Order, subs, total: l1Total};
+  });
+
+  const resultado = sumArr(...buns.map(b=>PYG_BY_BUN[b].resultado));
+  return {months: PYG_BY_BUN[buns[0]].months, l1_order: l1Order, data, resultado};
+}
+
+function switchBun(bun){
+  currentBun = bun;
+  DATA = DATA_BY_BUN[bun];
+  PYG_FULL = PYG_BY_BUN[bun];
+
+  months = DATA.months;
+  nM = months.length;
+  selMonthIdx = nM - 1;
+
+  pygMonths = PYG_FULL.months;
+  nPM = pygMonths.length;
+  nM2 = nPM;
+  selMonthIdx2 = nM2 - 1;
+  mode2 = 'M';
+  document.querySelectorAll('#toggleAcum2 button').forEach(b=>b.classList.toggle('active', b.dataset.mode==='M'));
+
+  openL1.clear();
+  openL2.clear();
+  openBrand.clear();
+
+  document.getElementById('bunTitle').textContent = 'P&G · ' + BUN_TITLES[bun];
+  document.querySelectorAll('.bun-hint').forEach(el => el.textContent = bun);
+
+  populateMonthSelect();
+  render();
+  populateMonthSelect2();
+  renderPygFull();
+}
+
+// Recalcula la vista "CONSOLIDADO" con las unidades marcadas en acumSelected,
+// conservando el mes y el modo (mensual/acumulado) que el usuario ya tenía elegidos.
+function applyAcum(){
+  currentBun = 'ACUM';
+  const buns = BUN_ORDER.filter(b=>acumSelected.has(b));
+
+  DATA = buildCombinedData(buns);
+  PYG_FULL = buildCombinedPygFull(buns);
+
+  months = DATA.months;
+  nM = months.length;
+  if(selMonthIdx < 0 || selMonthIdx > nM - 1) selMonthIdx = nM - 1;
+
+  pygMonths = PYG_FULL.months;
+  nPM = pygMonths.length;
+  nM2 = nPM;
+  if(selMonthIdx2 < 0 || selMonthIdx2 > nM2 - 1) selMonthIdx2 = nM2 - 1;
+
+  openL1.clear();
+  openL2.clear();
+  openBrand.clear();
+
+  const label = buns.join(' + ');
+  document.getElementById('bunTitle').textContent = 'P&G · Consolidado (' + label + ')';
+  document.querySelectorAll('.bun-hint').forEach(el => el.textContent = 'CONSOLIDADO: ' + label);
+
+  populateMonthSelect();
+  render();
+  populateMonthSelect2();
+  renderPygFull();
+}
+
+document.querySelectorAll('.bunnav button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.bunnav button').forEach(b=>b.classList.toggle('active', b===btn));
+    const bun = btn.dataset.bun;
+    const chipsRow = document.getElementById('acumChips');
+    if(bun === 'ACUM'){
+      chipsRow.classList.add('show');
+      applyAcum();
+    } else {
+      chipsRow.classList.remove('show');
+      switchBun(bun);
+    }
+  });
+});
+
+document.getElementById('acumChips').addEventListener('click', (e)=>{
+  const chip = e.target.closest('.chip');
+  if(!chip) return;
+  const b = chip.dataset.chip;
+  if(acumSelected.has(b)){
+    if(acumSelected.size === 1) return; // siempre debe quedar al menos una unidad marcada
+    acumSelected.delete(b);
+  } else {
+    acumSelected.add(b);
+  }
+  chip.classList.toggle('active', acumSelected.has(b));
+  applyAcum();
+});
+</script>
+<script data-goatcounter="https://prova2026.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+(function(){
+  var NAME_KEY = 'gc_visitor_name';
+
+  function slug(s){
+    return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'')
+      .toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'anonimo';
+  }
+
+  function waitGC(cb, tries){
+    tries = tries || 0;
+    if(window.goatcounter && window.goatcounter.count) return cb();
+    if(tries > 50) return;
+    setTimeout(function(){ waitGC(cb, tries+1); }, 100);
+  }
+
+  function markVisit(nm){
+    waitGC(function(){
+      window.goatcounter.count({path:'persona/' + slug(nm), title:'Visita de ' + nm, event:true});
+    });
+  }
+
+  function showNamePrompt(){
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(20,18,14,0.55);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:-apple-system,"Segoe UI",sans-serif;';
+    overlay.innerHTML =
+      '<div style="background:#fff;border-radius:8px;padding:28px 30px;max-width:320px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,0.25);text-align:center;">' +
+        '<div style="font-size:15px;font-weight:600;color:#1c1a14;margin-bottom:6px;">¿Quién eres?</div>' +
+        '<div style="font-size:12.5px;color:#7a7260;margin-bottom:16px;">Solo para llevar un registro interno de visitas al cuadro de mando.</div>' +
+        '<input id="gcNameInput" type="text" placeholder="Tu nombre" style="width:100%;padding:9px 12px;border:1px solid #ddd8cc;border-radius:4px;font-size:14px;margin-bottom:12px;box-sizing:border-box;">' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button id="gcNameSkip" style="flex:1;padding:9px;border:1px solid #ddd8cc;background:#fff;color:#7a7260;border-radius:4px;font-size:12.5px;cursor:pointer;">Omitir</button>' +
+          '<button id="gcNameOk" style="flex:1;padding:9px;border:none;background:#1c1a14;color:#f2ede3;border-radius:4px;font-size:12.5px;font-weight:600;cursor:pointer;">Entrar</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    var input = overlay.querySelector('#gcNameInput');
+    input.focus();
+
+    function finish(nm){
+      localStorage.setItem(NAME_KEY, nm);
+      overlay.remove();
+      markVisit(nm);
+    }
+    overlay.querySelector('#gcNameOk').addEventListener('click', function(){
+      finish(input.value.trim() || 'Anónimo');
+    });
+    overlay.querySelector('#gcNameSkip').addEventListener('click', function(){
+      finish('Anónimo');
+    });
+    input.addEventListener('keydown', function(e){
+      if(e.key === 'Enter') overlay.querySelector('#gcNameOk').click();
+    });
+  }
+
+  var storedName = localStorage.getItem(NAME_KEY);
+  if(storedName) markVisit(storedName); else showNamePrompt();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DIST-WHOLESALE · Cuadro de Mando Comercial</title>
+<meta name="description" content="Márgenes, compras, facturación, stock y P&amp;G por BUN de la sociedad de distribución.">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+html, body {
+  height: 100%;
+}
+body {
+  font-family: 'EB Garamond', Georgia, serif;
+  background: #f2ede3;
+  color: #1c1a14;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── TOP BAR ── */
+.cover-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 32px 60px 0;
+  border-top: 2px solid #1c1a14;
+  flex-shrink: 0;
+}
+.cover-topbar-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #7a7260;
+}
+
+/* ── CENTER ── */
+.cover-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 40px 20px;
+}
+.cover-eyebrow {
+  font-style: italic;
+  font-size: 20px;
+  color: #7a7260;
+  letter-spacing: 0.3px;
+  margin-bottom: 16px;
+}
+.cover-title {
+  font-weight: 400;
+  font-size: clamp(64px, 9vw, 130px);
+  color: #1c1a14;
+  letter-spacing: -1px;
+  line-height: 0.95;
+  margin-bottom: 28px;
+}
+.cover-divider {
+  width: 64px;
+  height: 2px;
+  background: #b8860b;
+  margin: 0 auto 32px;
+}
+.cover-desc {
+  font-size: 19px;
+  color: #3a3628;
+  line-height: 1.6;
+  max-width: 520px;
+  margin-bottom: 52px;
+}
+.cover-desc strong { font-weight: 600; }
+
+/* ── CARDS ── */
+.cards-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.nav-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 240px;
+  padding: 24px 28px;
+  background: #fff;
+  border: 1px solid #ddd8cc;
+  border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+}
+.nav-card:hover {
+  border-color: #b8860b;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+.nav-card-disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  filter: grayscale(0.4);
+}
+.nav-card-disabled:hover {
+  border-color: #ddd8cc;
+  box-shadow: none;
+  transform: none;
+}
+.nav-card-disabled .nav-card-arrow,
+.nav-card-disabled:hover .nav-card-arrow {
+  color: #a39c8c;
+  gap: 8px;
+}
+.nav-card-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #7a7260;
+}
+.nav-card-title {
+  font-size: 22px;
+  font-weight: 500;
+  color: #1c1a14;
+  line-height: 1.1;
+}
+.nav-card-desc {
+  font-size: 14px;
+  color: #5a5448;
+  line-height: 1.55;
+  flex: 1;
+}
+.nav-card-arrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #7a7260;
+  margin-top: 6px;
+  transition: color 0.15s, gap 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-card:hover .nav-card-arrow {
+  color: #b8860b;
+  gap: 12px;
+}
+.nav-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.nav-card-icon.ventas      { background: #e4f0e8; }
+.nav-card-icon.compras     { background: #faeeda; }
+.nav-card-icon.facturacion { background: #e8eaf5; }
+.nav-card-icon.stock       { background: #f3e6ec; }
+.nav-card-icon.pyg         { background: #f5e8e0; }
+.nav-card-icon svg { width: 18px; height: 18px; }
+.nav-card-icon.ventas      svg { stroke: #2d5a3d; }
+.nav-card-icon.compras     svg { stroke: #ba7517; }
+.nav-card-icon.facturacion svg { stroke: #1e3a5f; }
+.nav-card-icon.stock       svg { stroke: #8a2f56; }
+.nav-card-icon.pyg         svg { stroke: #8b4a20; }
+
+/* ── BOTTOM BAR ── */
+.cover-bottombar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 60px 32px;
+  border-bottom: 1px solid #c8c0b0;
+  flex-shrink: 0;
+}
+.cover-footnote {
+  font-style: italic;
+  font-size: 14px;
+  color: #7a7260;
+}
+
+@media (max-width: 600px) {
+  .cover-topbar { padding: 20px 24px 0; }
+  .cover-center { padding: 32px 24px 16px; }
+  .cover-bottombar { padding: 0 24px 24px; }
+  .cards-row { flex-direction: column; align-items: center; }
+  .nav-card { width: 100%; max-width: 320px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cover-topbar">
+  <span class="cover-topbar-label"><a href="../../../index.html" style="color:inherit;text-decoration:none">← Portal</a> · Cuadro de Mando Comercial</span>
+  <span class="cover-topbar-label">Confidencial · Uso Interno</span>
+</div>
+
+<div class="cover-center">
+  <div class="cover-eyebrow">Ejercicio 2026</div>
+  <div class="cover-title">PROVALLIANCE</div>
+  <div class="cover-divider"></div>
+  <div class="cover-desc">
+    Selecciona el informe que quieres consultar.
+  </div>
+
+  <div class="cards-row">
+
+    <a class="nav-card" href="ventas.html">
+      <div class="nav-card-icon ventas">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+          <polyline points="16 7 22 7 22 13"/>
+        </svg>
+      </div>
+      <div class="nav-card-label">Comercial</div>
+      <div class="nav-card-title">Márgenes</div>
+      <div class="nav-card-desc">Venta, coste y margen bruto por BUN, marca, cliente y artículo. <em>En pruebas.</em></div>
+      <div class="nav-card-arrow">Ver informe →</div>
+    </a>
+
+    <a class="nav-card" href="compras.html">
+      <div class="nav-card-icon compras">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+      </div>
+      <div class="nav-card-label">Compras</div>
+      <div class="nav-card-title">Informe de Compras</div>
+      <div class="nav-card-desc">Gasto por proveedor y marca, desglose hasta línea de pedido.</div>
+      <div class="nav-card-arrow">Ver informe →</div>
+    </a>
+
+    <a class="nav-card" href="facturacion.html">
+      <div class="nav-card-icon facturacion">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </div>
+      <div class="nav-card-label">Facturación</div>
+      <div class="nav-card-title">Informe de Facturación</div>
+      <div class="nav-card-desc">Importe neto por BUN, marca y cliente con detalle de facturas.</div>
+      <div class="nav-card-arrow">Ver informe →</div>
+    </a>
+
+    <a class="nav-card" href="stock.html">
+      <div class="nav-card-icon stock">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 8l-9-5-9 5 9 5 9-5z"/>
+          <path d="M3 8v8l9 5 9-5V8"/>
+          <line x1="12" y1="13" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <div class="nav-card-label">Inventario</div>
+      <div class="nav-card-title">Informe de Stock</div>
+      <div class="nav-card-desc">Existencias y valoración de inventario por almacén y marca.</div>
+      <div class="nav-card-arrow">Ver informe →</div>
+    </a>
+
+    <a class="nav-card" href="pyg.html">
+      <div class="nav-card-icon pyg">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="21" x2="21" y2="21"/>
+          <path d="M3 21V9"/>
+          <path d="M9 21V13"/>
+          <path d="M15 21V6"/>
+          <path d="M21 21V3"/>
+        </svg>
+      </div>
+      <div class="nav-card-label">Resultados</div>
+      <div class="nav-card-title">P&amp;G por BUN</div>
+      <div class="nav-card-desc">Ventas, COGS y margen; cuenta de resultados completa con desglose por marca y tercero.</div>
+      <div class="nav-card-arrow">Ver informe →</div>
+    </a>
+
+  </div>
+</div>
+
+<div class="cover-bottombar">
+  <span class="cover-footnote">Cifras en euros · DIST-WHOLESALE · Sociedad 50000</span>
+</div>
+
+</body>
+</html>

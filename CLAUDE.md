@@ -14,6 +14,8 @@ emails, importes individuales de personas), avisa antes de seguir y no los lleve
 2. **Actualizar** un dashboard existente: conserva su estructura, gráficos y textos; cambia solo los
    datos (y lo que pidan). Comprueba que los totales cuadran con el Excel nuevo.
 3. **Crear** uno nuevo: `unidades/<unidad>/<nombre>.html` (minúsculas y guiones).
+   Si es una web de varias páginas, va en `unidades/<unidad>/<nombre>/` con un `index.html` de portada;
+   el portal enlaza esa portada (enlace "← Portal" a `../../../index.html`). Ej.: `unidades/producto/dist-wholesale/`.
 4. Cada dashboard es **un único HTML autocontenido**:
    - En `<head>`: `<title>`, `<meta name="description">` (una frase) y
      `<meta name="actualizado" content="aaaa-mm-dd">` con la fecha de los datos. El portal los usa.

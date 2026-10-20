@@ -56,6 +56,10 @@ nav button[aria-selected="true"] { color:var(--texto); border-bottom-color:var(-
 .leyenda i.linea { height:0; border-top:2px dashed var(--suave); border-radius:0; vertical-align:3px; }
 .filtros { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px; }
 .filtros label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--suave); display:flex; flex-direction:column; gap:4px; }
+.filtros label.casilla { flex-direction:row; align-items:center; gap:8px; font-size:12px; letter-spacing:0; text-transform:none; color:var(--texto);
+  background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:7px 12px; cursor:pointer; }
+.filtros label.casilla:has(input:checked) { border-color:var(--acento); box-shadow:inset 3px 0 0 var(--acento); }
+.filtros label.casilla input { accent-color:var(--acento); width:15px; height:15px; margin:0; cursor:pointer; }
 select, input[type="search"] { font:inherit; font-size:13px; color:var(--texto); background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:6px 10px; min-width:180px; }
 input[type="search"] { min-width:240px; text-transform:none; letter-spacing:normal; font-weight:400; }
 input[type="search"]:focus, select:focus { outline:2px solid var(--acento); outline-offset:1px; }
@@ -248,6 +252,7 @@ document.getElementById('paneles').innerHTML = Object.entries(PESTANAS).map(([id
     <div class="filtros">
       ${id === 'hq' ? `<label>Tipo<select id="${id}-tipo"><option value="">Todos</option>${TIPOS.map(t => `<option>${t}</option>`).join('')}</select></label>` : ''}
       <label>Proveedor<input id="${id}-buscar" type="search" placeholder="Buscar proveedor…" autocomplete="off"></label>
+      <label class="casilla"><input id="${id}-difieren" type="checkbox"> Solo los que no cuadran</label>
     </div>
     <div class="kpis" id="${id}-kpis"></div>
     <div class="rejilla">
@@ -326,9 +331,11 @@ for (const id of Object.keys(PESTANAS)) {
   const P = D[id].proveedores.map(p => ({ ...p, dif: Math.round((p.importe - p.seguimiento) * 100) / 100 }));
   const conTipo = id === 'hq';
   const selTipo = document.getElementById(`${id}-tipo`), buscar = document.getElementById(`${id}-buscar`);
+  const soloDifieren = document.getElementById(`${id}-difieren`);  // |importe − seguimiento| ≥ 1 €
   function pintar() {
     const q = norm(buscar.value);
-    const f = P.filter(p => (!selTipo || !selTipo.value || p.tipo === selTipo.value) && (!q || norm(p.proveedor).includes(q)))
+    const f = P.filter(p => (!selTipo || !selTipo.value || p.tipo === selTipo.value) && (!q || norm(p.proveedor).includes(q))
+      && (!soloDifieren.checked || Math.abs(p.dif) >= 1))
       .sort((a, b) => b.importe - a.importe);
     const imp = sum(f.map(p => p.importe)), seg = sum(f.map(p => p.seguimiento)), dif = imp - seg;
     const ajustes = sum(f.filter(p => p.tipo === 'Ajustes').map(p => p.importe));
@@ -366,11 +373,12 @@ for (const id of Object.keys(PESTANAS)) {
     document.getElementById(`${id}-tabla`).innerHTML =
       `<tr><th>Proveedor</th>${conTipo ? '<th class="txt">Tipo</th>' : ''}<th>Importe</th><th>Seguimiento</th><th>Diferencia</th><th class="txt">Comentario</th></tr>` +
       (f.length ? f.map(p => `<tr class="${Math.abs(p.dif) >= 1 ? 'difiere' : ''}"><td>${esc(p.proveedor)}</td>${conTipo ? `<td class="txt"><span class="tipo">${esc(p.tipo)}</span></td>` : ''}<td>${eur(p.importe)}</td><td>${eur(p.seguimiento)}</td><td class="${Math.abs(p.dif) >= 1 ? signo(p.dif) : ''}">${eur(p.dif)}</td><td class="coment">${esc(p.comentario)}</td></tr>`).join('')
-        : `<tr><td class="vacio" colspan="${cols}">Ningún proveedor coincide con la búsqueda.</td></tr>`) +
+        : `<tr><td class="vacio" colspan="${cols}">Ningún proveedor coincide con los filtros.</td></tr>`) +
       `<tr class="total"><td>TOTAL</td>${conTipo ? '<td></td>' : ''}<td>${eur(imp)}</td><td>${eur(seg)}</td><td>${eur(dif)}</td><td></td></tr>`;
   }
   selTipo?.addEventListener('change', pintar);
   buscar.addEventListener('input', pintar);
+  soloDifieren.addEventListener('change', pintar);
   pintar();
   mejorarTabla(document.getElementById(`${id}-tabla`), `marketing-${id}`);
 }

@@ -52,7 +52,10 @@ nav button[aria-selected="true"] { color:var(--texto); border-bottom-color:var(-
 .leyenda i.linea { height:0; border-top:2px dashed var(--suave); border-radius:0; vertical-align:3px; }
 .filtros { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px; }
 .filtros label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--suave); display:flex; flex-direction:column; gap:4px; }
-select { font:inherit; font-size:13px; color:var(--texto); background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:6px 10px; min-width:180px; }
+select, input[type="search"] { font:inherit; font-size:13px; color:var(--texto); background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:6px 10px; min-width:180px; }
+input[type="search"] { min-width:240px; text-transform:none; letter-spacing:normal; font-weight:400; }
+input[type="search"]:focus, select:focus { outline:2px solid var(--acento); outline-offset:1px; }
+td.vacio { text-align:left; color:var(--suave); font-style:italic; }
 .tabla { overflow-x:auto; }
 table { width:100%; border-collapse:collapse; font-size:12.5px; font-variant-numeric:tabular-nums; }
 th { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--suave); text-align:right; padding:8px 10px; border-bottom:1px solid var(--borde); white-space:nowrap; }
@@ -114,7 +117,10 @@ tr.total td { font-weight:600; color:var(--texto); border-top:2px solid var(--te
 
   <!-- ───────── TARJETA ───────── -->
   <section class="panel" id="tarjeta" role="tabpanel" aria-labelledby="t-tarjeta" hidden>
-    <div class="filtros"><label>BU<select id="tar-bun"></select></label></div>
+    <div class="filtros">
+      <label>BU<select id="tar-bun"></select></label>
+      <label>Persona<input id="tar-buscar" type="search" placeholder="Buscar por nombre…" autocomplete="off"></label>
+    </div>
     <div class="kpis" id="tar-kpis"></div>
     <div class="rejilla">
       <div class="caja">
@@ -140,6 +146,7 @@ tr.total td { font-weight:600; color:var(--texto); border-top:2px solid var(--te
     <div class="filtros">
       <label>BU<select id="tp-bu"></select></label>
       <label>Mes<select id="tp-filtro-mes"></select></label>
+      <label>Persona<input id="tp-buscar" type="search" placeholder="Buscar por nombre…" autocomplete="off"></label>
     </div>
     <div class="kpis" id="tp-kpis"></div>
     <div class="rejilla">
@@ -173,6 +180,8 @@ const eur = v => v == null ? '—' : fmt.format(v) + ' €';
 const pct = v => v == null ? '—' : new Intl.NumberFormat('es-ES', { style: 'percent', maximumFractionDigits: 0 }).format(v);
 const signo = v => v == null ? '' : v >= 0 ? 'pos' : 'neg';
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+// Búsqueda sin distinguir mayúsculas ni acentos ("maria" encuentra "María")
+const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const sum = a => a.reduce((x, y) => x + (y || 0), 0);
 const kpis = (id, items) => document.getElementById(id).innerHTML = items.map(([et, v, n]) =>
@@ -256,7 +265,7 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
 (() => {
   const filas = D.tarjeta.map(r => ({ ...r, total: sum(r.meses) }));
   const buns = [...new Set(filas.map(r => r.bun))].sort();
-  const sel = document.getElementById('tar-bun');
+  const sel = document.getElementById('tar-bun'), buscar = document.getElementById('tar-buscar');
   sel.innerHTML = '<option value="">Todas</option>' + buns.map(b => `<option>${esc(b)}</option>`).join('');
   const meses = D.mesesTarjeta.map(m => m.slice(0, 1) + m.slice(1, 3).toLowerCase());
   const porBu = buns.map(b => [b, sum(filas.filter(r => r.bun === b).map(r => r.total))]).sort((a, b) => b[1] - a[1]);
@@ -266,7 +275,9 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
     options: { indexAxis: 'y', scales: ejes(true, false) },
   });
   function pintar() {
-    const f = filas.filter(r => !sel.value || r.bun === sel.value).sort((a, b) => b.total - a.total);
+    const q = norm(buscar.value);
+    const f = filas.filter(r => (!sel.value || r.bun === sel.value) && (!q || norm(r.titular + ' ' + r.cruce).includes(q)))
+      .sort((a, b) => b.total - a.total);
     const total = sum(f.map(r => r.total)), porMes = meses.map((_, i) => sum(f.map(r => r.meses[i])));
     const top = f[0];
     kpis('tar-kpis', [
@@ -275,7 +286,7 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
       ['Titulares', f.length, sel.value || 'Todas las BU'],
       ['Mayor gasto', top ? eur(top.total) : '—', top ? esc(top.titular) : ''],
     ]);
-    document.getElementById('tar-mes-sub').textContent = sel.value || 'Todas las BU';
+    document.getElementById('tar-mes-sub').textContent = [sel.value || 'Todas las BU', q && `“${buscar.value.trim()}”`].filter(Boolean).join(' · ');
     dibujar('tar-mes', {
       type: 'bar',
       data: { labels: meses, datasets: [{ label: 'Gasto con tarjeta', data: porMes, ...barra(css('--s1')) }] },
@@ -283,10 +294,12 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
     });
     document.getElementById('tar-tabla').innerHTML =
       `<tr><th>Titular</th><th class="txt">BU</th><th class="txt">Asignación</th>${meses.map(m => `<th>${m}</th>`).join('')}<th>Total</th></tr>` +
-      f.map(r => `<tr><td>${esc(r.titular)}</td><td class="txt">${esc(r.bun)}</td><td class="txt">${esc(r.cruce)}</td>${r.meses.map(v => `<td>${eur(v)}</td>`).join('')}<td><strong>${eur(r.total)}</strong></td></tr>`).join('') +
+      (f.length ? f.map(r => `<tr><td>${esc(r.titular)}</td><td class="txt">${esc(r.bun)}</td><td class="txt">${esc(r.cruce)}</td>${r.meses.map(v => `<td>${eur(v)}</td>`).join('')}<td><strong>${eur(r.total)}</strong></td></tr>`).join('')
+        : `<tr><td class="vacio" colspan="${meses.length + 4}">Ninguna persona coincide con la búsqueda.</td></tr>`) +
       `<tr class="total"><td>TOTAL</td><td></td><td></td>${porMes.map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(total)}</td></tr>`;
   }
   sel.addEventListener('change', pintar);
+  buscar.addEventListener('input', pintar);
   pintar();
 })();
 
@@ -297,12 +310,14 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
   const COLORES = ['--s1', '--s2', '--s3', '--s4', '--s5'].map(css);
   const tipo = n => TIPOS.includes(n) ? n : 'Otros';
   const R = D.travelperk.map(([mes, bu, sub, cruce, emp, nat, imp, n]) => ({ mes, bu, sub, cruce, emp, tipo: tipo(nat), imp, n }));
-  const selBu = document.getElementById('tp-bu'), selMes = document.getElementById('tp-filtro-mes');
+  const selBu = document.getElementById('tp-bu'), selMes = document.getElementById('tp-filtro-mes'), buscar = document.getElementById('tp-buscar');
   selBu.innerHTML = '<option value="">Todas</option>' + [...new Set(R.map(r => r.bu))].sort().map(b => `<option>${esc(b)}</option>`).join('');
   selMes.innerHTML = '<option value="">Todos</option>' + CORTO.slice(0, N_MESES).map((m, i) => `<option value="${i}">${MESES[i].charAt(0) + MESES[i].slice(1).toLowerCase()}</option>`).join('');
   document.getElementById('tp-leyenda').innerHTML = TIPOS.map((t, i) => `<span><i style="background:${COLORES[i]}"></i>${t}</span>`).join('');
   function pintar() {
-    const porBu = R.filter(r => !selBu.value || r.bu === selBu.value);
+    const q = norm(buscar.value);
+    // BU y persona filtran todo; el mes filtra todo salvo el gráfico mensual (que lo resalta)
+    const porBu = R.filter(r => (!selBu.value || r.bu === selBu.value) && (!q || norm(r.emp).includes(q)));
     const f = porBu.filter(r => selMes.value === '' || r.mes === +selMes.value);
     const total = sum(f.map(r => r.imp)), movs = sum(f.map(r => r.n));
     const emps = new Set(f.map(r => r.emp));
@@ -341,11 +356,13 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
     const filas = Object.values(porEmp).sort((a, b) => b.total - a.total);
     document.getElementById('tp-tabla').innerHTML =
       `<tr><th>Empleado</th><th class="txt">BU</th><th class="txt">Sub-BU</th>${TIPOS.map(t => `<th>${t}</th>`).join('')}<th>Total</th><th>Movimientos</th></tr>` +
-      filas.map(e => `<tr><td>${esc(e.emp)}</td><td class="txt">${esc(e.bu)}</td><td class="txt">${esc(e.sub)}</td>${TIPOS.map(t => `<td>${eur(e.tipos[t])}</td>`).join('')}<td><strong>${eur(e.total)}</strong></td><td>${e.n}</td></tr>`).join('') +
+      (filas.length ? filas.map(e => `<tr><td>${esc(e.emp)}</td><td class="txt">${esc(e.bu)}</td><td class="txt">${esc(e.sub)}</td>${TIPOS.map(t => `<td>${eur(e.tipos[t])}</td>`).join('')}<td><strong>${eur(e.total)}</strong></td><td>${e.n}</td></tr>`).join('')
+        : `<tr><td class="vacio" colspan="${TIPOS.length + 5}">Ninguna persona coincide con la búsqueda.</td></tr>`) +
       `<tr class="total"><td>TOTAL</td><td></td><td></td>${porTipo.map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(total)}</td><td>${fmt.format(movs)}</td></tr>`;
   }
   selBu.addEventListener('change', pintar);
   selMes.addEventListener('change', pintar);
+  buscar.addEventListener('input', pintar);
   pintar();
 })();
 </script>

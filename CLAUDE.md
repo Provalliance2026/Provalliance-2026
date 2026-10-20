@@ -31,8 +31,9 @@ emails, importes individuales de personas), avisa antes de seguir y no los lleve
 
 ## Estilo visual común
 
-- Fuente: Inter. Color principal `#1f3a5f`, acento `#c8102e`, fondo claro `#f6f7f9`.
-- Tarjetas con borde suave y radio 12px. Mismo aspecto en todos los dashboards.
+El mismo que la portada del portal y DIST-WHOLESALE: fondo `#f2ede3`, texto `#1c1a14`, gris `#7a7260`,
+bordes `#ddd8cc`, acento dorado `#b8860b`; títulos en EB Garamond y textos en Inter; tarjetas blancas
+con radio 4px.
 
 ## No hacer
 

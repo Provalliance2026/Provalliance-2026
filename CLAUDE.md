@@ -1,7 +1,8 @@
 # Instrucciones para Claude
 
-Repositorio de dashboards HTML generados a partir de Excel, organizado en tres unidades:
-`unidades/salones` (SALONES), `unidades/franquicias` (FRANQUICIAS) y `unidades/producto` (PRODUCTO).
+Repositorio de dashboards HTML generados a partir de Excel, organizado en cuatro unidades:
+`unidades/salones` (SALONES), `unidades/franquicias` (FRANQUICIAS), `unidades/producto` (PRODUCTO)
+y `unidades/hq` (HQ).
 Responde y escribe todo (textos de los dashboards incluidos) en **español**.
 
 **El repositorio es público.** Si un Excel contiene datos personales (nombres, DNI, teléfonos,

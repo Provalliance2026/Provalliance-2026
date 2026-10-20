@@ -10,6 +10,7 @@ Todos se publican en un portal común: **https://provalliance2026.github.io/Prov
 | SALONES | [`unidades/salones/`](unidades/salones) |
 | FRANQUICIAS | [`unidades/franquicias/`](unidades/franquicias) |
 | PRODUCTO | [`unidades/producto/`](unidades/producto) |
+| HQ | [`unidades/hq/`](unidades/hq) |
 
 Cada unidad tiene la misma estructura:
 

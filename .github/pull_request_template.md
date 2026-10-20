@@ -2,6 +2,7 @@
 - [ ] SALONES
 - [ ] FRANQUICIAS
 - [ ] PRODUCTO
+- [ ] HQ
 
 ## Qué cambia
 - [ ] Actualización de datos de un dashboard

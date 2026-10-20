@@ -185,9 +185,16 @@ PORTADA = """<!doctype html>
 
 def tarjeta_unidad(u: dict) -> str:
     n = len(u["dashboards"])
-    cuenta = "Todavía sin dashboards" if n == 0 else f"{n} dashboard" + ("s" if n > 1 else "")
+    destino = "index.html"
+    if n == 0:
+        cuenta = "Todavía sin dashboards"
+    elif n == 1:  # sin página intermedia: directo al único dashboard
+        cuenta = u["dashboards"][0]["titulo"].split(" · ")[0]
+        destino = u["dashboards"][0]["archivo"]
+    else:
+        cuenta = f"{n} dashboards"
     return f"""
-    <a class="unidad" href="unidades/{html.escape(u['carpeta'])}/index.html">
+    <a class="unidad" href="unidades/{html.escape(u['carpeta'])}/{html.escape(destino)}">
       <h2>{html.escape(u['nombre'])}</h2>
       <p>{cuenta}</p>
       <span class="flecha">Entrar →</span>

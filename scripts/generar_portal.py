@@ -68,11 +68,12 @@ def copiar_publico(origen: Path, destino: Path) -> None:
         shutil.copy2(ruta, destino / relativa)
 
 
-def seccion(u: dict) -> str:
+def seccion(u: dict, ruta: str) -> str:
+    """ruta: prefijo de los enlaces desde la página donde se pinta la sección."""
     e = html.escape
     if u["dashboards"]:
         tarjetas = "".join(f"""
-        <a class="tarjeta" href="unidades/{e(u['carpeta'])}/{e(d['archivo'])}">
+        <a class="tarjeta" href="{ruta}{e(d['archivo'])}">
           <h3>{e(d['titulo'])}</h3>
           <p>{e(d.get('description', ''))}</p>
           <small>{'Datos a ' + e(d['actualizado']) if d.get('actualizado') else ''}</small>
@@ -92,7 +93,7 @@ PLANTILLA = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboards Provalliance</title>
+<title>{titulo}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -113,10 +114,11 @@ PLANTILLA = """<!doctype html>
   .tarjeta p {{ color:var(--suave); margin:0 0 12px; }}
   .tarjeta small, .vacio {{ color:var(--suave); }}
   footer {{ height:32px; }}
+  .volver {{ display:inline-block; margin-bottom:8px; color:var(--suave); text-decoration:none; font-size:.85rem; }}
 </style>
 </head>
 <body>
-<header><h1>Dashboards Provalliance</h1></header>{secciones}
+<header>{volver}<h1>{titulo}</h1></header>{secciones}
 <footer></footer>
 </body>
 </html>
@@ -130,8 +132,15 @@ def main() -> None:
     SALIDA.mkdir()
     for u in unidades:
         copiar_publico(UNIDADES / u["carpeta"], SALIDA / "unidades" / u["carpeta"])
-    secciones = "".join(seccion(u) for u in unidades)
-    (SALIDA / "index.html").write_text(PLANTILLA.format(secciones=secciones), encoding="utf-8")
+    secciones = "".join(seccion(u, f"unidades/{u['carpeta']}/") for u in unidades)
+    (SALIDA / "index.html").write_text(
+        PLANTILLA.format(titulo="Dashboards Provalliance", volver="", secciones=secciones), encoding="utf-8")
+    # Una página por unidad, para que /unidades/<unidad>/ no dé 404
+    for u in unidades:
+        (SALIDA / "unidades" / u["carpeta"] / "index.html").write_text(PLANTILLA.format(
+            titulo=f"Dashboards Provalliance · {html.escape(u['nombre'])}",
+            volver='<a class="volver" href="../../index.html">← Portal</a><br>',
+            secciones=seccion(u, "")), encoding="utf-8")
     total = sum(len(u["dashboards"]) for u in unidades)
     print(f"Portal generado en {SALIDA}: {len(unidades)} unidades, {total} dashboards.")
 

@@ -68,58 +68,101 @@ def copiar_publico(origen: Path, destino: Path) -> None:
         shutil.copy2(ruta, destino / relativa)
 
 
-def seccion(u: dict, ruta: str) -> str:
-    """ruta: prefijo de los enlaces desde la página donde se pinta la sección."""
+# Icono (trazo SVG) según palabras del título; el color rota por posición, como en DIST-WHOLESALE
+ICONOS = [
+    (("viaje", "travel"), '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'),
+    (("marketing", "publicidad"), '<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'),
+    (("stock", "inventario"), '<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><line x1="12" y1="13" x2="12" y2="21"/>'),
+    (("venta", "margen", "wholesale", "comercial"), '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>'),
+]
+ICONO_DEFECTO = '<line x1="3" y1="21" x2="21" y2="21"/><path d="M3 21V9"/><path d="M9 21V13"/><path d="M15 21V6"/><path d="M21 21V3"/>'
+COLORES = [("#e4f0e8", "#2d5a3d"), ("#faeeda", "#ba7517"), ("#e8eaf5", "#1e3a5f"), ("#f3e6ec", "#8a2f56"), ("#f5e8e0", "#8b4a20")]
+
+
+def icono(titulo: str) -> str:
+    t = titulo.lower()
+    return next((svg for claves, svg in ICONOS if any(k in t for k in claves)), ICONO_DEFECTO)
+
+
+def fecha_es(iso: str) -> str:
+    partes = iso.split("-")
+    return "/".join(reversed(partes)) if len(partes) == 3 else iso
+
+
+def tarjeta_dashboard(d: dict, i: int) -> str:
     e = html.escape
-    if u["dashboards"]:
-        tarjetas = "".join(f"""
-        <a class="tarjeta" href="{ruta}{e(d['archivo'])}">
-          <h3>{e(d['titulo'])}</h3>
-          <p>{e(d.get('description', ''))}</p>
-          <small>{'Datos a ' + e(d['actualizado']) if d.get('actualizado') else ''}</small>
-        </a>""" for d in u["dashboards"])
-    else:
-        tarjetas = '\n        <p class="vacio">Todavía no hay dashboards.</p>'
+    fondo, trazo = COLORES[i % len(COLORES)]
+    titulo, _, subtitulo = d["titulo"].partition(" · ")
+    fecha = f"Datos a {fecha_es(d['actualizado'])}" if d.get("actualizado") else ""
     return f"""
-  <section>
-    <div class="rejilla">{tarjetas}
-    </div>
-  </section>"""
+    <a class="tarjeta" href="{e(d['archivo'])}" style="--icono-fondo:{fondo}; --icono-trazo:{trazo}">
+      <span class="icono"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">{icono(d['titulo'])}</svg></span>
+      <h2>{e(titulo)}</h2>
+      <p>{e(d.get('description', ''))}</p>
+      <div class="pie-tarjeta"><span>{e(fecha)}</span><span class="flecha">Abrir →</span></div>
+    </a>"""
 
 
-PLANTILLA = """<!doctype html>
+UNIDAD = """<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{titulo}</title>
+<title>{nombre} · Provalliance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {{ --fondo:#f2ede3; --tarjeta:#fff; --texto:#1c1a14; --suave:#7a7260; --borde:#ddd8cc; --principal:#1c1a14; --acento:#b8860b; }}
+  :root {{ --fondo:#f2ede3; --tarjeta:#fff; --texto:#1c1a14; --cuerpo:#3a3628; --suave:#7a7260; --borde:#ddd8cc; --acento:#b8860b; }}
   @media (prefers-color-scheme: dark) {{
-    :root {{ --fondo:#16140f; --tarjeta:#201d17; --texto:#efe9dc; --suave:#a39c8c; --borde:#3a352b; --principal:#efe9dc; }}
+    :root {{ --fondo:#16140f; --tarjeta:#201d17; --texto:#efe9dc; --cuerpo:#d6cfbf; --suave:#a39c8c; --borde:#3a352b; }}
+    .icono {{ filter:brightness(.85) saturate(1.2); }}
   }}
-  * {{ box-sizing: border-box; }}
-  body {{ margin:0; font-family:Inter, system-ui, sans-serif; background:var(--fondo); color:var(--texto); }}
-  header, section {{ max-width:1100px; margin:auto; padding:0 16px; }}
-  header {{ padding-top:32px; }}
-  h1 {{ margin:0; color:var(--principal); font-family:'EB Garamond', Georgia, serif; font-weight:500; font-size:2.2rem; }}
-  h2 {{ margin:32px 0 12px; font-size:.85rem; letter-spacing:.08em; color:var(--acento); border-bottom:1px solid var(--borde); padding-bottom:8px; }}
-  section {{ margin-top:24px; }}
-  .rejilla {{ display:grid; gap:16px; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); }}
-  .tarjeta {{ display:block; background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:20px; color:inherit; text-decoration:none; transition:border-color .15s; }}
-  .tarjeta:hover {{ border-color:var(--acento); }}
-  .tarjeta h3 {{ font-family:'EB Garamond', Georgia, serif; font-weight:500; font-size:1.35rem; margin:0 0 8px; }}
-  .tarjeta p {{ color:var(--suave); margin:0 0 12px; }}
-  .tarjeta small, .vacio {{ color:var(--suave); }}
-  footer {{ height:32px; }}
-  .volver {{ display:inline-block; margin-bottom:8px; color:var(--suave); text-decoration:none; font-size:.85rem; }}
+  * {{ box-sizing:border-box; margin:0; padding:0; }}
+  body {{ font-family:'EB Garamond', Georgia, serif; background:var(--fondo); color:var(--texto);
+         min-height:100vh; display:flex; flex-direction:column; }}
+  .barra {{ display:flex; justify-content:space-between; gap:16px; padding:32px 60px 0; border-top:2px solid var(--texto); }}
+  .etiqueta {{ font-family:Inter, sans-serif; font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--suave); text-decoration:none; white-space:nowrap; }}
+  a.etiqueta:hover {{ color:var(--acento); }}
+  .centro {{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:48px 24px; }}
+  .antetitulo {{ font-style:italic; font-size:20px; color:var(--suave); margin-bottom:12px; }}
+  h1 {{ font-weight:400; font-size:clamp(64px, 11vw, 150px); letter-spacing:-1px; line-height:.95; margin-bottom:28px; }}
+  .separador {{ width:64px; height:2px; background:var(--acento); margin:0 auto 28px; }}
+  .texto {{ font-size:19px; color:var(--cuerpo); margin-bottom:48px; }}
+  .tarjetas {{ display:flex; gap:24px; justify-content:center; flex-wrap:wrap; }}
+  .tarjeta {{ display:flex; flex-direction:column; align-items:flex-start; gap:12px; width:340px; min-height:270px; padding:32px; text-align:left;
+             background:var(--tarjeta); border:1px solid var(--borde); border-top:3px solid var(--icono-trazo); border-radius:4px;
+             color:inherit; text-decoration:none; transition:border-color .18s, box-shadow .18s, transform .18s; }}
+  .tarjeta:hover {{ border-color:var(--acento); border-top-color:var(--acento); box-shadow:0 10px 32px rgba(0,0,0,.09); transform:translateY(-3px); }}
+  .icono {{ width:52px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:var(--icono-fondo); margin-bottom:6px; }}
+  .icono svg {{ width:26px; height:26px; stroke:var(--icono-trazo); }}
+  .tarjeta h2 {{ font-weight:500; font-size:32px; line-height:1.05; }}
+  .tarjeta p {{ font-family:Inter, sans-serif; font-size:14px; line-height:1.55; color:var(--suave); flex:1; }}
+  .pie-tarjeta {{ width:100%; display:flex; justify-content:space-between; align-items:center; padding-top:14px; border-top:1px solid var(--borde);
+                 font-family:Inter, sans-serif; font-size:12px; color:var(--suave); }}
+  .flecha {{ font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; transition:color .15s, letter-spacing .15s; }}
+  .tarjeta:hover .flecha {{ color:var(--acento); letter-spacing:3px; }}
+  .vacio {{ font-style:italic; color:var(--suave); font-size:18px; }}
+  .pie {{ padding:0 60px 32px; border-bottom:1px solid var(--borde); font-style:italic; font-size:14px; color:var(--suave); }}
+  @media (max-width:600px) {{
+    .barra {{ padding:20px 16px 0; }} .pie {{ padding:0 16px 24px; }} .barra span.etiqueta {{ display:none; }}
+    .tarjeta {{ width:100%; max-width:380px; min-height:0; padding:24px; }}
+  }}
 </style>
 </head>
 <body>
-<header>{volver}<h1>{titulo}</h1></header>{secciones}
-<footer></footer>
+<div class="barra">
+  <a class="etiqueta" href="../../">← Portal</a>
+  <span class="etiqueta">Cuadros de Mando · Ejercicio 2026</span>
+</div>
+<div class="centro">
+  <div class="antetitulo">Unidad de negocio</div>
+  <h1>{nombre}</h1>
+  <div class="separador"></div>
+  <div class="texto">{texto}</div>
+  <div class="tarjetas">{tarjetas}
+  </div>
+</div>
+<div class="pie">Provalliance · Cifras en euros</div>
 </body>
 </html>
 """
@@ -229,10 +272,11 @@ def main() -> None:
             destino = html.escape(u["dashboards"][0]["archivo"])
             pagina.write_text(REDIRECCION.format(destino=destino), encoding="utf-8")
             continue
-        pagina.write_text(PLANTILLA.format(
-            titulo=html.escape(u['nombre']),
-            volver='<a class="volver" href="../../">← Portal</a><br>',
-            secciones=seccion(u, "")), encoding="utf-8")
+        n = len(u["dashboards"])
+        pagina.write_text(UNIDAD.format(
+            nombre=html.escape(u["nombre"]),
+            texto="Selecciona el informe que quieres consultar." if n else "Todavía no hay dashboards en esta unidad.",
+            tarjetas="".join(tarjeta_dashboard(d, i) for i, d in enumerate(u["dashboards"]))), encoding="utf-8")
     total = sum(len(u["dashboards"]) for u in unidades)
     print(f"Portal generado en {SALIDA}: {len(unidades)} unidades, {total} dashboards.")
 

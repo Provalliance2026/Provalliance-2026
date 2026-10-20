@@ -200,17 +200,17 @@ PORTADA = """<!doctype html>
   .unidad p {{ font-size:15px; color:var(--suave); flex:1; }}
   .flecha {{ font-family:Inter, sans-serif; font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--suave); }}
   .unidad:hover .flecha {{ color:var(--acento); }}
-  .novedades {{ width:min(860px, 100%); margin-top:64px; text-align:left; }}
+  .novedades {{ width:min(620px, 100%); margin-top:44px; text-align:left; }}
   .novedades h2 {{ font-family:Inter, sans-serif; font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--suave);
-                  padding-bottom:10px; border-bottom:1px solid var(--texto); }}
+                  padding-bottom:6px; border-bottom:1px solid var(--texto); }}
   .novedades ul {{ list-style:none; }}
-  .novedades a {{ display:grid; grid-template-columns:130px 1fr auto; gap:16px; align-items:baseline; padding:14px 4px;
+  .novedades a {{ display:grid; grid-template-columns:90px 1fr auto; gap:12px; align-items:baseline; padding:7px 4px;
                  border-bottom:1px solid var(--borde); color:inherit; text-decoration:none; transition:background .15s; }}
   .novedades a:hover {{ background:var(--tarjeta); }}
   .novedades a:hover .nov-nombre {{ color:var(--acento); }}
-  .nov-unidad {{ font-family:Inter, sans-serif; font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--acento); }}
-  .nov-nombre {{ font-size:20px; }}
-  .nov-fecha {{ font-family:Inter, sans-serif; font-size:12px; color:var(--suave); white-space:nowrap; }}
+  .nov-unidad {{ font-family:Inter, sans-serif; font-size:9px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--acento); }}
+  .nov-nombre {{ font-size:16px; }}
+  .nov-fecha {{ font-family:Inter, sans-serif; font-size:11px; color:var(--suave); white-space:nowrap; }}
   .pie {{ padding:0 60px 32px; border-bottom:1px solid var(--borde); font-style:italic; font-size:14px; color:var(--suave); }}
   @media (max-width:600px) {{
     .barra {{ padding:20px 16px 0; }} .pie {{ padding:0 16px 24px; }}

@@ -200,10 +200,22 @@ PORTADA = """<!doctype html>
   .unidad p {{ font-size:15px; color:var(--suave); flex:1; }}
   .flecha {{ font-family:Inter, sans-serif; font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--suave); }}
   .unidad:hover .flecha {{ color:var(--acento); }}
+  .novedades {{ width:min(860px, 100%); margin-top:64px; text-align:left; }}
+  .novedades h2 {{ font-family:Inter, sans-serif; font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--suave);
+                  padding-bottom:10px; border-bottom:1px solid var(--texto); }}
+  .novedades ul {{ list-style:none; }}
+  .novedades a {{ display:grid; grid-template-columns:130px 1fr auto; gap:16px; align-items:baseline; padding:14px 4px;
+                 border-bottom:1px solid var(--borde); color:inherit; text-decoration:none; transition:background .15s; }}
+  .novedades a:hover {{ background:var(--tarjeta); }}
+  .novedades a:hover .nov-nombre {{ color:var(--acento); }}
+  .nov-unidad {{ font-family:Inter, sans-serif; font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--acento); }}
+  .nov-nombre {{ font-size:20px; }}
+  .nov-fecha {{ font-family:Inter, sans-serif; font-size:12px; color:var(--suave); white-space:nowrap; }}
   .pie {{ padding:0 60px 32px; border-bottom:1px solid var(--borde); font-style:italic; font-size:14px; color:var(--suave); }}
   @media (max-width:600px) {{
     .barra {{ padding:20px 16px 0; }} .pie {{ padding:0 16px 24px; }}
     .unidad {{ width:100%; max-width:340px; }}
+    .novedades a {{ grid-template-columns:1fr auto; }} .nov-unidad {{ grid-column:1 / -1; }}
   }}
 </style>
 </head>
@@ -219,6 +231,11 @@ PORTADA = """<!doctype html>
   <div class="texto">Informes y dashboards de cada unidad de negocio.</div>
   <div class="unidades">{tarjetas}
   </div>
+  <section class="novedades">
+    <h2>Últimas actualizaciones</h2>
+    <ul>{novedades}
+    </ul>
+  </section>
 </div>
 <div class="pie">Cifras en euros</div>
 </body>
@@ -237,6 +254,19 @@ REDIRECCION = """<!doctype html>
 <body><a href="{destino}">Abrir el dashboard</a></body>
 </html>
 """
+
+def novedades(unidades: list[dict], cuantas: int = 6) -> str:
+    """Dashboards ordenados por fecha de datos (meta «actualizado»), los más recientes primero."""
+    e = html.escape
+    todos = [(d["actualizado"], u, d) for u in unidades for d in u["dashboards"] if d.get("actualizado")]
+    todos.sort(key=lambda x: x[0], reverse=True)
+    return "".join(f"""
+      <li><a href="unidades/{e(u['carpeta'])}/{e(d['archivo'])}">
+        <span class="nov-unidad">{e(u['nombre'])}</span>
+        <span class="nov-nombre">{e(d['titulo'].split(' · ')[0])}</span>
+        <span class="nov-fecha">Datos a {fecha_es(fecha)}</span>
+      </a></li>""" for fecha, u, d in todos[:cuantas])
+
 
 def tarjeta_unidad(u: dict) -> str:
     n = len(u["dashboards"])
@@ -264,7 +294,7 @@ def main() -> None:
     for u in unidades:
         copiar_publico(UNIDADES / u["carpeta"], SALIDA / "unidades" / u["carpeta"])
     tarjetas = "".join(tarjeta_unidad(u) for u in unidades)
-    (SALIDA / "index.html").write_text(PORTADA.format(tarjetas=tarjetas), encoding="utf-8")
+    (SALIDA / "index.html").write_text(PORTADA.format(tarjetas=tarjetas, novedades=novedades(unidades)), encoding="utf-8")
     # Una página por unidad con sus dashboards; si solo tiene uno, redirige a él
     for u in unidades:
         pagina = SALIDA / "unidades" / u["carpeta"] / "index.html"

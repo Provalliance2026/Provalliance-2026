@@ -15,12 +15,14 @@
   --fondo:#f2ede3; --tarjeta:#fff; --texto:#1c1a14; --cuerpo:#3a3628; --suave:#7a7260; --borde:#ddd8cc; --linea:#ece7dc;
   --acento:#b8860b; --pos:#2d5a3d; --neg:#8b2020;
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300;
+  --ok:#2d7a4a; --aviso:#a86200; --mal:#b3261e;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --fondo:#16140f; --tarjeta:#201d17; --texto:#efe9dc; --cuerpo:#d6cfbf; --suave:#a39c8c; --borde:#3a352b; --linea:#2c2821;
     --pos:#6fbf8a; --neg:#e07a7a;
     --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300;
+    --ok:#6fbf8a; --aviso:#e0a040; --mal:#e07a7a;
   }
 }
 * { box-sizing:border-box; margin:0; padding:0; }
@@ -69,6 +71,28 @@ tr.grupo td { font-weight:600; color:var(--texto); background:var(--fondo); }
 tr.total td { font-weight:600; color:var(--texto); border-top:2px solid var(--texto); }
 .pos { color:var(--pos); } .neg { color:var(--neg); }
 .nota { font-size:12px; color:var(--suave); margin-top:10px; }
+/* Semáforo: forma + color + texto, nunca solo color */
+.estado { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; white-space:nowrap; }
+.estado::before { content:''; width:8px; height:8px; border-radius:50%; background:currentColor; flex:none; }
+.estado.verde { color:var(--ok); } .estado.ambar { color:var(--aviso); } .estado.rojo { color:var(--mal); } .estado.gris { color:var(--suave); }
+.estado.ambar::before { border-radius:1px; transform:rotate(45deg) scale(.85); } .estado.rojo::before { border-radius:1px; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+.chips button { font:inherit; font-size:12px; color:var(--cuerpo); background:var(--tarjeta); border:1px solid var(--borde); border-radius:999px; padding:4px 12px; cursor:pointer; }
+.chips button[aria-pressed="true"] { color:var(--texto); border-color:var(--texto); font-weight:600; }
+.chips button .estado { font-size:12px; font-weight:inherit; }
+/* Nombres que abren la ficha de persona */
+.persona { font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer; text-align:left;
+  text-decoration:underline dotted var(--suave); text-underline-offset:3px; }
+.persona:hover { color:var(--acento); text-decoration-color:var(--acento); }
+dialog#ficha { width:min(980px, calc(100% - 32px)); max-height:calc(100vh - 48px); margin:auto; padding:24px; overflow:auto;
+  background:var(--fondo); color:var(--cuerpo); border:1px solid var(--borde); border-radius:6px; }
+dialog#ficha::backdrop { background:rgba(20,18,12,.55); }
+.ficha-cab { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; border-bottom:2px solid var(--texto); padding-bottom:14px; margin-bottom:18px; }
+.ficha-cab h2 { font-family:'EB Garamond', Georgia, serif; font-weight:500; font-size:34px; color:var(--texto); line-height:1.1; margin:2px 0 6px; }
+.cerrar { font:inherit; font-size:18px; line-height:1; color:var(--suave); background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:6px 10px; cursor:pointer; }
+.cerrar:hover { color:var(--texto); border-color:var(--acento); }
+dialog#ficha .caja { margin-bottom:16px; }
+/*__TABLAS_CSS__*/
 @media (max-width:600px) { .rejilla { grid-template-columns:1fr; } h1 { font-size:32px; } .grafico { height:260px; } .meta { text-align:left; } }
 </style>
 </head>
@@ -111,13 +135,23 @@ tr.total td { font-weight:600; color:var(--texto); border-top:2px solid var(--te
       </div>
     </div>
     <div class="caja" style="margin-bottom:20px">
+      <h2>Previsión a cierre de año</h2>
+      <div class="sub" id="seg-prev-sub"></div>
+      <div class="leyenda"><span><i style="background:var(--s1)"></i>Gasto acumulado</span><span><i class="linea" style="border-top-color:var(--s1)"></i>Proyección al ritmo actual</span><span><i class="linea"></i>Presupuesto anual</span></div>
+      <div class="grafico"><canvas id="seg-prev"></canvas></div>
+    </div>
+    <div class="caja" style="margin-bottom:20px">
       <h2>Resumen por BU</h2>
       <div class="sub">Tal como aparece en el resumen de la pestaña Seguimiento</div>
       <div class="tabla"><table id="seg-resumen"></table></div>
     </div>
     <div class="caja">
       <h2>Detalle por responsable y empleado</h2>
+      <div class="sub">Pulsa un nombre para ver su ficha · Estado: <span class="estado rojo">Superado</span> ya ha gastado más que su presupuesto anual ·
+        <span class="estado ambar">Por encima del ritmo</span> gasta más de lo que toca a estas alturas del año ·
+        <span class="estado verde">En presupuesto</span></div>
       <div class="sub">Tendencia = proyección a cierre de año del gasto actual · Desviación = presupuesto − tendencia (positivo: por debajo de presupuesto)</div>
+      <div class="chips" id="seg-chips" role="group" aria-label="Filtrar por estado"></div>
       <div class="tabla"><table id="seg-detalle"></table></div>
       <p class="nota" id="seg-nota"></p>
     </div>
@@ -144,7 +178,7 @@ tr.total td { font-weight:600; color:var(--texto); border-top:2px solid var(--te
     </div>
     <div class="caja">
       <h2>Detalle por titular</h2>
-      <div class="sub">Ordenado por gasto acumulado</div>
+      <div class="sub">Pulsa un nombre para ver su ficha · pulsa una cabecera para ordenar</div>
       <div class="tabla"><table id="tar-tabla"></table></div>
     </div>
   </section>
@@ -172,14 +206,36 @@ tr.total td { font-weight:600; color:var(--texto); border-top:2px solid var(--te
     </div>
     <div class="caja">
       <h2>Detalle por empleado</h2>
-      <div class="sub">Ordenado por gasto · movimientos = líneas de factura</div>
+      <div class="sub">Movimientos = líneas de factura · pulsa un nombre para ver su ficha · pulsa una cabecera para ordenar</div>
       <div class="tabla"><table id="tp-tabla"></table></div>
     </div>
   </section>
+
+  <dialog id="ficha" aria-labelledby="ficha-nombre">
+    <div class="ficha-cab">
+      <div>
+        <div class="ante" id="ficha-ante"></div>
+        <h2 id="ficha-nombre"></h2>
+        <div id="ficha-estado"></div>
+      </div>
+      <button type="button" class="cerrar" aria-label="Cerrar ficha">✕</button>
+    </div>
+    <div class="kpis" id="ficha-kpis"></div>
+    <div class="caja">
+      <h2>Gasto mensual</h2>
+      <div class="sub" id="ficha-mes-sub"></div>
+      <div class="grafico" style="height:230px"><canvas id="ficha-mes"></canvas></div>
+    </div>
+    <div class="rejilla">
+      <div class="caja"><h2>Tarjeta</h2><div class="sub">Titulares imputados a esta línea</div><div class="tabla"><table id="ficha-tarjeta"></table></div></div>
+      <div class="caja"><h2>TravelPerk</h2><div class="sub">Por viajero y tipo de gasto</div><div class="tabla"><table id="ficha-tp"></table></div></div>
+    </div>
+  </dialog>
 </div>
 
 <script id="datos" type="application/json">__DATOS__</script>
 <script>
+/*__TABLAS_JS__*/
 const D = JSON.parse(document.getElementById('datos').textContent);
 const MESES = D.meses, CORTO = MESES.map(m => m.slice(0, 3).charAt(0) + m.slice(1, 3).toLowerCase());
 const N_MESES = 9; // enero–septiembre con datos
@@ -194,6 +250,23 @@ const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).
 const sum = a => a.reduce((x, y) => x + (y || 0), 0);
 const kpis = (id, items) => document.getElementById(id).innerHTML = items.map(([et, v, n]) =>
   `<div class="kpi"><div class="et">${et}</div><div class="v">${v}</div><div class="n">${n || ''}</div></div>`).join('');
+
+// ── Semáforo por línea de Seguimiento: compara el gasto con el presupuesto que «toca» a estas alturas ──
+const ESTADOS = [['rojo', 'Superado'], ['ambar', 'Por encima del ritmo'], ['verde', 'En presupuesto'], ['gris', 'Sin presupuesto']];
+function estadoDe(r) {
+  if (!r.presupuesto) return ESTADOS[3];
+  if (r.real > r.presupuesto) return ESTADOS[0];
+  if (r.real > r.presupuesto * N_MESES / 12) return ESTADOS[1];
+  return ESTADOS[2];
+}
+const insignia = ([cls, texto]) => `<span class="estado ${cls}">${texto}</span>`;
+// Nombre que abre la ficha; «clave» es la línea de Seguimiento a la que se imputa
+const btnPersona = (clave, texto) => `<button type="button" class="persona" data-persona="${esc(clave)}">${esc(texto ?? clave)}</button>`;
+
+// ── TravelPerk: filas [mes, bu, subBu, cruce, empleado, asignación, naturaleza, importe, movimientos] ──
+const TIPOS_TP = ['Gastos de gestión', 'Tren', 'Vuelo', 'Hotel', 'Otros'];
+const TP = D.travelperk.map(([mes, bu, sub, cruce, emp, asig, nat, imp, n]) =>
+  ({ mes, bu, sub, cruce, emp, asig, tipo: TIPOS_TP.includes(nat) ? nat : 'Otros', imp, n }));
 
 // ── Gráficos: estilo común ──
 Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
@@ -231,7 +304,27 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
     ['Gasto real', eur(T.real), 'Enero–septiembre'],
     ['Consumido', pct(consumido), `${N_MESES} de 12 meses transcurridos (${pct(N_MESES / 12)})`],
     ['Pendiente', eur(presupuesto - T.real), 'Presupuesto disponible hasta diciembre'],
+    ['Previsión a cierre', eur(T.real / N_MESES * 12), `Al ritmo actual · ${pct(T.real / N_MESES * 12 / presupuesto)} del presupuesto`],
   ]);
+
+  // Previsión: acumulado real hasta el último mes con datos y proyección lineal a diciembre
+  const acum = [];
+  T.meses.slice(0, N_MESES).reduce((a, v, i) => (acum[i] = a + (v || 0)), 0);
+  const ritmo = T.real / N_MESES, cierre = ritmo * 12;
+  document.getElementById('seg-prev-sub').textContent =
+    `Al ritmo medio de ${eur(ritmo)} al mes se cerraría el año en ${eur(cierre)}: ` +
+    (cierre <= presupuesto ? `${eur(presupuesto - cierre)} por debajo del presupuesto.` : `${eur(cierre - presupuesto)} por encima del presupuesto.`);
+  const linea = (label, data, color, discontinua) => ({ type: 'line', label, data, borderColor: color, backgroundColor: color, borderWidth: 2,
+    borderDash: discontinua ? [6, 4] : [], pointRadius: 0, pointHoverRadius: 5, spanGaps: false, tension: 0 });
+  dibujar('seg-prev', {
+    data: { labels: CORTO, datasets: [
+      { ...linea('Gasto acumulado', CORTO.map((_, i) => i < N_MESES ? acum[i] : null), css('--s1')), pointRadius: 3 },
+      linea('Proyección', CORTO.map((_, i) => i < N_MESES - 1 ? null : acum[N_MESES - 1] + ritmo * (i - N_MESES + 1)), css('--s1'), true),
+      linea('Presupuesto anual', CORTO.map(() => presupuesto), css('--suave'), true),
+    ] },
+    options: { scales: ejes(false, false), interaction: { mode: 'index', intersect: false },
+      plugins: { tooltip: { filter: i => i.parsed.y !== null } } },
+  });
   const mediaMes = presupuesto / 12;
   dibujar('seg-mes', {
     data: { labels: CORTO.slice(0, N_MESES), datasets: [
@@ -257,15 +350,33 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
     return `<tr class="${cls}"><td>${esc(r.bu)}</td><td class="txt">${esc(r.owner)}</td><td>${eur(r.presupuesto)}</td>${r.meses.slice(0, N_MESES).map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(r.real)}</td><td class="${signo(r.pendiente)}">${eur(r.pendiente)}</td><td>${r.presupuesto ? pct(r.real / r.presupuesto) : '—'}</td></tr>`;
   }).join('');
 
-  let html = `<tr><th>Empleado</th><th class="txt">BU</th><th>Presupuesto</th>${CORTO.slice(0, N_MESES).map(m => `<th>${m}</th>`).join('')}<th>Real 2026</th><th>Pendiente</th><th>Tendencia</th><th>Desviación</th><th>Desv. %</th><th>Tarjeta</th></tr>`;
-  const grupos = [...new Set(S.detalle.map(r => r.grupo))];
-  for (const g of grupos) {
-    const filas = S.detalle.filter(r => r.grupo === g);
-    html += `<tr class="grupo"><td>${esc(g)}</td><td></td><td>${eur(sum(filas.map(r => r.presupuesto)))}</td>${CORTO.slice(0, N_MESES).map((_, i) => `<td>${eur(sum(filas.map(r => r.meses[i])))}</td>`).join('')}<td>${eur(sum(filas.map(r => r.real)))}</td><td></td><td></td><td></td><td></td><td>${eur(sum(filas.map(r => r.tarjeta)))}</td></tr>`;
-    html += filas.map(r => `<tr><td>${esc(r.persona)}</td><td class="txt">${esc(r.bu)}</td><td>${eur(r.presupuesto)}</td>${r.meses.slice(0, N_MESES).map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(r.real)}</td><td class="${signo(r.pendiente)}">${eur(r.pendiente)}</td><td>${eur(r.tendencia)}</td><td class="${signo(r.desv)}">${eur(r.desv)}</td><td class="${signo(r.desvPct)}">${pct(r.desvPct)}</td><td>${eur(r.tarjeta)}</td></tr>`).join('');
+  // Detalle: agrupado por responsable con «Todos»; al filtrar por estado, lista plana (ordenable)
+  const cabDet = `<tr><th>Empleado</th><th class="txt">Estado</th><th class="txt">BU</th><th>Presupuesto</th>${CORTO.slice(0, N_MESES).map(m => `<th>${m}</th>`).join('')}<th>Real 2026</th><th>Pendiente</th><th>Tendencia</th><th>Desviación</th><th>Desv. %</th><th>Tarjeta</th></tr>`;
+  const filaDet = r => `<tr><td>${btnPersona(r.persona)}</td><td class="txt">${insignia(estadoDe(r))}</td><td class="txt">${esc(r.bu)}</td><td>${eur(r.presupuesto)}</td>${r.meses.slice(0, N_MESES).map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(r.real)}</td><td class="${signo(r.pendiente)}">${eur(r.pendiente)}</td><td>${eur(r.tendencia)}</td><td class="${signo(r.desv)}">${eur(r.desv)}</td><td class="${signo(r.desvPct)}">${pct(r.desvPct)}</td><td>${eur(r.tarjeta)}</td></tr>`;
+  const filaSuma = (etiqueta, cls, filas) => `<tr class="${cls}"><td>${esc(etiqueta)}</td><td></td><td></td><td>${eur(sum(filas.map(r => r.presupuesto)))}</td>${CORTO.slice(0, N_MESES).map((_, i) => `<td>${eur(sum(filas.map(r => r.meses[i])))}</td>`).join('')}<td>${eur(sum(filas.map(r => r.real)))}</td><td></td><td></td><td></td><td></td><td>${eur(sum(filas.map(r => r.tarjeta)))}</td></tr>`;
+  const conGasto = S.detalle.filter(r => r.presupuesto || r.real);
+  let filtro = '';
+  function pintarDetalle() {
+    let html = cabDet;
+    if (!filtro) {
+      for (const g of [...new Set(S.detalle.map(r => r.grupo))]) {
+        const filas = S.detalle.filter(r => r.grupo === g);
+        html += filaSuma(g, 'grupo', filas) + filas.map(filaDet).join('');
+      }
+      html += `<tr class="total"><td>TOTAL</td><td></td><td></td><td>${eur(T.presupuesto)}</td>${T.meses.slice(0, N_MESES).map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(T.real)}</td><td>${eur(T.pendiente)}</td><td></td><td></td><td></td><td>${eur(T.tarjeta)}</td></tr>`;
+    } else {
+      const filas = conGasto.filter(r => estadoDe(r)[0] === filtro).sort((a, b) => b.real - a.real);
+      html += filas.map(filaDet).join('') + filaSuma('TOTAL', 'total', filas);
+    }
+    document.getElementById('seg-detalle').innerHTML = html;
+    document.querySelectorAll('#seg-chips button').forEach(b => b.setAttribute('aria-pressed', b.dataset.filtro === filtro));
   }
-  html += `<tr class="total"><td>TOTAL</td><td></td><td>${eur(T.presupuesto)}</td>${T.meses.slice(0, N_MESES).map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(T.real)}</td><td>${eur(T.pendiente)}</td><td></td><td></td><td></td><td>${eur(T.tarjeta)}</td></tr>`;
-  document.getElementById('seg-detalle').innerHTML = html;
+  const chips = document.getElementById('seg-chips');
+  chips.innerHTML = `<button type="button" data-filtro="">Todos (${S.detalle.length})</button>` +
+    ESTADOS.map(e => [e, conGasto.filter(r => estadoDe(r)[0] === e[0]).length]).filter(([, n]) => n)
+      .map(([e, n]) => `<button type="button" data-filtro="${e[0]}">${insignia(e)} ${n}</button>`).join('');
+  chips.addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) { filtro = b.dataset.filtro; pintarDetalle(); } });
+  pintarDetalle();
   document.getElementById('seg-nota').textContent = `Fuera del total: OH Beauty ${eur(sum(S.fueraTotal.map(r => r.real)))} (` + S.fueraTotal.map(r => `${r.bu} · ${r.persona} ${eur(r.real)}`).join(' · ') + ').';
 })();
 
@@ -302,7 +413,7 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
     });
     document.getElementById('tar-tabla').innerHTML =
       `<tr><th>Titular</th><th class="txt">BU</th><th class="txt">Asignación</th>${meses.map(m => `<th>${m}</th>`).join('')}<th>Total</th></tr>` +
-      (f.length ? f.map(r => `<tr><td>${esc(r.titular)}</td><td class="txt">${esc(r.bun)}</td><td class="txt">${esc(r.cruce)}</td>${r.meses.map(v => `<td>${eur(v)}</td>`).join('')}<td><strong>${eur(r.total)}</strong></td></tr>`).join('')
+      (f.length ? f.map(r => `<tr><td>${btnPersona(r.cruce, r.titular)}</td><td class="txt">${esc(r.bun)}</td><td class="txt">${esc(r.cruce)}</td>${r.meses.map(v => `<td>${eur(v)}</td>`).join('')}<td><strong>${eur(r.total)}</strong></td></tr>`).join('')
         : `<tr><td class="vacio" colspan="${meses.length + 4}">Ninguna persona coincide con la búsqueda.</td></tr>`) +
       `<tr class="total"><td>TOTAL</td><td></td><td></td>${porMes.map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(total)}</td></tr>`;
   }
@@ -313,11 +424,8 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
 
 // ═════════ TRAVELPERK ═════════
 (() => {
-  // filas: [mes, bu, subBu, cruce, empleado, naturaleza, importe, movimientos]
-  const TIPOS = ['Gastos de gestión', 'Tren', 'Vuelo', 'Hotel', 'Otros'];
+  const TIPOS = TIPOS_TP, R = TP;
   const COLORES = ['--s1', '--s2', '--s3', '--s4', '--s5'].map(css);
-  const tipo = n => TIPOS.includes(n) ? n : 'Otros';
-  const R = D.travelperk.map(([mes, bu, sub, cruce, emp, nat, imp, n]) => ({ mes, bu, sub, cruce, emp, tipo: tipo(nat), imp, n }));
   const selBu = document.getElementById('tp-bu'), selMes = document.getElementById('tp-filtro-mes'), buscar = document.getElementById('tp-buscar');
   selBu.innerHTML = '<option value="">Todas</option>' + [...new Set(R.map(r => r.bu))].sort().map(b => `<option>${esc(b)}</option>`).join('');
   selMes.innerHTML = '<option value="">Todos</option>' + CORTO.slice(0, N_MESES).map((m, i) => `<option value="${i}">${MESES[i].charAt(0) + MESES[i].slice(1).toLowerCase()}</option>`).join('');
@@ -358,13 +466,13 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
     });
     const porEmp = {};
     f.forEach(r => {
-      const e = porEmp[r.emp] ??= { emp: r.emp, bu: r.bu, sub: r.sub, total: 0, n: 0, tipos: Object.fromEntries(TIPOS.map(t => [t, 0])) };
+      const e = porEmp[r.emp] ??= { emp: r.emp, asig: r.asig, bu: r.bu, sub: r.sub, total: 0, n: 0, tipos: Object.fromEntries(TIPOS.map(t => [t, 0])) };
       e.total += r.imp; e.n += r.n; e.tipos[r.tipo] += r.imp;
     });
     const filas = Object.values(porEmp).sort((a, b) => b.total - a.total);
     document.getElementById('tp-tabla').innerHTML =
       `<tr><th>Empleado</th><th class="txt">BU</th><th class="txt">Sub-BU</th>${TIPOS.map(t => `<th>${t}</th>`).join('')}<th>Total</th><th>Movimientos</th></tr>` +
-      (filas.length ? filas.map(e => `<tr><td>${esc(e.emp)}</td><td class="txt">${esc(e.bu)}</td><td class="txt">${esc(e.sub)}</td>${TIPOS.map(t => `<td>${eur(e.tipos[t])}</td>`).join('')}<td><strong>${eur(e.total)}</strong></td><td>${e.n}</td></tr>`).join('')
+      (filas.length ? filas.map(e => `<tr><td>${btnPersona(e.asig, e.emp)}</td><td class="txt">${esc(e.bu)}</td><td class="txt">${esc(e.sub)}</td>${TIPOS.map(t => `<td>${eur(e.tipos[t])}</td>`).join('')}<td><strong>${eur(e.total)}</strong></td><td>${e.n}</td></tr>`).join('')
         : `<tr><td class="vacio" colspan="${TIPOS.length + 5}">Ninguna persona coincide con la búsqueda.</td></tr>`) +
       `<tr class="total"><td>TOTAL</td><td></td><td></td>${porTipo.map(v => `<td>${eur(v)}</td>`).join('')}<td>${eur(total)}</td><td>${fmt.format(movs)}</td></tr>`;
   }
@@ -373,6 +481,63 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
   buscar.addEventListener('input', pintar);
   pintar();
 })();
+
+// ═════════ FICHA DE PERSONA ═════════
+// Junta, para una línea de Seguimiento, su presupuesto, la tarjeta y TravelPerk imputados a ella
+(() => {
+  const dlg = document.getElementById('ficha');
+  const meses = CORTO.slice(0, N_MESES);
+  function abrirFicha(clave) {
+    const k = norm(clave);
+    const r = D.seguimiento.detalle.find(x => norm(x.persona) === k);
+    const tars = D.tarjeta.filter(t => norm(t.cruce) === k).map(t => ({ ...t, total: sum(t.meses) }));
+    const tps = TP.filter(t => norm(t.asig) === k);
+    const totTar = sum(tars.map(t => t.total)), totTp = sum(tps.map(t => t.imp));
+    document.getElementById('ficha-ante').textContent = r ? `${r.grupo} · ${r.bu}` : 'Sin línea en Seguimiento';
+    document.getElementById('ficha-nombre').textContent = r ? r.persona : clave;
+    document.getElementById('ficha-estado').innerHTML = r ? insignia(estadoDe(r)) : '';
+    kpis('ficha-kpis', r ? [
+      ['Presupuesto 2026', eur(r.presupuesto), 'Propuesta anual'],
+      ['Gasto real', eur(r.real), r.presupuesto ? `${pct(r.real / r.presupuesto)} consumido` : 'Enero–septiembre'],
+      ['Pendiente', eur(r.presupuesto ? r.presupuesto - r.real : null), 'Hasta diciembre'],
+      ['Previsión a cierre', eur(r.real / N_MESES * 12), r.presupuesto ? `${pct(r.real / N_MESES * 12 / r.presupuesto)} del presupuesto` : 'Al ritmo actual'],
+    ] : [
+      ['Tarjeta', eur(totTar), 'Enero–septiembre'],
+      ['TravelPerk', eur(totTp), 'Enero–septiembre'],
+    ]);
+    // Mensual: gasto de Seguimiento (o tarjeta + TravelPerk si la línea no está en Seguimiento) frente a presupuesto/12
+    const serie = r ? r.meses.slice(0, N_MESES).map(v => v || 0)
+      : meses.map((_, i) => sum(tars.map(t => t.meses[i])) + sum(tps.filter(t => t.mes === i).map(t => t.imp)));
+    document.getElementById('ficha-mes-sub').textContent = r
+      ? (r.presupuesto ? `Gasto real de Seguimiento frente al presupuesto mensual (${eur(r.presupuesto / 12)})` : 'Gasto real de Seguimiento')
+      : 'Tarjeta + TravelPerk';
+    const ds = [{ type: 'bar', label: 'Gasto', data: serie, ...barra(css('--s1')) }];
+    if (r?.presupuesto) ds.push({ type: 'line', label: 'Presupuesto mensual', data: meses.map(() => r.presupuesto / 12),
+      borderColor: css('--suave'), borderWidth: 2, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 0 });
+    if (!dlg.open) dlg.showModal();
+    dibujar('ficha-mes', { data: { labels: meses, datasets: ds }, options: { scales: ejes(false, false), interaction: { mode: 'index', intersect: false } } });
+
+    document.getElementById('ficha-tarjeta').innerHTML = `<tr><th>Titular</th><th>Total</th></tr>` +
+      (tars.length ? tars.sort((a, b) => b.total - a.total).map(t => `<tr><td>${esc(t.titular)}</td><td>${eur(t.total)}</td></tr>`).join('') +
+        `<tr class="total"><td>TOTAL</td><td>${eur(totTar)}</td></tr>`
+        : `<tr><td class="vacio" colspan="2">Sin gasto con tarjeta.</td></tr>`);
+    const viajeros = [...new Set(tps.map(t => t.emp))]
+      .map(emp => ({ emp, total: sum(tps.filter(t => t.emp === emp).map(t => t.imp)), tipos: TIPOS_TP.map(ti => sum(tps.filter(t => t.emp === emp && t.tipo === ti).map(t => t.imp))) }))
+      .sort((a, b) => b.total - a.total);
+    document.getElementById('ficha-tp').innerHTML = `<tr><th>Viajero</th>${TIPOS_TP.map(t => `<th>${t}</th>`).join('')}<th>Total</th></tr>` +
+      (viajeros.length ? viajeros.map(v => `<tr><td>${esc(v.emp)}</td>${v.tipos.map(x => `<td>${eur(x)}</td>`).join('')}<td><strong>${eur(v.total)}</strong></td></tr>`).join('') +
+        `<tr class="total"><td>TOTAL</td>${TIPOS_TP.map(ti => `<td>${eur(sum(tps.filter(t => t.tipo === ti).map(t => t.imp)))}</td>`).join('')}<td>${eur(totTp)}</td></tr>`
+        : `<tr><td class="vacio" colspan="${TIPOS_TP.length + 2}">Sin reservas en TravelPerk.</td></tr>`);
+  }
+  document.addEventListener('click', ev => { const b = ev.target.closest('[data-persona]'); if (b) abrirFicha(b.dataset.persona); });
+  dlg.querySelector('.cerrar').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', ev => { if (ev.target === dlg) dlg.close(); });  // clic fuera de la ficha
+})();
+
+// ═════════ TABLAS: ordenar y descargar ═════════
+[['seg-resumen', 'viajes-resumen-bu'], ['seg-detalle', 'viajes-seguimiento-empleados'], ['tar-tabla', 'viajes-tarjeta'],
+ ['tp-tabla', 'viajes-travelperk'], ['ficha-tarjeta', 'ficha-tarjeta'], ['ficha-tp', 'ficha-travelperk']]
+  .forEach(([id, archivo]) => mejorarTabla(document.getElementById(id), archivo));
 </script>
 </body>
 </html>

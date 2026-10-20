@@ -1,0 +1,10 @@
+/* Tablas ordenables y botón de descarga (ver tablas.js) */
+th.ordenable { cursor:pointer; user-select:none; }
+th.ordenable:hover { color:var(--texto); }
+th.ordenable::after { content:'↕'; margin-left:4px; opacity:.35; }
+th[data-orden="asc"]::after { content:'▲'; opacity:1; color:var(--acento); }
+th[data-orden="desc"]::after { content:'▼'; opacity:1; color:var(--acento); }
+.descargar { float:right; margin:-46px 0 0; font:inherit; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase;
+  color:var(--suave); background:var(--tarjeta); border:1px solid var(--borde); border-radius:4px; padding:6px 12px; cursor:pointer; }
+.descargar:hover { color:var(--texto); border-color:var(--acento); }
+@media (max-width:600px) { .descargar { float:none; margin:0 0 10px; } }

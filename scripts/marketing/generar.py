@@ -15,6 +15,10 @@ fecha = date.fromisoformat(sys.argv[2])
 datos = subprocess.run([sys.executable, "-I", str(AQUI / "extraer.py"), sys.argv[1]],
                        check=True, capture_output=True, text=True).stdout
 html = (AQUI / "plantilla.html").read_text(encoding="utf-8")
+# Código común de tablas (ordenar y descargar), compartido por todos los dashboards
+COMUN = AQUI.parent / "comun"
+html = (html.replace("/*__TABLAS_CSS__*/", (COMUN / "tablas.css").read_text(encoding="utf-8"))
+             .replace("/*__TABLAS_JS__*/", (COMUN / "tablas.js").read_text(encoding="utf-8")))
 html = (html.replace("__DATOS__", datos.replace("</", "<\\/"))
             .replace("__ACTUALIZADO__", fecha.isoformat()).replace("__FECHA__", fecha.strftime("%d/%m/%Y")))
 SALIDA.write_text(html, encoding="utf-8")

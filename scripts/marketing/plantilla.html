@@ -73,6 +73,7 @@ tr.total td { font-weight:600; color:var(--texto); border-top:2px solid var(--te
 .tipo { display:inline-block; font-size:10px; font-weight:600; letter-spacing:1px; padding:1px 6px; border-radius:3px; background:var(--fondo); color:var(--suave); }
 td.coment { text-align:left; color:var(--suave); font-style:italic; white-space:normal; min-width:120px; }
 tr.difiere td:first-child { box-shadow:inset 3px 0 0 var(--acento); }
+/*__TABLAS_CSS__*/
 </style>
 </head>
 <body>
@@ -100,6 +101,7 @@ tr.difiere td:first-child { box-shadow:inset 3px 0 0 var(--acento); }
 
 <script id="datos" type="application/json">__DATOS__</script>
 <script>
+/*__TABLAS_JS__*/
 const D = JSON.parse(document.getElementById('datos').textContent);
 const fmt = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0, useGrouping: 'always' });
 const eur = v => v == null ? '—' : fmt.format(Math.round(v) || 0) + ' €';  // || 0 evita «-0 €»
@@ -156,7 +158,7 @@ document.getElementById('paneles').innerHTML = Object.entries(PESTANAS).map(([id
     </div>
     <div class="caja">
       <h2>Detalle por proveedor</h2>
-      <div class="sub">Ordenado por importe · marcados en dorado los que tienen diferencia</div>
+      <div class="sub">Marcados en dorado los que tienen diferencia · pulsa una cabecera para ordenar</div>
       <div class="tabla"><table id="${id}-tabla"></table></div>
     </div>
   </section>`).join('');
@@ -221,6 +223,7 @@ for (const id of Object.keys(PESTANAS)) {
   selTipo?.addEventListener('change', pintar);
   buscar.addEventListener('input', pintar);
   pintar();
+  mejorarTabla(document.getElementById(`${id}-tabla`), `marketing-${id}`);
 }
 </script>
 </body>

@@ -13,5 +13,9 @@ SALIDA = AQUI.parent.parent / "unidades" / "hq" / "viajes.html"
 datos = subprocess.run([sys.executable, "-I", str(AQUI / "extraer.py"), sys.argv[1]],
                        check=True, capture_output=True, text=True).stdout
 plantilla = (AQUI / "plantilla.html").read_text(encoding="utf-8")
+# Código común de tablas (ordenar y descargar), compartido por todos los dashboards
+COMUN = AQUI.parent / "comun"
+plantilla = (plantilla.replace("/*__TABLAS_CSS__*/", (COMUN / "tablas.css").read_text(encoding="utf-8"))
+             .replace("/*__TABLAS_JS__*/", (COMUN / "tablas.js").read_text(encoding="utf-8")))
 SALIDA.write_text(plantilla.replace("__DATOS__", datos.replace("</", "<\\/")), encoding="utf-8")
 print(f"Generado {SALIDA}")

@@ -28,6 +28,9 @@ emails, importes individuales de personas), avisa antes de seguir y no los lleve
      Si la unidad tiene varios dashboards (como HQ), añade también "← Menú <UNIDAD>" a `./`.
    - Responsive (usable en móvil) y modo claro/oscuro con variables CSS en `:root`.
    - Formato español: `1.234,56 €`, fechas `dd/mm/aaaa` (`Intl.NumberFormat('es-ES')`).
+   - Tablas ordenables y con botón «Descargar Excel»: incrusta `scripts/comun/tablas.css` y `tablas.js`
+     (marcadores `/*__TABLAS_CSS__*/` y `/*__TABLAS_JS__*/`, ver los `generar.py`) y llama a
+     `mejorarTabla(tabla, nombreArchivo)` en cada tabla.
 5. Ejecuta `python3 scripts/generar_portal.py` para comprobar que el portal se construye sin errores.
 6. Haz commit en la rama de trabajo (no en `main`) con un mensaje descriptivo.
 

@@ -45,13 +45,14 @@ for r in tar[1:38]:
         tarjeta.append({"titular": txt(r[9]).title(), "bun": txt(r[10]), "cruce": txt(r[11]),
                         "meses": [round(float(r[c]), 2) if isinstance(r[c], (int, float)) else 0 for c in range(13, 22)]})
 
-# ── TOTAL2026 TravelPerk (€), agregado por mes/BU/sub-BU/cruce/empleado/naturaleza ──
+# ── TOTAL2026 TravelPerk (€), agregado por mes/BU/sub-BU/cruce/empleado/asignación/naturaleza ──
+# La asignación (columna EMPLOYEE) es la línea de Seguimiento a la que se imputa el gasto
 agg = collections.defaultdict(lambda: [0.0, 0])
 for r in list(wb["TOTAL2026"].iter_rows(values_only=True))[1:]:
     if r[11] is None: continue
     sub = r[9] if r[9] not in (None, 0, "0") else "Sin sub-BU"
     k = (MESES.index(r[6]), txt(r[8]) or "Sin BU", txt(sub), txt(r[10]), " ".join(txt(r[7]).split()).title(),
-         txt(r[14]) or "Sin clasificar")
+         txt(r[12]), txt(r[14]) or "Sin clasificar")
     agg[k][0] += float(r[11]); agg[k][1] += 1
 travelperk = [[*k, round(v[0], 2), v[1]] for k, v in sorted(agg.items())]
 

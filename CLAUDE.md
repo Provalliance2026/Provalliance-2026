@@ -25,6 +25,7 @@ emails, importes individuales de personas), avisa antes de seguir y no los lleve
      (versión fija). Sin otras dependencias externas salvo Google Fonts.
    - Cabecera con el nombre de la unidad, título, fecha de los datos y enlace "← Portal" a `../../`;
      fila de KPIs; gráficos; tabla de detalle si aporta.
+     Si la unidad tiene varios dashboards (como HQ), añade también "← Menú <UNIDAD>" a `./`.
    - Responsive (usable en móvil) y modo claro/oscuro con variables CSS en `:root`.
    - Formato español: `1.234,56 €`, fechas `dd/mm/aaaa` (`Intl.NumberFormat('es-ES')`).
 5. Ejecuta `python3 scripts/generar_portal.py` para comprobar que el portal se construye sin errores.

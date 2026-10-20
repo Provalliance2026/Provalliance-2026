@@ -28,6 +28,10 @@ body { font-family:Inter, system-ui, sans-serif; font-size:14px; line-height:1.5
 .pagina { max-width:1240px; margin:auto; padding:28px 16px 64px; }
 .volver { display:inline-block; font-size:11px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--suave); text-decoration:none; margin-bottom:14px; }
 .volver:hover { color:var(--texto); }
+.migas { display:flex; align-items:center; gap:10px; margin-bottom:14px; color:var(--suave); font-size:11px; }
+.migas .volver { margin-bottom:0; }
+.migas .volver:first-child { color:var(--texto); }
+.migas .volver:first-child:hover { color:var(--acento); }
 header { border-bottom:2px solid var(--texto); padding-bottom:16px; display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; }
 .ante { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--suave); }
 h1 { font-family:'EB Garamond', Georgia, serif; font-weight:500; font-size:40px; color:var(--texto); line-height:1.1; }
@@ -70,7 +74,11 @@ tr.total td { font-weight:600; color:var(--texto); border-top:2px solid var(--te
 </head>
 <body>
 <div class="pagina">
-  <a class="volver" href="../../">← Portal</a>
+  <div class="migas">
+    <a class="volver" href="./">← Menú HQ</a>
+    <span>·</span>
+    <a class="volver" href="../../">Portal</a>
+  </div>
   <header>
     <div>
       <div class="ante">HQ · Gastos de viaje</div>

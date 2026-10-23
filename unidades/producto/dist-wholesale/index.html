@@ -300,5 +300,29 @@ body {
   <span class="cover-footnote">Cifras en euros · DIST-WHOLESALE · Sociedad 50000</span>
 </div>
 
+<!-- Al pinchar un panel: se desvanece antes de navegar -->
+<style>
+  body { transition:opacity .35s ease; }
+  body.saliendo { opacity:0; }
+  .desvanecer { transition:opacity .35s ease, transform .35s ease, filter .35s ease !important;
+                opacity:0 !important; transform:scale(.96) !important; filter:blur(2px); }
+  @media (prefers-reduced-motion: reduce) { body, .desvanecer { transition:none !important; } }
+</style>
+<script>
+document.addEventListener("click", ev => {
+  const a = ev.target.closest("a.nav-card");
+  if (!a || ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  ev.preventDefault();
+  a.classList.add("desvanecer");
+  setTimeout(() => document.body.classList.add("saliendo"), 120);
+  setTimeout(() => { location.href = a.href; }, 420);
+});
+// Al volver con «Atrás» (caché del navegador) la página reaparece
+addEventListener("pageshow", () => {
+  document.body.classList.remove("saliendo");
+  document.querySelectorAll(".desvanecer").forEach(el => el.classList.remove("desvanecer"));
+});
+</script>
 </body>
 </html>

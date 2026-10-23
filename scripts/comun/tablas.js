@@ -12,7 +12,7 @@ const valorCelda = texto => {
 
 function mejorarTabla(tabla, nombreArchivo) {
   const estado = { col: null, asc: false };
-  let ocupado = false;
+  let ocupado = false, animar = false;
   function aplicar() {
     if (ocupado) return;
     ocupado = true;
@@ -26,6 +26,7 @@ function mejorarTabla(tabla, nombreArchivo) {
         const esTexto = i === 0 || th.classList.contains('txt');
         estado.asc = estado.col === i ? !estado.asc : esTexto;  // texto A→Z; números de mayor a menor
         estado.col = i;
+        animar = true;
         aplicar();
       };
     });
@@ -39,7 +40,15 @@ function mejorarTabla(tabla, nombreArchivo) {
         return estado.asc ? c : -c;
       });
       [...cuerpo, ...final].forEach(r => r.parentNode.appendChild(r));
+      if (animar) {  // fundido de las filas al reordenar (efx-reordenada, en efectos.css)
+        tabla.classList.remove('efx-reordenada');
+        void tabla.offsetWidth;
+        tabla.classList.add('efx-reordenada');
+        clearTimeout(tabla.efxFin);
+        tabla.efxFin = setTimeout(() => tabla.classList.remove('efx-reordenada'), 400);
+      }
     }
+    animar = false;
     ocupado = false;
   }
   // Cada vez que el dashboard vuelve a pintar la tabla (filtros, búsqueda), se reaplica el orden

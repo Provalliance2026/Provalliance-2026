@@ -14,30 +14,10 @@ SALIDA = RAIZ / "_site"
 EXTENSIONES_DATOS = {".xlsx", ".xlsm", ".xls", ".csv"}
 
 
-# Al pinchar un panel: el panel se desvanece y la página se funde antes de navegar
-DESVANECER = """<style>
-  body { transition:opacity .35s ease; }
-  body.saliendo { opacity:0; }
-  .desvanecer { transition:opacity .35s ease, transform .35s ease, filter .35s ease !important;
-                opacity:0 !important; transform:scale(.96) !important; filter:blur(2px); }
-  @media (prefers-reduced-motion: reduce) { body, .desvanecer { transition:none !important; } }
-</style>
-<script>
-document.addEventListener("click", ev => {
-  const a = ev.target.closest("a.unidad, a.tarjeta, .novedades a");
-  if (!a || ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  ev.preventDefault();
-  a.classList.add("desvanecer");
-  setTimeout(() => document.body.classList.add("saliendo"), 120);
-  setTimeout(() => { location.href = a.href; }, 420);
-});
-// Al volver con «Atrás» (caché del navegador) la página reaparece
-addEventListener("pageshow", () => {
-  document.body.classList.remove("saliendo");
-  document.querySelectorAll(".desvanecer").forEach(el => el.classList.remove("desvanecer"));
-});
-</script>"""
+# Efectos visuales comunes (entrada, salida al pinchar un panel, etc.): ver scripts/comun/efectos.*
+COMUN = RAIZ / "scripts" / "comun"
+EFECTOS_CSS = (COMUN / "efectos.css").read_text(encoding="utf-8")
+EFECTOS_JS = f"<script>\n{(COMUN / 'efectos.js').read_text(encoding='utf-8')}</script>"
 
 
 class LectorCabecera(HTMLParser):
@@ -173,6 +153,7 @@ UNIDAD = """<!doctype html>
     .barra {{ padding:20px 16px 0; }} .pie {{ padding:0 16px 24px; }} .barra span.etiqueta {{ display:none; }}
     .tarjeta {{ width:100%; max-width:380px; min-height:0; padding:24px; }}
   }}
+{efectos_css}
 </style>
 </head>
 <body>
@@ -189,7 +170,7 @@ UNIDAD = """<!doctype html>
   </div>
 </div>
 <div class="pie">Provalliance · Cifras en euros</div>
-{desvanecer}
+{efectos_js}
 </body>
 </html>
 """
@@ -244,6 +225,7 @@ PORTADA = """<!doctype html>
     .unidad {{ width:100%; max-width:340px; }}
     .novedades a {{ grid-template-columns:1fr auto; }} .nov-unidad {{ grid-column:1 / -1; }}
   }}
+{efectos_css}
 </style>
 </head>
 <body>
@@ -265,7 +247,7 @@ PORTADA = """<!doctype html>
   </section>
 </div>
 <div class="pie">Cifras en euros</div>
-{desvanecer}
+{efectos_js}
 </body>
 </html>
 """
@@ -322,7 +304,7 @@ def main() -> None:
     for u in unidades:
         copiar_publico(UNIDADES / u["carpeta"], SALIDA / "unidades" / u["carpeta"])
     tarjetas = "".join(tarjeta_unidad(u) for u in unidades)
-    (SALIDA / "index.html").write_text(PORTADA.format(tarjetas=tarjetas, novedades=novedades(unidades), desvanecer=DESVANECER), encoding="utf-8")
+    (SALIDA / "index.html").write_text(PORTADA.format(tarjetas=tarjetas, novedades=novedades(unidades), efectos_css=EFECTOS_CSS, efectos_js=EFECTOS_JS), encoding="utf-8")
     # Una página por unidad con sus dashboards; si solo tiene uno, redirige a él
     for u in unidades:
         pagina = SALIDA / "unidades" / u["carpeta"] / "index.html"
@@ -335,7 +317,7 @@ def main() -> None:
             nombre=html.escape(u["nombre"]),
             texto="Selecciona el informe que quieres consultar." if n else "Todavía no hay dashboards en esta unidad.",
             tarjetas="".join(tarjeta_dashboard(d, i) for i, d in enumerate(u["dashboards"])),
-            desvanecer=DESVANECER), encoding="utf-8")
+            efectos_css=EFECTOS_CSS, efectos_js=EFECTOS_JS), encoding="utf-8")
     total = sum(len(u["dashboards"]) for u in unidades)
     print(f"Portal generado en {SALIDA}: {len(unidades)} unidades, {total} dashboards.")
 

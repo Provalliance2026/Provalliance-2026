@@ -14,6 +14,32 @@ SALIDA = RAIZ / "_site"
 EXTENSIONES_DATOS = {".xlsx", ".xlsm", ".xls", ".csv"}
 
 
+# Al pinchar un panel: el panel se desvanece y la página se funde antes de navegar
+DESVANECER = """<style>
+  body { transition:opacity .35s ease; }
+  body.saliendo { opacity:0; }
+  .desvanecer { transition:opacity .35s ease, transform .35s ease, filter .35s ease !important;
+                opacity:0 !important; transform:scale(.96) !important; filter:blur(2px); }
+  @media (prefers-reduced-motion: reduce) { body, .desvanecer { transition:none !important; } }
+</style>
+<script>
+document.addEventListener("click", ev => {
+  const a = ev.target.closest("a.unidad, a.tarjeta, .novedades a");
+  if (!a || ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  ev.preventDefault();
+  a.classList.add("desvanecer");
+  setTimeout(() => document.body.classList.add("saliendo"), 120);
+  setTimeout(() => { location.href = a.href; }, 420);
+});
+// Al volver con «Atrás» (caché del navegador) la página reaparece
+addEventListener("pageshow", () => {
+  document.body.classList.remove("saliendo");
+  document.querySelectorAll(".desvanecer").forEach(el => el.classList.remove("desvanecer"));
+});
+</script>"""
+
+
 class LectorCabecera(HTMLParser):
     """Extrae <title> y las etiquetas <meta name="..."> de un dashboard."""
 
@@ -163,6 +189,7 @@ UNIDAD = """<!doctype html>
   </div>
 </div>
 <div class="pie">Provalliance · Cifras en euros</div>
+{desvanecer}
 </body>
 </html>
 """
@@ -238,6 +265,7 @@ PORTADA = """<!doctype html>
   </section>
 </div>
 <div class="pie">Cifras en euros</div>
+{desvanecer}
 </body>
 </html>
 """
@@ -294,7 +322,7 @@ def main() -> None:
     for u in unidades:
         copiar_publico(UNIDADES / u["carpeta"], SALIDA / "unidades" / u["carpeta"])
     tarjetas = "".join(tarjeta_unidad(u) for u in unidades)
-    (SALIDA / "index.html").write_text(PORTADA.format(tarjetas=tarjetas, novedades=novedades(unidades)), encoding="utf-8")
+    (SALIDA / "index.html").write_text(PORTADA.format(tarjetas=tarjetas, novedades=novedades(unidades), desvanecer=DESVANECER), encoding="utf-8")
     # Una página por unidad con sus dashboards; si solo tiene uno, redirige a él
     for u in unidades:
         pagina = SALIDA / "unidades" / u["carpeta"] / "index.html"
@@ -306,7 +334,8 @@ def main() -> None:
         pagina.write_text(UNIDAD.format(
             nombre=html.escape(u["nombre"]),
             texto="Selecciona el informe que quieres consultar." if n else "Todavía no hay dashboards en esta unidad.",
-            tarjetas="".join(tarjeta_dashboard(d, i) for i, d in enumerate(u["dashboards"]))), encoding="utf-8")
+            tarjetas="".join(tarjeta_dashboard(d, i) for i, d in enumerate(u["dashboards"])),
+            desvanecer=DESVANECER), encoding="utf-8")
     total = sum(len(u["dashboards"]) for u in unidades)
     print(f"Portal generado en {SALIDA}: {len(unidades)} unidades, {total} dashboards.")
 

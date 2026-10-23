@@ -1,0 +1,36 @@
+/* Efectos visuales comunes (ver efectos.js). Se incrustan en el portal y en cada dashboard. */
+/* 1. Entrada: la página aparece con un fundido y los paneles entran escalonados */
+@keyframes efx-aparecer { from { opacity:0; } }
+@keyframes efx-subir { from { opacity:0; transform:translateY(14px); } }
+body { animation:efx-aparecer .45s ease backwards; transition:opacity .35s ease; }
+.unidad, .tarjeta, .nav-card { animation:efx-subir .5s cubic-bezier(.2,.7,.3,1) backwards; }
+:is(.unidades, .tarjetas, .cards-row) > :nth-child(2) { animation-delay:.08s; }
+:is(.unidades, .tarjetas, .cards-row) > :nth-child(3) { animation-delay:.16s; }
+:is(.unidades, .tarjetas, .cards-row) > :nth-child(4) { animation-delay:.24s; }
+:is(.unidades, .tarjetas, .cards-row) > :nth-child(5) { animation-delay:.32s; }
+:is(.unidades, .tarjetas, .cards-row) > :nth-child(n+6) { animation-delay:.4s; }
+.efx-entra { animation:efx-subir .5s cubic-bezier(.2,.7,.3,1) backwards; }
+
+/* Salida: al pinchar un panel se desvanece y la página se funde antes de navegar */
+body.efx-saliendo { opacity:0; }
+.efx-desvanece { transition:opacity .35s ease, transform .35s ease, filter .35s ease !important;
+                 opacity:0 !important; transform:scale(.96) !important; filter:blur(2px); }
+
+/* 4. La línea dorada bajo el título se traza de izquierda a derecha */
+@keyframes efx-trazar { from { transform:scaleX(0); } }
+.separador, .cover-divider { transform-origin:left; animation:efx-trazar .8s cubic-bezier(.6,0,.2,1) .2s backwards; }
+
+/* 5. Al ordenar una tabla, las filas reaparecen con un fundido */
+@keyframes efx-fila { from { opacity:0; transform:translateY(4px); } }
+table.efx-reordenada tr:has(> td) { animation:efx-fila .3s ease backwards; }
+
+/* 6. En pantallas táctiles el panel se hunde al tocarlo */
+@media (hover: none) {
+  .unidad, .tarjeta, .nav-card, .novedades a { -webkit-tap-highlight-color:transparent; }
+  :is(.unidad, .tarjeta, .nav-card):active { transform:scale(.97); transition:transform .1s ease; }
+  .novedades a:active { background:var(--tarjeta, #fff); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation:none !important; transition:none !important; }
+}

@@ -31,6 +31,9 @@ emails, importes individuales de personas), avisa antes de seguir y no los lleve
    - Tablas ordenables y con botón «Descargar Excel»: incrusta `scripts/comun/tablas.css` y `tablas.js`
      (marcadores `/*__TABLAS_CSS__*/` y `/*__TABLAS_JS__*/`, ver los `generar.py`) y llama a
      `mejorarTabla(tabla, nombreArchivo)` en cada tabla.
+   - Efectos visuales comunes (entrada, KPIs que cuentan, gráficos al verlos…): incrusta
+     `scripts/comun/efectos.css` y `efectos.js` (marcadores `/*__EFECTOS_CSS__*/` y `/*__EFECTOS_JS__*/`, el JS
+     al final del `<body>`). En HTML sin generador: `python3 scripts/comun/incrustar_efectos.py <html>`.
 5. Ejecuta `python3 scripts/generar_portal.py` para comprobar que el portal se construye sin errores.
 6. Haz commit en la rama de trabajo (no en `main`) con un mensaje descriptivo.
 

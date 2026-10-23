@@ -93,6 +93,7 @@ dialog#ficha::backdrop { background:rgba(20,18,12,.55); }
 .cerrar:hover { color:var(--texto); border-color:var(--acento); }
 dialog#ficha .caja { margin-bottom:16px; }
 /*__TABLAS_CSS__*/
+/*__EFECTOS_CSS__*/
 @media (max-width:600px) { .rejilla { grid-template-columns:1fr; } h1 { font-size:32px; } .grafico { height:260px; } .meta { text-align:left; } }
 </style>
 </head>
@@ -538,6 +539,9 @@ if (['tarjeta', 'travelperk'].includes(location.hash.slice(1))) abrir(location.h
 [['seg-resumen', 'viajes-resumen-bu'], ['seg-detalle', 'viajes-seguimiento-empleados'], ['tar-tabla', 'viajes-tarjeta'],
  ['tp-tabla', 'viajes-travelperk'], ['ficha-tarjeta', 'ficha-tarjeta'], ['ficha-tp', 'ficha-travelperk']]
   .forEach(([id, archivo]) => mejorarTabla(document.getElementById(id), archivo));
+</script>
+<script>
+/*__EFECTOS_JS__*/
 </script>
 </body>
 </html>
